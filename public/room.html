@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Jim-Jam - Room</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .room-code {
+      color: #667eea;
+      font-weight: bold;
+      font-size: 20px;
+      font-family: monospace;
+    }
+
+    .search-box {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-input {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .search-results {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .song-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    .song-item:hover {
+      background: #f9f9f9;
+    }
+
+    .song-item img {
+      width: 60px;
+      height: 45px;
+      border-radius: 4px;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+
+    .song-info {
+      flex: 1;
+    }
+
+    .song-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .song-meta {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .player-section {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    #audioPlayer {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .now-playing {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .queue-section {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .queue-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .queue-item:last-child {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .users-list {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .user-tag {
+      display: inline-block;
+      background: #e8f5e9;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-right: 8px;
+      font-size: 12px;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎵 Jim-Jam</h1>
+      <p>Room Code: <span class="room-code" id="roomCodeDisplay">-</span></p>
+      <div class="users-list" id="usersList">-</div>
+    </div>
+
+    <div class="search-box">
+      <h3>🔍 Search Music</h3>
+      <div class="search-input">
+        <input type="text" id="searchInput" placeholder="Search for songs on YouTube..." />
+        <button class="btn-primary" onclick="searchSongs()">Search</button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="player-section">
+      <div class="now-playing" id="nowPlaying">No song playing</div>
+      <audio id="audioPlayer" controls></audio>
+    </div>
+
+    <div class="queue-section">
+      <h3>📝 Queue</h3>
+      <div id="queueList">
+        <div class="empty-state">Queue is empty</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    let currentRoomCode = null;
+    let currentUser = null;
+
+    // Get room code from URL or prompt
+    const urlParams = new URLSearchParams(window.location.search);
+    currentRoomCode = urlParams.get('room');
+
+    if (!currentRoomCode) {
+      alert('No room code provided!');
+      window.location.href = '/';
+    }
+
+    // Join room automatically
+    const userName = prompt('Enter your name:') || 'Anonymous';
+    currentUser = userName;
+
+    socket.emit('room:join', {
+      roomCode: currentRoomCode,
+      name: userName,
+      isCreating: false
+    });
+
+    // Socket events
+    socket.on('room:joined', (data) => {
+      console.log('Joined room:', data);
+      document.getElementById('roomCodeDisplay').textContent = data.roomCode;
+      updateUsersList(data.state.users);
+      updateQueue(data.state.queue);
+    });
+
+    socket.on('user:joined', (data) => {
+      console.log('User joined:', data);
+      updateUsersList(data.users);
+    });
+
+    socket.on('user:left', (data) => {
+      console.log('User left:', data);
+      updateUsersList(data.users);
+    });
+
+    socket.on('queue:updated', (data) => {
+      console.log('Queue updated:', data);
+      updateQueue(data.queue);
+    });
+
+    socket.on('song:playing', (data) => {
+      console.log('Now playing:', data);
+      playAudio(data.song);
+    });
+
+    socket.on('song:stateChanged', (data) => {
+      const audioPlayer = document.getElementById('audioPlayer');
+      if (data.isPlaying) {
+        audioPlayer.play();
+      } else {
+        audioPlayer.pause();
+      }
+      audioPlayer.currentTime = data.currentTime;
+    });
+
+    socket.on('error', (data) => {
+      alert('Error: ' + data.message);
+    });
+
+    // UI Functions
+    function updateUsersList(users) {
+      const usersList = document.getElementById('usersList');
+      usersList.innerHTML = users.map(u => 
+        `<span class="user-tag">${u.name}</span>`
+      ).join('');
+    }
+
+    function updateQueue(queue) {
+      const queueList = document.getElementById('queueList');
+      
+      if (queue.length === 0) {
+        queueList.innerHTML = '<div class="empty-state">Queue is empty</div>';
+        return;
+      }
+
+      queueList.innerHTML = queue.map((song, idx) => `
+        <div class="queue-item">
+          <div>
+            <div class="song-title">${song.title}</div>
+            <div class="song-meta">${song.channel} • ${song.duration}</div>
+          </div>
+          <button class="btn-primary" onclick="playSong('${song.id}')">Play</button>
+        </div>
+      `).join('');
+    }
+
+    async function searchSongs() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      const resultsDiv = document.getElementById('searchResults');
+      resultsDiv.innerHTML = '<div class="empty-state">Searching...</div>';
+
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const results = await response.json();
+
+        if (results.error) {
+          resultsDiv.innerHTML = `<div class="empty-state">Error: ${results.error}</div>`;
+          return;
+        }
+
+        if (results.length === 0) {
+          resultsDiv.innerHTML = '<div class="empty-state">No results found</div>';
+          return;
+        }
+
+        resultsDiv.innerHTML = results.map(song => `
+          <div class="song-item">
+            <img src="${song.thumbnail}" alt="${song.title}" />
+            <div class="song-info">
+              <div class="song-title">${song.title}</div>
+              <div class="song-meta">${song.channel} • ${song.duration}</div>
+            </div>
+            <button class="btn-primary" onclick='addToQueue(${JSON.stringify(song).replace(/'/g, "&apos;")})'>Add</button>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Search error:', err);
+        resultsDiv.innerHTML = '<div class="empty-state">Search failed</div>';
+      }
+    }
+
+    function addToQueue(song) {
+      socket.emit('queue:add', {
+        videoId: song.videoId,
+        title: song.title,
+        channel: song.channel,
+        duration: song.duration,
+        thumbnail: song.thumbnail
+      });
+    }
+
+    function playSong(songId) {
+      socket.emit('song:play', { songId });
+    }
+
+    function playAudio(song) {
+      const audioPlayer = document.getElementById('audioPlayer');
+      const nowPlaying = document.getElementById('nowPlaying');
+      
+      nowPlaying.textContent = `Now Playing: ${song.title} 🎵`;
+      
+      // Stream audio from our backend
+      audioPlayer.src = `/api/audio/${song.videoId}`;
+      audioPlayer.play().catch(err => {
+        console.error('Play error:', err);
+      });
+    }
+
+    // Search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchSongs();
+    });
+  </script>
+</body>
+</html>

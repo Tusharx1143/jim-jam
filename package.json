@@ -1,0 +1,28 @@
+{
+  "name": "jim-jam",
+  "version": "2.0.0",
+  "description": "Synchronized music listening with friends",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "PORT=3000 node src/server.js"
+  },
+  "keywords": [
+    "music",
+    "streaming",
+    "sync",
+    "real-time"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@distube/ytdl": "^2.0.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "node-fetch": "^3.3.2",
+    "socket.io": "^4.8.3",
+    "uuid": "^13.0.0",
+    "youtube-dl-exec": "^3.0.30",
+    "ytsr": "^3.8.4"
+  }
+}
