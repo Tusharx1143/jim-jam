@@ -91,50 +91,8 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-// GET: Stream audio from YouTube video via Invidious proxy
-app.get('/api/audio/:videoId', async (req, res) => {
-  const videoId = req.params.videoId;
-  
-  if (!videoId) {
-    return res.status(400).json({ error: 'Missing videoId' });
-  }
-
-  try {
-    console.log(`🎵 Getting audio stream for: ${videoId}`);
-    
-    // Use Invidious API (free YouTube proxy)
-    const response = await fetch(`https://invidious.io/api/v1/videos/${videoId}?fields=formatStreams`);
-    const data = await response.json();
-    
-    if (!data.formatStreams || data.formatStreams.length === 0) {
-      console.error(`❌ No streams found for ${videoId}`);
-      return res.status(400).json({ error: 'No audio streams available' });
-    }
-    
-    // Get the best audio format (webm audio only)
-    const audioStream = data.formatStreams.find(s => s.type && s.type.includes('audio'));
-    
-    if (!audioStream) {
-      console.error(`❌ No audio format found for ${videoId}`);
-      return res.status(400).json({ error: 'No audio format found' });
-    }
-    
-    // Make invidious URL absolute if needed
-    let audioUrl = audioStream.url;
-    if (!audioUrl.startsWith('http')) {
-      audioUrl = 'https://invidious.io' + audioUrl;
-    }
-    
-    console.log(`✅ Redirecting to audio stream: ${audioUrl.substring(0, 60)}...`);
-    
-    // Redirect to the actual audio URL
-    res.redirect(audioUrl);
-    
-  } catch (err) {
-    console.error(`❌ Error getting audio: ${err.message}`);
-    res.status(500).json({ error: 'Failed to get audio stream', details: err.message });
-  }
-});
+// Audio is handled via YouTube IFrame API embedded in frontend
+// No backend audio extraction needed
 
 // ============================================
 // SOCKET.IO EVENTS

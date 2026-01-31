@@ -1,9 +1,174 @@
+🎵 Jim-jam server running at http://0.0.0.0:3001
+User connected: Uvu_quCldeZhmTDCAAAB
+Anonymous joined room 8cf553b6
+Room 8cf553b6 deleted (empty)
+User disconnected: Uvu_quCldeZhmTDCAAAB
+User connected: p9dacEQzFF4nueo2AAAD
+asdas joined room e725a5ef
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
 
-🎵 JIM-JAM Server Running
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type gridShelfViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
 
-📍 http://localhost:3001
-🚀 Ready for connections
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type gridShelfViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type gridShelfViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
 
-🎵 Getting audio stream for: jNQXAC9IVRw
-❌ Error getting audio: Unexpected token '<', "<html>
-<h"... is not valid JSON
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type gridShelfViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type gridShelfViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type gridShelfViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type gridShelfViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type gridShelfViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Playing Navjot Ahuja - Khat (Official Audio)  in room e725a5ef
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Playing Safar in room e725a5ef
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\
+Error: type lockupViewModel is not known
+    at parseItem (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:83:13)
+    at catchAndLogFunc (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:90:12)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/parseItem.js:119:46)
+    at /root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:34
+    at Array.map (<anonymous>)
+    at module.exports (/root/clawd/jim-jam/node_modules/ytsr/lib/main.js:53:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /root/clawd/jim-jam/server.js:29:27
+
+/********************************************************************************************************************************************************************************************************
+failed at func parseItem: type lockupViewModel is not known
+pls post the the files in /root/clawd/jim-jam/node_modules/ytsr/dumps to https://github.com/TimeForANinja/node-ytsr/issues
+os: linux-x64, node.js: v22.22.0, ytsr: 3.8.4
+********************************************************************************************************************************************************************************************************\

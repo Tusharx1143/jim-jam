@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎵 Jim-Jam - Test</title>
+  <title>Jim-jam 🎵 - Listen Together</title>
   <style>
     * {
       margin: 0;
@@ -12,300 +12,204 @@
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #333;
-    }
-
-    .container {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      max-width: 500px;
-      width: 90%;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      transition: border-color 0.3s;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-
-    .btn-primary {
-      background: #667eea;
       color: white;
     }
-
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .btn-secondary:hover {
-      background: #e0e0e0;
-    }
-
-    #status {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      font-size: 13px;
-      color: #666;
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: monospace;
-      line-height: 1.6;
-    }
-
-    .log-entry {
-      padding: 4px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .log-entry:last-child {
-      border-bottom: none;
-    }
-
-    .status-connected {
-      color: #4caf50;
-      font-weight: bold;
-    }
-
-    .status-error {
-      color: #f44336;
-      font-weight: bold;
-    }
-
-    .status-info {
-      color: #2196f3;
-    }
-
-    #roomInfo {
-      display: none;
-      margin-top: 20px;
-      padding: 15px;
-      background: #e8f5e9;
-      border-radius: 8px;
-      border-left: 4px solid #4caf50;
-    }
-
-    #roomInfo.show {
-      display: block;
-    }
-
-    .room-code {
-      font-size: 24px;
-      font-weight: bold;
-      color: #2e7d32;
+    
+    .container {
       text-align: center;
-      margin: 10px 0;
-      letter-spacing: 2px;
-      font-family: monospace;
+      padding: 2rem;
+    }
+    
+    .logo {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .tagline {
+      font-size: 1.2rem;
+      color: #a0a0a0;
+      margin-bottom: 3rem;
+    }
+    
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+    
+    .btn {
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      min-width: 250px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      color: white;
+      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+    }
+    
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid #e94560;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(233, 69, 96, 0.2);
+    }
+    
+    .join-section {
+      margin-top: 2rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .join-section input {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      border: 2px solid #333;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      width: 200px;
+    }
+    
+    .join-section input::placeholder {
+      color: #666;
+    }
+    
+    .join-section input:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+    
+    .features {
+      margin-top: 4rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .feature {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 15px;
+      width: 200px;
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .feature h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .feature p {
+      font-size: 0.85rem;
+      color: #888;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎵 JIM-JAM</h1>
-    <p class="subtitle">Synchronized Music Listening</p>
-
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" id="userName" placeholder="Enter your name" maxlength="30" value="User">
+    <div class="logo">🎵</div>
+    <h1>Jim-jam</h1>
+    <p class="tagline">Listen to YouTube music together, in perfect sync</p>
+    
+    <div class="actions">
+      <button class="btn btn-primary" onclick="createRoom()">Create a Room</button>
+      
+      <div class="join-section">
+        <input type="text" id="roomCode" placeholder="Enter room code">
+        <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label>Room Code (to join)</label>
-      <input type="text" id="roomCode" placeholder="Leave blank to create new" maxlength="6" style="text-transform: uppercase;">
-    </div>
-
-    <div class="buttons">
-      <button class="btn-primary" onclick="createRoom()">Create Room</button>
-      <button class="btn-secondary" onclick="joinRoom()">Join Room</button>
-    </div>
-
-    <div id="roomInfo">
-      <p style="color: #2e7d32; font-weight: bold;">✅ Room Created!</p>
-      <p style="margin-bottom: 5px;">Your Room Code:</p>
-      <div class="room-code" id="displayRoomCode"></div>
-      <p style="font-size: 12px; color: #666; text-align: center;">Share this code with a friend to join</p>
-    </div>
-
-    <div id="status">
-      <div class="log-entry">Waiting for connection...</div>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🎧</div>
+        <h3>Perfect Sync</h3>
+        <p>Everyone hears the same beat at the same time</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📝</div>
+        <h3>Queue Songs</h3>
+        <p>Build playlists together with your friends</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <h3>Chat</h3>
+        <p>Talk about the music while you listen</p>
+      </div>
     </div>
   </div>
 
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    // Socket.io connection
-    const socket = io();
-
-    // Status logging
-    function addStatus(message, type = 'info') {
-      const status = document.getElementById('status');
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      
-      if (type === 'connected') {
-        entry.className += ' status-connected';
-        entry.textContent = `✅ ${message}`;
-      } else if (type === 'error') {
-        entry.className += ' status-error';
-        entry.textContent = `❌ ${message}`;
-      } else if (type === 'info') {
-        entry.className += ' status-info';
-        entry.textContent = `ℹ️ ${message}`;
-      } else {
-        entry.textContent = `📝 ${message}`;
+    async function createRoom() {
+      try {
+        const res = await fetch('/api/create-room');
+        const { roomId } = await res.json();
+        window.location.href = `/room/${roomId}`;
+      } catch (err) {
+        alert('Failed to create room. Please try again.');
       }
-      
-      status.appendChild(entry);
-      status.scrollTop = status.scrollHeight;
     }
-
-    // Socket events
-    socket.on('connect', () => {
-      addStatus('Connected to server', 'connected');
-      console.log('Socket connected:', socket.id);
-    });
-
-    socket.on('room:joined', (data) => {
-      addStatus(`Joined room: ${data.roomCode}`, 'connected');
-      addStatus(`Users in room: ${data.state.users.length}`);
-      addStatus(`Redirecting to room...`);
-      console.log('Room state:', data.state);
-      
-      // Redirect to room page
-      setTimeout(() => {
-        window.location.href = `/room.html?room=${data.roomCode}`;
-      }, 1000);
-    });
-
-    socket.on('user:joined', (data) => {
-      addStatus(`${data.userName} joined the room`);
-      addStatus(`Total users: ${data.users.length}`);
-    });
-
-    socket.on('user:left', (data) => {
-      addStatus(`${data.userName} left the room`);
-      addStatus(`Total users: ${data.users.length}`);
-    });
-
-    socket.on('queue:updated', (data) => {
-      addStatus(`Queue updated: ${data.queue.length} songs`);
-    });
-
-    socket.on('song:playing', (data) => {
-      addStatus(`▶️ Playing: ${data.song.title}`);
-    });
-
-    socket.on('song:stateChanged', (data) => {
-      const state = data.isPlaying ? '▶️ Playing' : '⏸️ Paused';
-      addStatus(`${state} at ${data.currentTime.toFixed(1)}s`);
-    });
-
-    socket.on('error', (data) => {
-      addStatus(data.message, 'error');
-    });
-
-    socket.on('disconnect', () => {
-      addStatus('Disconnected from server', 'error');
-    });
-
-    // UI Functions
-    function createRoom() {
-      const name = document.getElementById('userName').value.trim();
-      if (!name) {
-        addStatus('Please enter a name', 'error');
-        return;
-      }
-
-      addStatus('Creating room...');
-      socket.emit('room:join', { name, isCreating: true });
-      
-      socket.once('room:joined', (data) => {
-        document.getElementById('displayRoomCode').textContent = data.roomCode;
-        document.getElementById('roomInfo').classList.add('show');
-      });
-    }
-
+    
     function joinRoom() {
-      const name = document.getElementById('userName').value.trim();
-      const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
-
-      if (!name || !roomCode) {
-        addStatus('Please enter name and room code', 'error');
-        return;
+      const code = document.getElementById('roomCode').value.trim();
+      if (code) {
+        window.location.href = `/room/${code}`;
+      } else {
+        alert('Please enter a room code');
       }
-
-      addStatus(`Joining room ${roomCode}...`);
-      socket.emit('room:join', { name, roomCode, isCreating: false });
     }
-
-    // Initial log
-    addStatus('Jim-Jam Test Client v1.0');
-    addStatus('Create a room or join an existing one');
+    
+    // Allow Enter key to join
+    document.getElementById('roomCode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinRoom();
+    });
   </script>
 </body>
 </html>

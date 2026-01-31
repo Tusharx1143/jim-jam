@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎵 Jim-Jam - Room</title>
+  <title>Jim-jam Room 🎵</title>
   <style>
     * {
       margin: 0;
@@ -12,378 +12,1008 @@
     }
     
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh;
-      color: #333;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .header {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .header h1 {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-
-    .room-code {
-      color: #667eea;
-      font-weight: bold;
-      font-size: 20px;
-      font-family: monospace;
-    }
-
-    .search-box {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .search-input {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    button {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-    }
-
-    .btn-primary {
-      background: #667eea;
       color: white;
     }
-
-    .btn-primary:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-    }
-
-    .search-results {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .song-item {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
-    }
-
-    .song-item:hover {
-      background: #f9f9f9;
-    }
-
-    .song-item img {
-      width: 60px;
-      height: 45px;
-      border-radius: 4px;
-      object-fit: cover;
-      margin-right: 12px;
-    }
-
-    .song-info {
-      flex: 1;
-    }
-
-    .song-title {
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .song-meta {
-      font-size: 12px;
-      color: #666;
-    }
-
-    .player-section {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    #audioPlayer {
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .now-playing {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #667eea;
-    }
-
-    .queue-section {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .queue-item {
+    
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
     }
-
-    .queue-item:last-child {
-      border-bottom: none;
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #e94560;
+      text-decoration: none;
     }
-
-    .empty-state {
+    
+    .room-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .room-code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .copy-btn {
+      background: #e94560;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    
+    .copy-btn:hover {
+      background: #ff6b6b;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      height: calc(100vh - 70px);
+    }
+    
+    @media (max-width: 900px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+    }
+    
+    .player-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .music-player {
+      background: linear-gradient(145deg, #1a1a2e, #0f0f1a);
+      border-radius: 20px;
+      padding: 2rem;
       text-align: center;
-      padding: 40px;
-      color: #999;
+      position: relative;
     }
-
-    .users-list {
-      margin-top: 10px;
-      font-size: 13px;
+    
+    .video-circle {
+      width: 250px;
+      height: 250px;
+      margin: 0 auto 1.5rem;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #252540, #1a1a30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    
+    /* Hide the YouTube player off-screen but keep it functional */
+    #hiddenPlayer {
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      width: 640px;
+      height: 360px;
+      pointer-events: none;
+    }
+    
+    /* Album art styling */
+    .album-art {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: none;
+    }
+    
+    .album-art.active {
+      display: block;
+    }
+    
+    .video-circle.playing {
+      box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .video-circle.playing .album-art {
+      animation: spin 20s linear infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(233, 69, 96, 0.5); }
+      50% { box-shadow: 0 0 50px rgba(233, 69, 96, 0.8); }
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .no-music {
+      text-align: center;
+      color: #666;
+      position: absolute;
+    }
+    
+    .no-music .icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .no-music p {
+      font-size: 0.85rem;
+    }
+    
+    /* Audio enable banner */
+    .audio-prompt {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #e94560, #ff6b6b);
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
+      animation: bounce 1s ease-in-out infinite;
+      display: none;
+    }
+    
+    .audio-prompt.show {
+      display: block;
+    }
+    
+    .audio-prompt:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-5px); }
+    }
+    
+    .track-info {
+      margin-top: 1.5rem;
+    }
+    
+    .track-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .track-channel {
+      color: #888;
+      font-size: 0.9rem;
+    }
+    
+    .player-controls {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .search-section {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .search-section input {
+      flex: 1;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+    }
+    
+    .search-section input::placeholder {
       color: #666;
     }
+    
+    .search-section input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .search-section button {
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      background: #e94560;
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    
+    .search-results {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .search-results.active {
+      display: block;
+    }
+    
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .search-result:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .search-result img {
+      width: 80px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    .search-result .title {
+      flex: 1;
+      font-size: 0.9rem;
+    }
+    
+    .search-result .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .search-result button {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    
+    .play-btn {
+      background: #e94560;
+      color: white;
+    }
+    
+    .queue-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: #e94560;
+    }
+    
+    .users-list, .queue-list, .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .user-item, .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+    
+    .user-item:hover, .queue-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #e94560, #ff6b6b);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+    
+    .host-badge {
+      background: #ffd700;
+      color: #000;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      margin-left: auto;
+    }
+    
+    .queue-item {
+      justify-content: space-between;
+    }
+    
+    .queue-item .title {
+      flex: 1;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .chat-message {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.5rem 0.8rem;
+      border-radius: 10px;
+    }
+    
+    .chat-message .user {
+      color: #e94560;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    
+    .chat-message .text {
+      font-size: 0.9rem;
+    }
+    
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.9rem;
+    }
+    
+    .chat-input input:focus {
+      outline: none;
+    }
+    
+    .chat-input button {
+      padding: 0.6rem 1rem;
+      border: none;
+      border-radius: 20px;
+      background: #e94560;
+      color: white;
+      cursor: pointer;
+    }
+    
+    .now-playing {
+      background: rgba(233, 69, 96, 0.2);
+      padding: 0.8rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    
+    .now-playing.active {
+      display: block;
+    }
+    
+    .now-playing .label {
+      font-size: 0.75rem;
+      color: #e94560;
+      text-transform: uppercase;
+    }
+    
+    .now-playing .title {
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-    .user-tag {
-      display: inline-block;
-      background: #e8f5e9;
-      padding: 4px 12px;
-      border-radius: 12px;
-      margin-right: 8px;
-      font-size: 12px;
-      color: #2e7d32;
+    /* Name modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal.hidden {
+      display: none;
+    }
+    
+    .modal-content {
+      background: #1a1a2e;
+      padding: 2rem;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: #e94560;
+    }
+    
+    .modal-content input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #333;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .modal-content input:focus {
+      outline: none;
+      border-color: #e94560;
+    }
+    
+    .modal-content button {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 25px;
+      background: #e94560;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🎵 Jim-Jam</h1>
-      <p>Room Code: <span class="room-code" id="roomCodeDisplay">-</span></p>
-      <div class="users-list" id="usersList">-</div>
-    </div>
-
-    <div class="search-box">
-      <h3>🔍 Search Music</h3>
-      <div class="search-input">
-        <input type="text" id="searchInput" placeholder="Search for songs on YouTube..." />
-        <button class="btn-primary" onclick="searchSongs()">Search</button>
-      </div>
-      <div class="search-results" id="searchResults"></div>
-    </div>
-
-    <div class="player-section">
-      <div class="now-playing" id="nowPlaying">No song playing</div>
-      <audio id="audioPlayer" controls></audio>
-    </div>
-
-    <div class="queue-section">
-      <h3>📝 Queue</h3>
-      <div id="queueList">
-        <div class="empty-state">Queue is empty</div>
-      </div>
+  <!-- Name Modal -->
+  <div class="modal" id="nameModal">
+    <div class="modal-content">
+      <h2>🎵 Join the Jam</h2>
+      <p style="margin-bottom: 1rem; color: #888;">What should we call you?</p>
+      <input type="text" id="userName" placeholder="Your name" maxlength="20">
+      <button onclick="joinRoom()">Join Room</button>
     </div>
   </div>
 
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  <script>
-    const socket = io();
-    let currentRoomCode = null;
-    let currentUser = null;
+  <!-- Audio enable prompt -->
+  <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
+    🔊 Click here to enable audio
+  </div>
 
-    // Get room code from URL or prompt
-    const urlParams = new URLSearchParams(window.location.search);
-    currentRoomCode = urlParams.get('room');
+  <header class="header">
+    <a href="/" class="logo">🎵 Jim-jam</a>
+    <div class="room-info">
+      <span class="room-code">Room: <strong id="roomCode"></strong></span>
+      <button class="copy-btn" onclick="copyRoomLink()">Copy Link</button>
+    </div>
+  </header>
 
-    if (!currentRoomCode) {
-      alert('No room code provided!');
-      window.location.href = '/';
-    }
-
-    // Join room automatically
-    const userName = prompt('Enter your name:') || 'Anonymous';
-    currentUser = userName;
-
-    socket.emit('room:join', {
-      roomCode: currentRoomCode,
-      name: userName,
-      isCreating: false
-    });
-
-    // Socket events
-    socket.on('room:joined', (data) => {
-      console.log('Joined room:', data);
-      document.getElementById('roomCodeDisplay').textContent = data.roomCode;
-      updateUsersList(data.state.users);
-      updateQueue(data.state.queue);
-    });
-
-    socket.on('user:joined', (data) => {
-      console.log('User joined:', data);
-      updateUsersList(data.users);
-    });
-
-    socket.on('user:left', (data) => {
-      console.log('User left:', data);
-      updateUsersList(data.users);
-    });
-
-    socket.on('queue:updated', (data) => {
-      console.log('Queue updated:', data);
-      updateQueue(data.queue);
-    });
-
-    socket.on('song:playing', (data) => {
-      console.log('Now playing:', data);
-      playAudio(data.song);
-    });
-
-    socket.on('song:stateChanged', (data) => {
-      const audioPlayer = document.getElementById('audioPlayer');
-      if (data.isPlaying) {
-        audioPlayer.play();
-      } else {
-        audioPlayer.pause();
-      }
-      audioPlayer.currentTime = data.currentTime;
-    });
-
-    socket.on('error', (data) => {
-      alert('Error: ' + data.message);
-    });
-
-    // UI Functions
-    function updateUsersList(users) {
-      const usersList = document.getElementById('usersList');
-      usersList.innerHTML = users.map(u => 
-        `<span class="user-tag">${u.name}</span>`
-      ).join('');
-    }
-
-    function updateQueue(queue) {
-      const queueList = document.getElementById('queueList');
-      
-      if (queue.length === 0) {
-        queueList.innerHTML = '<div class="empty-state">Queue is empty</div>';
-        return;
-      }
-
-      queueList.innerHTML = queue.map((song, idx) => `
-        <div class="queue-item">
-          <div>
-            <div class="song-title">${song.title}</div>
-            <div class="song-meta">${song.channel} • ${song.duration}</div>
+  <main class="main-content">
+    <section class="player-section">
+      <div class="music-player">
+        <div class="video-circle" id="videoCircle">
+          <div class="no-music" id="noMusic">
+            <div class="icon">🎵</div>
+            <p>Search for a song to start jamming!</p>
           </div>
-          <button class="btn-primary" onclick="playSong('${song.id}')">Play</button>
+          <img class="album-art" id="albumArt" src="" alt="Album Art">
+        </div>
+        <!-- Hidden YouTube player for audio only -->
+        <div id="hiddenPlayer">
+          <div id="player"></div>
+        </div>
+        <div class="track-info" id="trackInfo" style="display: none;">
+          <div class="track-title" id="trackTitle"></div>
+          <div class="track-channel" id="trackChannel"></div>
+        </div>
+        <div class="player-controls" id="playerControls" style="display: none;">
+          <button class="control-btn" onclick="skipBack()" title="Back 10s">⏪</button>
+          <button class="control-btn play-pause-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+          <button class="control-btn" onclick="playNext()" title="Next">⏭️</button>
+        </div>
+      </div>
+      
+      <div class="search-section">
+        <input type="text" id="searchInput" placeholder="Search YouTube for music...">
+        <button onclick="searchYouTube()">Search</button>
+      </div>
+      
+      <div class="search-results" id="searchResults"></div>
+      
+      <div class="now-playing" id="nowPlaying">
+        <div class="label">Now Playing</div>
+        <div class="title" id="nowPlayingTitle"></div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="panel" style="flex: 0.5;">
+        <h3>👥 Listeners (<span id="userCount">0</span>)</h3>
+        <div class="users-list" id="usersList"></div>
+      </div>
+      
+      <div class="panel" style="flex: 0.5;">
+        <h3>📝 Queue</h3>
+        <div class="queue-list" id="queueList">
+          <p style="color: #666; font-size: 0.85rem;">Queue is empty</p>
+        </div>
+      </div>
+      
+      <div class="panel">
+        <h3>💬 Chat</h3>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Say something...">
+          <button onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const roomId = window.location.pathname.split('/').pop();
+    document.getElementById('roomCode').textContent = roomId;
+    
+    let socket;
+    let player;
+    let isHost = false;
+    let isSyncing = false;
+    
+    // YouTube IFrame API
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScript = document.getElementsByTagName('script')[0];
+    firstScript.parentNode.insertBefore(tag, firstScript);
+    
+    let userInteracted = false;
+    
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '360',
+        width: '640',
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          enablejsapi: 1,
+          origin: window.location.origin
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError
+        }
+      });
+    }
+    
+    function onPlayerReady(event) {
+      console.log('Player ready');
+      player.setVolume(100);
+      // Try to unmute - may be blocked by browser until user interaction
+      player.unMute();
+    }
+    
+    function onPlayerError(event) {
+      console.error('YouTube Player Error:', event.data);
+      // Error codes: 2=invalid video ID, 5=HTML5 error, 100=not found, 101/150=embedding disabled
+      if (event.data === 101 || event.data === 150) {
+        addSystemMessage('This video cannot be played (embedding disabled). Skipping...');
+        socket.emit('play-next');
+      }
+    }
+    
+    // Enable audio after user interaction
+    function enableAudio() {
+      if (!userInteracted && player) {
+        userInteracted = true;
+        player.unMute();
+        player.setVolume(100);
+        document.getElementById('audioPrompt').classList.remove('show');
+        // If a video is loaded, try playing it
+        if (player.getVideoData && player.getVideoData().video_id) {
+          player.playVideo();
+        }
+      }
+    }
+    
+    function forceEnableAudio() {
+      enableAudio();
+      if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+        player.playVideo();
+      }
+    }
+    
+    // Show audio prompt when a song loads but audio might be blocked
+    function checkAudioPrompt() {
+      if (!userInteracted && player && player.isMuted && player.isMuted()) {
+        document.getElementById('audioPrompt').classList.add('show');
+      }
+    }
+    
+    // Listen for any user interaction to enable audio
+    document.addEventListener('click', enableAudio, { once: false });
+    document.addEventListener('keydown', enableAudio, { once: false });
+    
+    function onPlayerStateChange(event) {
+      if (isSyncing) return;
+      
+      // YT.PlayerState: PLAYING=1, PAUSED=2
+      if (event.data === YT.PlayerState.PLAYING) {
+        updatePlayingState(true);
+        socket.emit('toggle-play', { 
+          isPlaying: true, 
+          currentTime: player.getCurrentTime() 
+        });
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        updatePlayingState(false);
+        socket.emit('toggle-play', { 
+          isPlaying: false, 
+          currentTime: player.getCurrentTime() 
+        });
+      } else if (event.data === YT.PlayerState.ENDED) {
+        updatePlayingState(false);
+        socket.emit('play-next');
+      }
+    }
+    
+    // Join room
+    function joinRoom() {
+      const name = document.getElementById('userName').value.trim() || 'Anonymous';
+      document.getElementById('nameModal').classList.add('hidden');
+      
+      socket = io();
+      
+      socket.on('connect', () => {
+        socket.emit('join-room', { roomId, name });
+      });
+      
+      socket.on('room-state', (state) => {
+        isHost = state.isHost;
+        updateUsers(state.users);
+        updateQueue(state.queue);
+        
+        if (state.currentVideo) {
+          loadVideo(state.currentVideo.videoId, state.currentTime, state.isPlaying);
+          showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.channel);
+          if (state.isPlaying) updatePlayingState(true);
+        }
+      });
+      
+      socket.on('video-changed', (data) => {
+        loadVideo(data.videoId, data.currentTime, data.isPlaying);
+        showNowPlaying(data.title, data.thumbnail, data.channel);
+        if (data.isPlaying) updatePlayingState(true);
+      });
+      
+      socket.on('play-state-changed', (data) => {
+        isSyncing = true;
+        updatePlayingState(data.isPlaying);
+        if (data.isPlaying) {
+          player.seekTo(data.currentTime, true);
+          player.playVideo();
+        } else {
+          player.pauseVideo();
+          player.seekTo(data.currentTime, true);
+        }
+        setTimeout(() => isSyncing = false, 500);
+      });
+      
+      socket.on('seeked', (data) => {
+        isSyncing = true;
+        player.seekTo(data.currentTime, true);
+        setTimeout(() => isSyncing = false, 500);
+      });
+      
+      socket.on('sync-response', (data) => {
+        const currentTime = player.getCurrentTime();
+        const diff = Math.abs(currentTime - data.currentTime);
+        if (diff > 2) {
+          isSyncing = true;
+          player.seekTo(data.currentTime, true);
+          setTimeout(() => isSyncing = false, 500);
+        }
+      });
+      
+      socket.on('user-joined', (user) => {
+        addSystemMessage(`${user.name} joined the jam`);
+      });
+      
+      socket.on('user-left', (user) => {
+        addSystemMessage(`${user.name} left`);
+      });
+      
+      socket.on('queue-updated', (data) => {
+        updateQueue(data.queue);
+      });
+      
+      socket.on('chat-message', (data) => {
+        addChatMessage(data.user, data.message);
+      });
+      
+      socket.on('became-host', () => {
+        isHost = true;
+        addSystemMessage('You are now the host');
+      });
+      
+      socket.on('error', (data) => {
+        alert(data.message);
+        window.location.href = '/';
+      });
+      
+      // Periodic sync
+      setInterval(() => {
+        if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+          socket.emit('sync-request');
+        }
+      }, 5000);
+    }
+    
+    function loadVideo(videoId, startTime, autoplay) {
+      document.getElementById('noMusic').style.display = 'none';
+      isSyncing = true;
+      
+      // Always try to unmute first
+      if (player.unMute) player.unMute();
+      if (player.setVolume) player.setVolume(100);
+      
+      if (autoplay) {
+        player.loadVideoById(videoId, startTime);
+      } else {
+        player.cueVideoById(videoId, startTime);
+      }
+      
+      // Check if audio might be blocked after a short delay
+      setTimeout(() => {
+        isSyncing = false;
+        if (!userInteracted && player.isMuted && player.isMuted()) {
+          document.getElementById('audioPrompt').classList.add('show');
+        }
+      }, 1000);
+    }
+    
+    function showNowPlaying(title, thumbnail, channel) {
+      document.getElementById('nowPlaying').classList.add('active');
+      document.getElementById('nowPlayingTitle').textContent = title;
+      
+      // Update music player UI
+      document.getElementById('noMusic').style.display = 'none';
+      document.getElementById('trackInfo').style.display = 'block';
+      document.getElementById('playerControls').style.display = 'flex';
+      document.getElementById('trackTitle').textContent = title;
+      document.getElementById('trackChannel').textContent = channel || '';
+      
+      // Show album art (use high quality thumbnail)
+      const albumArt = document.getElementById('albumArt');
+      // Try to get maxresdefault, fallback to hqdefault
+      const videoId = thumbnail.match(/\/vi\/([^\/]+)\//)?.[1] || '';
+      albumArt.src = videoId 
+        ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+        : thumbnail;
+      albumArt.onerror = () => { albumArt.src = thumbnail; };
+      albumArt.classList.add('active');
+    }
+    
+    function togglePlay() {
+      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    }
+    
+    function skipBack() {
+      const currentTime = player.getCurrentTime();
+      const newTime = Math.max(0, currentTime - 10);
+      player.seekTo(newTime, true);
+      socket.emit('seek', { currentTime: newTime });
+    }
+    
+    function playNext() {
+      socket.emit('play-next');
+    }
+    
+    function updatePlayingState(isPlaying) {
+      const videoCircle = document.getElementById('videoCircle');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      
+      if (isPlaying) {
+        videoCircle.classList.add('playing');
+        if (playPauseBtn) playPauseBtn.textContent = '⏸️';
+      } else {
+        videoCircle.classList.remove('playing');
+        if (playPauseBtn) playPauseBtn.textContent = '▶️';
+      }
+    }
+    
+    function updateUsers(users) {
+      const list = document.getElementById('usersList');
+      document.getElementById('userCount').textContent = users.length;
+      
+      list.innerHTML = users.map((user, i) => `
+        <div class="user-item">
+          <div class="user-avatar">${user.name[0].toUpperCase()}</div>
+          <span>${user.name}</span>
+          ${i === 0 ? '<span class="host-badge">HOST</span>' : ''}
         </div>
       `).join('');
     }
-
-    async function searchSongs() {
+    
+    function updateQueue(queue) {
+      const list = document.getElementById('queueList');
+      if (queue.length === 0) {
+        list.innerHTML = '<p style="color: #666; font-size: 0.85rem;">Queue is empty</p>';
+      } else {
+        list.innerHTML = queue.map(item => `
+          <div class="queue-item">
+            <span class="title">${item.title}</span>
+            <span style="color: #666; font-size: 0.75rem;">${item.addedBy}</span>
+          </div>
+        `).join('');
+      }
+    }
+    
+    function addChatMessage(user, message) {
+      const container = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'chat-message';
+      div.innerHTML = `<span class="user">${user}</span> <span class="text">${escapeHtml(message)}</span>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    function addSystemMessage(message) {
+      const container = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'chat-message';
+      div.innerHTML = `<span style="color: #888; font-style: italic;">${message}</span>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+    
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (message) {
+        socket.emit('chat-message', { message });
+        input.value = '';
+      }
+    }
+    
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendChat();
+    });
+    
+    // YouTube search via our backend API
+    async function searchYouTube() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
-
-      const resultsDiv = document.getElementById('searchResults');
-      resultsDiv.innerHTML = '<div class="empty-state">Searching...</div>';
-
+      
       try {
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        const results = await response.json();
-
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const results = await res.json();
+        
         if (results.error) {
-          resultsDiv.innerHTML = `<div class="empty-state">Error: ${results.error}</div>`;
+          alert('Search failed: ' + results.error);
           return;
         }
-
-        if (results.length === 0) {
-          resultsDiv.innerHTML = '<div class="empty-state">No results found</div>';
-          return;
-        }
-
-        resultsDiv.innerHTML = results.map(song => `
-          <div class="song-item">
-            <img src="${song.thumbnail}" alt="${song.title}" />
-            <div class="song-info">
-              <div class="song-title">${song.title}</div>
-              <div class="song-meta">${song.channel} • ${song.duration}</div>
+        
+        const container = document.getElementById('searchResults');
+        container.classList.add('active');
+        
+        container.innerHTML = results.map(video => `
+          <div class="search-result">
+            <img src="${video.thumbnail}" alt="">
+            <div class="title">
+              ${escapeHtml(video.title)}
+              <div style="font-size: 0.75rem; color: #888;">${video.channel} • ${video.duration || ''}</div>
             </div>
-            <button class="btn-primary" onclick='addToQueue(${JSON.stringify(song).replace(/'/g, "&apos;")})'>Add</button>
+            <div class="actions">
+              <button class="play-btn" onclick="playVideo('${video.videoId}', '${escapeHtml(video.title).replace(/'/g, "\\'")}', '${video.thumbnail}', '${escapeHtml(video.channel).replace(/'/g, "\\'")}')">▶</button>
+              <button class="queue-btn" onclick="addToQueue('${video.videoId}', '${escapeHtml(video.title).replace(/'/g, "\\'")}', '${video.thumbnail}', '${escapeHtml(video.channel).replace(/'/g, "\\'")}')">+</button>
+            </div>
           </div>
         `).join('');
       } catch (err) {
-        console.error('Search error:', err);
-        resultsDiv.innerHTML = '<div class="empty-state">Search failed</div>';
+        console.error('Search failed:', err);
+        alert('Search failed. Try again.');
       }
     }
-
-    function addToQueue(song) {
-      socket.emit('queue:add', {
-        videoId: song.videoId,
-        title: song.title,
-        channel: song.channel,
-        duration: song.duration,
-        thumbnail: song.thumbnail
-      });
-    }
-
-    function playSong(songId) {
-      socket.emit('song:play', { songId });
-    }
-
-    function playAudio(song) {
-      const audioPlayer = document.getElementById('audioPlayer');
-      const nowPlaying = document.getElementById('nowPlaying');
-      
-      nowPlaying.textContent = `Now Playing: ${song.title} 🎵`;
-      
-      // Stream audio from our backend
-      audioPlayer.src = `/api/audio/${song.videoId}`;
-      audioPlayer.play().catch(err => {
-        console.error('Play error:', err);
-      });
-    }
-
-    // Search on Enter key
+    
     document.getElementById('searchInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchSongs();
+      if (e.key === 'Enter') searchYouTube();
+    });
+    
+    function playVideo(videoId, title, thumbnail, channel) {
+      socket.emit('play-video', { videoId, title, thumbnail, channel });
+      document.getElementById('searchResults').classList.remove('active');
+      document.getElementById('searchInput').value = '';
+    }
+    
+    function addToQueue(videoId, title, thumbnail, channel) {
+      socket.emit('add-to-queue', { videoId, title, thumbnail, channel });
+    }
+    
+    function copyRoomLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Room link copied!');
+    }
+    
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Handle Enter on name input
+    document.getElementById('userName').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinRoom();
     });
   </script>
 </body>
