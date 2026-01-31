@@ -621,8 +621,31 @@
     
     let socket;
     let player;
+    let audioPlayer; // For SoundCloud playback
     let isHost = false;
     let isSyncing = false;
+    let currentSource = null; // 'youtube' or 'soundcloud'
+    
+    // Create audio player for SoundCloud
+    audioPlayer = new Audio();
+    audioPlayer.crossOrigin = 'anonymous';
+    audioPlayer.addEventListener('play', () => {
+      if (!isSyncing && currentSource === 'soundcloud') {
+        updatePlayingState(true);
+        socket.emit('toggle-play', { isPlaying: true, currentTime: audioPlayer.currentTime });
+      }
+    });
+    audioPlayer.addEventListener('pause', () => {
+      if (!isSyncing && currentSource === 'soundcloud') {
+        updatePlayingState(false);
+        socket.emit('toggle-play', { isPlaying: false, currentTime: audioPlayer.currentTime });
+      }
+    });
+    audioPlayer.addEventListener('ended', () => {
+      if (currentSource === 'soundcloud') {
+        socket.emit('play-next');
+      }
+    });
     
     // YouTube IFrame API
     const tag = document.createElement('script');
@@ -740,34 +763,57 @@
         updateQueue(state.queue);
         
         if (state.currentVideo) {
-          loadVideo(state.currentVideo.videoId, state.currentTime, state.isPlaying);
-          showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.channel);
+          currentSource = state.currentVideo.source;
+          if (state.currentVideo.source === 'youtube') {
+            loadVideo(state.currentVideo.id, state.currentTime, state.isPlaying);
+          } else if (state.currentVideo.source === 'soundcloud') {
+            loadSoundCloudTrack(state.currentVideo.id, state.currentVideo.streamUrl, state.currentTime, state.isPlaying);
+          }
+          showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.artist, state.currentVideo.source);
           if (state.isPlaying) updatePlayingState(true);
         }
       });
       
       socket.on('video-changed', (data) => {
-        loadVideo(data.videoId, data.currentTime, data.isPlaying);
-        showNowPlaying(data.title, data.thumbnail, data.channel);
+        currentSource = data.source;
+        if (data.source === 'youtube') {
+          loadVideo(data.id, data.currentTime, data.isPlaying);
+        } else if (data.source === 'soundcloud') {
+          loadSoundCloudTrack(data.id, data.streamUrl, data.currentTime, data.isPlaying);
+        }
+        showNowPlaying(data.title, data.thumbnail, data.artist, data.source);
         if (data.isPlaying) updatePlayingState(true);
       });
       
       socket.on('play-state-changed', (data) => {
         isSyncing = true;
         updatePlayingState(data.isPlaying);
-        if (data.isPlaying) {
-          player.seekTo(data.currentTime, true);
-          player.playVideo();
-        } else {
-          player.pauseVideo();
-          player.seekTo(data.currentTime, true);
+        if (currentSource === 'youtube') {
+          if (data.isPlaying) {
+            player.seekTo(data.currentTime, true);
+            player.playVideo();
+          } else {
+            player.pauseVideo();
+            player.seekTo(data.currentTime, true);
+          }
+        } else if (currentSource === 'soundcloud') {
+          audioPlayer.currentTime = data.currentTime;
+          if (data.isPlaying) {
+            audioPlayer.play();
+          } else {
+            audioPlayer.pause();
+          }
         }
         setTimeout(() => isSyncing = false, 500);
       });
       
       socket.on('seeked', (data) => {
         isSyncing = true;
-        player.seekTo(data.currentTime, true);
+        if (currentSource === 'youtube') {
+          player.seekTo(data.currentTime, true);
+        } else if (currentSource === 'soundcloud') {
+          audioPlayer.currentTime = data.currentTime;
+        }
         setTimeout(() => isSyncing = false, 500);
       });
       
@@ -838,7 +884,31 @@
       }, 1000);
     }
     
-    function showNowPlaying(title, thumbnail, channel) {
+    function loadSoundCloudTrack(trackId, streamUrl, startTime, autoplay) {
+      document.getElementById('noMusic').style.display = 'none';
+      isSyncing = true;
+      
+      if (streamUrl) {
+        audioPlayer.src = streamUrl;
+        audioPlayer.currentTime = startTime || 0;
+        if (autoplay) {
+          audioPlayer.play().catch(err => {
+            console.error('Failed to play SoundCloud track:', err);
+            addSystemMessage('Failed to play this SoundCloud track. Skipping...');
+            socket.emit('play-next');
+          });
+        }
+      } else {
+        addSystemMessage('Could not load SoundCloud stream. Skipping...');
+        socket.emit('play-next');
+      }
+      
+      setTimeout(() => {
+        isSyncing = false;
+      }, 1000);
+    }
+    
+    function showNowPlaying(title, thumbnail, artist, source) {
       document.getElementById('nowPlaying').classList.add('active');
       document.getElementById('nowPlayingTitle').textContent = title;
       
@@ -847,31 +917,41 @@
       document.getElementById('trackInfo').style.display = 'block';
       document.getElementById('playerControls').style.display = 'flex';
       document.getElementById('trackTitle').textContent = title;
-      document.getElementById('trackChannel').textContent = channel || '';
+      document.getElementById('trackChannel').textContent = `${artist || 'Unknown'} (${source.toUpperCase()})`;
       
-      // Show album art (use high quality thumbnail)
+      // Show album art
       const albumArt = document.getElementById('albumArt');
-      // Try to get maxresdefault, fallback to hqdefault
-      const videoId = thumbnail.match(/\/vi\/([^\/]+)\//)?.[1] || '';
-      albumArt.src = videoId 
-        ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-        : thumbnail;
-      albumArt.onerror = () => { albumArt.src = thumbnail; };
+      albumArt.src = thumbnail;
+      albumArt.onerror = () => { albumArt.src = 'https://via.placeholder.com/300?text=No+Art'; };
       albumArt.classList.add('active');
     }
     
     function togglePlay() {
-      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
+      if (currentSource === 'youtube') {
+        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        } else {
+          player.playVideo();
+        }
+      } else if (currentSource === 'soundcloud') {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+        } else {
+          audioPlayer.pause();
+        }
       }
     }
     
     function skipBack() {
-      const currentTime = player.getCurrentTime();
-      const newTime = Math.max(0, currentTime - 10);
-      player.seekTo(newTime, true);
+      let newTime;
+      if (currentSource === 'youtube') {
+        const currentTime = player.getCurrentTime();
+        newTime = Math.max(0, currentTime - 10);
+        player.seekTo(newTime, true);
+      } else if (currentSource === 'soundcloud') {
+        newTime = Math.max(0, audioPlayer.currentTime - 10);
+        audioPlayer.currentTime = newTime;
+      }
       socket.emit('seek', { currentTime: newTime });
     }
     
@@ -950,7 +1030,7 @@
       if (e.key === 'Enter') sendChat();
     });
     
-    // YouTube search via our backend API
+    // Search YouTube + SoundCloud via our backend API
     async function searchYouTube() {
       const query = document.getElementById('searchInput').value.trim();
       if (!query) return;
@@ -967,19 +1047,24 @@
         const container = document.getElementById('searchResults');
         container.classList.add('active');
         
-        container.innerHTML = results.map(video => `
-          <div class="search-result">
-            <img src="${video.thumbnail}" alt="">
-            <div class="title">
-              ${escapeHtml(video.title)}
-              <div style="font-size: 0.75rem; color: #888;">${video.channel} • ${video.duration || ''}</div>
+        container.innerHTML = results.map(result => {
+          const sourceLabel = result.source.toUpperCase();
+          const sourceColor = result.source === 'youtube' ? '#ff0000' : '#ff6b00';
+          return `
+            <div class="search-result">
+              <img src="${result.thumbnail}" alt="">
+              <div class="title">
+                ${escapeHtml(result.title)}
+                <div style="font-size: 0.75rem; color: #888;">${result.artist} • ${result.duration || ''}</div>
+                <div style="font-size: 0.7rem; color: ${sourceColor}; font-weight: bold; margin-top: 3px;">${sourceLabel}</div>
+              </div>
+              <div class="actions">
+                <button class="play-btn" onclick="playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}', '${result.streamUrl || ''}')">▶</button>
+                <button class="queue-btn" onclick="addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}', '${result.streamUrl || ''}')">+</button>
+              </div>
             </div>
-            <div class="actions">
-              <button class="play-btn" onclick="playVideo('${video.videoId}', '${escapeHtml(video.title).replace(/'/g, "\\'")}', '${video.thumbnail}', '${escapeHtml(video.channel).replace(/'/g, "\\'")}')">▶</button>
-              <button class="queue-btn" onclick="addToQueue('${video.videoId}', '${escapeHtml(video.title).replace(/'/g, "\\'")}', '${video.thumbnail}', '${escapeHtml(video.channel).replace(/'/g, "\\'")}')">+</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (err) {
         console.error('Search failed:', err);
         alert('Search failed. Try again.');
@@ -990,14 +1075,14 @@
       if (e.key === 'Enter') searchYouTube();
     });
     
-    function playVideo(videoId, title, thumbnail, channel) {
-      socket.emit('play-video', { videoId, title, thumbnail, channel });
+    function playVideo(id, title, thumbnail, artist, source, streamUrl) {
+      socket.emit('play-video', { id, title, thumbnail, artist, source, streamUrl });
       document.getElementById('searchResults').classList.remove('active');
       document.getElementById('searchInput').value = '';
     }
     
-    function addToQueue(videoId, title, thumbnail, channel) {
-      socket.emit('add-to-queue', { videoId, title, thumbnail, channel });
+    function addToQueue(id, title, thumbnail, artist, source, streamUrl) {
+      socket.emit('add-to-queue', { id, title, thumbnail, artist, source, streamUrl });
     }
     
     function copyRoomLink() {

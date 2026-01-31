@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const ytsr = require('ytsr');
+const scdl = require('soundcloud-scraper');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,31 +19,60 @@ const rooms = new Map();
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// YouTube search API using ytsr
+// Hybrid search - YouTube + SoundCloud
 app.get('/api/search', async (req, res) => {
   const query = req.query.q;
   if (!query) {
     return res.status(400).json({ error: 'Missing query' });
   }
   
+  const results = [];
+  
+  // Search YouTube
   try {
-    const searchResults = await ytsr(query, { limit: 10 });
-    
-    const results = searchResults.items
+    const ytResults = await ytsr(query, { limit: 5 });
+    ytResults.items
       .filter(item => item.type === 'video')
-      .map(item => ({
-        videoId: item.id,
-        title: item.title,
-        thumbnail: item.bestThumbnail?.url || `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
-        channel: item.author?.name || 'Unknown',
-        duration: item.duration
-      }));
-    
-    res.json(results);
+      .forEach(item => {
+        results.push({
+          source: 'youtube',
+          id: item.id,
+          title: item.title,
+          thumbnail: item.bestThumbnail?.url || `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
+          artist: item.author?.name || 'Unknown',
+          duration: item.duration,
+          url: `https://www.youtube.com/watch?v=${item.id}`
+        });
+      });
   } catch (err) {
-    console.error('Search error:', err);
-    res.status(500).json({ error: 'Search failed' });
+    console.error('YouTube search error:', err);
   }
+  
+  // Search SoundCloud
+  try {
+    const scResults = await scdl.search({
+      query: query,
+      resourceType: 'tracks',
+      limit: 5
+    });
+    
+    scResults.forEach(track => {
+      results.push({
+        source: 'soundcloud',
+        id: track.id,
+        title: track.title,
+        thumbnail: track.artwork_url || track.user?.avatar_url || 'https://via.placeholder.com/300',
+        artist: track.user?.username || 'Unknown',
+        duration: track.duration ? Math.round(track.duration / 1000) : 0,
+        url: track.permalink_url,
+        streamUrl: track.media?.transcodings?.[0]?.url
+      });
+    });
+  } catch (err) {
+    console.error('SoundCloud search error:', err);
+  }
+  
+  res.json(results.slice(0, 10)); // Return top 10 combined results
 });
 
 // API to create a new room
@@ -110,25 +140,34 @@ io.on('connection', (socket) => {
     console.log(`${userName} joined room ${roomId}`);
   });
 
-  // Play a video
-  socket.on('play-video', ({ videoId, title, thumbnail, channel }) => {
+  // Play a video/track
+  socket.on('play-video', ({ id, title, thumbnail, artist, source, streamUrl }) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
-    room.currentVideo = { videoId, title, thumbnail, channel };
+    room.currentVideo = { 
+      id, 
+      title, 
+      thumbnail, 
+      artist,
+      source, // 'youtube' or 'soundcloud'
+      streamUrl // For SoundCloud
+    };
     room.isPlaying = true;
     room.currentTime = 0;
     room.lastUpdate = Date.now();
 
     io.to(currentRoom).emit('video-changed', {
-      videoId,
+      id,
       title,
       thumbnail,
-      channel,
+      artist,
+      source,
+      streamUrl,
       isPlaying: true,
       currentTime: 0
     });
-    console.log(`Playing ${title} in room ${currentRoom}`);
+    console.log(`Playing ${title} (${source}) in room ${currentRoom}`);
   });
 
   // Play/Pause toggle
@@ -157,7 +196,7 @@ io.on('connection', (socket) => {
     socket.to(currentRoom).emit('seeked', { currentTime });
   });
 
-  // Sync request (periodic sync to prevent drift)
+  // Sync request
   socket.on('sync-request', () => {
     const room = rooms.get(currentRoom);
     if (!room || !room.currentVideo) return;
@@ -170,11 +209,19 @@ io.on('connection', (socket) => {
   });
 
   // Add to queue
-  socket.on('add-to-queue', ({ videoId, title, thumbnail, channel }) => {
+  socket.on('add-to-queue', ({ id, title, thumbnail, artist, source, streamUrl }) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
-    room.queue.push({ videoId, title, thumbnail, channel, addedBy: userName });
+    room.queue.push({ 
+      id, 
+      title, 
+      thumbnail, 
+      artist, 
+      source,
+      streamUrl,
+      addedBy: userName 
+    });
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
   });
 
@@ -184,16 +231,18 @@ io.on('connection', (socket) => {
     if (!room || room.queue.length === 0) return;
 
     const next = room.queue.shift();
-    room.currentVideo = { videoId: next.videoId, title: next.title, thumbnail: next.thumbnail, channel: next.channel };
+    room.currentVideo = next;
     room.isPlaying = true;
     room.currentTime = 0;
     room.lastUpdate = Date.now();
 
     io.to(currentRoom).emit('video-changed', {
-      videoId: next.videoId,
+      id: next.id,
       title: next.title,
       thumbnail: next.thumbnail,
-      channel: next.channel,
+      artist: next.artist,
+      source: next.source,
+      streamUrl: next.streamUrl,
       isPlaying: true,
       currentTime: 0
     });
