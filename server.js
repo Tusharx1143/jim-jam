@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -10,8 +11,16 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// Environment variable validation
+if (!process.env.YOUTUBE_API_KEY) {
+  console.error('❌ ERROR: YOUTUBE_API_KEY is not set in .env file');
+  console.error('Please copy .env.example to .env and add your YouTube API key');
+  console.error('Get your API key at: https://console.cloud.google.com/apis/credentials');
+  process.exit(1);
+}
+
 const PORT = process.env.PORT || 3000;
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'AIzaSyBfxwqfY7Bs_sQ4Waf38soDnIIdm4mjKoM';
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 // Store active rooms
 const rooms = new Map();
