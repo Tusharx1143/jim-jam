@@ -4,673 +4,183 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jim-jam Room 🎵</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      color: white;
-    }
-    
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(0, 0, 0, 0.3);
-    }
-    
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #e94560;
-      text-decoration: none;
-    }
-    
-    .room-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    
-    .room-code {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-    }
-    
-    .copy-btn {
-      background: #e94560;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      color: white;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-    
-    .copy-btn:hover {
-      background: #ff6b6b;
-    }
-    
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 1rem;
-      padding: 1rem 2rem;
-      height: calc(100vh - 70px);
-    }
-    
-    @media (max-width: 900px) {
-      .main-content {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-    }
-    
-    .player-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .music-player {
-      background: linear-gradient(145deg, #1a1a2e, #0f0f1a);
-      border-radius: 20px;
-      padding: 2rem;
-      text-align: center;
-      position: relative;
-    }
-    
-    .video-circle {
-      width: 250px;
-      height: 250px;
-      margin: 0 auto 1.5rem;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #252540, #1a1a30);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-    }
-    
-    /* Hide the YouTube player off-screen but keep it functional */
-    #hiddenPlayer {
-      position: fixed;
-      left: -9999px;
-      top: -9999px;
-      width: 640px;
-      height: 360px;
-      pointer-events: none;
-    }
-    
-    /* Album art styling */
-    .album-art {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      display: none;
-    }
-    
-    .album-art.active {
-      display: block;
-    }
-    
-    .video-circle.playing {
-      box-shadow: 0 0 30px rgba(233, 69, 96, 0.5);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    .video-circle.playing .album-art {
-      animation: spin 20s linear infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 30px rgba(233, 69, 96, 0.5); }
-      50% { box-shadow: 0 0 50px rgba(233, 69, 96, 0.8); }
-    }
-    
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    
-    .no-music {
-      text-align: center;
-      color: #666;
-      position: absolute;
-    }
-    
-    .no-music .icon {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .no-music p {
-      font-size: 0.85rem;
-    }
-    
-    /* Audio enable banner */
-    .audio-prompt {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(90deg, #e94560, #ff6b6b);
-      padding: 1rem 2rem;
-      border-radius: 50px;
-      cursor: pointer;
-      z-index: 1000;
-      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
-      animation: bounce 1s ease-in-out infinite;
-      display: none;
-    }
-    
-    .audio-prompt.show {
-      display: block;
-    }
-    
-    .audio-prompt:hover {
-      transform: translateX(-50%) scale(1.05);
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(-5px); }
-    }
-    
-    .track-info {
-      margin-top: 1.5rem;
-    }
-    
-    .track-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .track-channel {
-      color: #888;
-      font-size: 0.9rem;
-    }
-    
-    .player-controls {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-    }
-    
-    .control-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      font-size: 1.5rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .control-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
-    .search-section {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .search-section input {
-      flex: 1;
-      padding: 0.8rem 1.2rem;
-      border: none;
-      border-radius: 25px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 1rem;
-    }
-    
-    .search-section input::placeholder {
-      color: #666;
-    }
-    
-    .search-section input:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .search-section button {
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 25px;
-      background: #e94560;
-      color: white;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    
-    .search-results {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      max-height: 200px;
-      overflow-y: auto;
-      display: none;
-    }
-    
-    .search-results.active {
-      display: block;
-    }
-    
-    .search-result {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.8rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    
-    .search-result:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .search-result img {
-      width: 80px;
-      height: 45px;
-      object-fit: cover;
-      border-radius: 5px;
-    }
-    
-    .search-result .title {
-      flex: 1;
-      font-size: 0.9rem;
-    }
-    
-    .search-result .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .search-result button {
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    
-    .play-btn {
-      background: #e94560;
-      color: white;
-    }
-    
-    .queue-btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-    }
-    
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .panel {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 15px;
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .panel h3 {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      color: #e94560;
-    }
-    
-    .users-list, .queue-list, .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-    }
-    
-    .user-item, .queue-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 8px;
-    }
-    
-    .user-item:hover, .queue-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-    
-    .user-avatar {
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, #e94560, #ff6b6b);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-    }
-    
-    .host-badge {
-      background: #ffd700;
-      color: #000;
-      padding: 0.1rem 0.4rem;
-      border-radius: 10px;
-      font-size: 0.7rem;
-      margin-left: auto;
-    }
-    
-    .queue-item {
-      justify-content: space-between;
-    }
-    
-    .queue-item .title {
-      flex: 1;
-      font-size: 0.85rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .chat-messages {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    
-    .chat-message {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.5rem 0.8rem;
-      border-radius: 10px;
-    }
-    
-    .chat-message .user {
-      color: #e94560;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-    
-    .chat-message .text {
-      font-size: 0.9rem;
-    }
-    
-    .chat-input {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .chat-input input {
-      flex: 1;
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 0.9rem;
-    }
-    
-    .chat-input input:focus {
-      outline: none;
-    }
-    
-    .chat-input button {
-      padding: 0.6rem 1rem;
-      border: none;
-      border-radius: 20px;
-      background: #e94560;
-      color: white;
-      cursor: pointer;
-    }
-    
-    .now-playing {
-      background: rgba(233, 69, 96, 0.2);
-      padding: 0.8rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      display: none;
-    }
-    
-    .now-playing.active {
-      display: block;
-    }
-    
-    .now-playing .label {
-      font-size: 0.75rem;
-      color: #e94560;
-      text-transform: uppercase;
-    }
-    
-    .now-playing .title {
-      font-weight: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
 
-    /* Name modal */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    
-    .modal.hidden {
-      display: none;
-    }
-    
-    .modal-content {
-      background: #1a1a2e;
-      padding: 2rem;
-      border-radius: 20px;
-      text-align: center;
-      max-width: 400px;
-      width: 90%;
-    }
-    
-    .modal-content h2 {
-      margin-bottom: 1rem;
-      color: #e94560;
-    }
-    
-    .modal-content input {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid #333;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .modal-content input:focus {
-      outline: none;
-      border-color: #e94560;
-    }
-    
-    .modal-content button {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 25px;
-      background: #e94560;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    /* Error Toast */
-    .error-toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #ff4757, #e94560);
-      color: white;
-      padding: 1rem 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
-      z-index: 1001;
-      display: none;
-      max-width: 400px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    .error-toast.show {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .error-toast .icon {
-      font-size: 1.5rem;
-    }
-
-    .error-toast .content {
-      flex: 1;
-    }
-
-    .error-toast .close-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 0;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(400px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-  </style>
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/reset.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/room.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
   <!-- Name Modal -->
   <div class="modal" id="nameModal">
     <div class="modal-content">
-      <h2>🎵 Join the Jam</h2>
-      <p style="margin-bottom: 1rem; color: #888;">What should we call you?</p>
-      <input type="text" id="userName" placeholder="Your name" maxlength="20">
-      <button onclick="joinRoom()">Join Room</button>
+      <div class="modal-header">
+        <h2 class="modal-title">🎵 Join the Jam</h2>
+        <p class="modal-description">What should we call you?</p>
+      </div>
+      <input
+        type="text"
+        id="userName"
+        class="input"
+        placeholder="Your name"
+        maxlength="20"
+        autofocus
+      >
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+      </div>
     </div>
   </div>
 
-  <!-- Audio enable prompt -->
+  <!-- Audio Enable Prompt -->
   <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
     🔊 Click here to enable audio
   </div>
 
-  <!-- Error Toast -->
-  <div class="error-toast" id="errorToast">
-    <span class="icon">⚠️</span>
-    <div class="content" id="errorMessage"></div>
-    <button class="close-btn" onclick="closeError()">✕</button>
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">ℹ️</span>
+    <div class="toast-content" id="toastMessage"></div>
+    <button class="toast-close" onclick="closeToast()">✕</button>
   </div>
 
-  <header class="header">
-    <a href="/" class="logo">🎵 Jim-jam</a>
-    <div class="room-info">
-      <span class="room-code">Room: <strong id="roomCode"></strong></span>
-      <button class="copy-btn" onclick="copyRoomLink()">Copy Link</button>
+  <!-- Header -->
+  <header class="room-header">
+    <div class="room-header-container">
+      <a href="/" class="room-logo">
+        <span>🎵</span>
+        <span>Jim-jam</span>
+      </a>
+
+      <div class="room-info">
+        <span class="room-code-display">
+          Room: <strong id="roomCodeDisplay"></strong>
+        </span>
+        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="copyRoomLink()">
+          Copy Link
+        </button>
+        <a href="/" class="btn btn-ghost" style="padding: 8px 16px; font-size: 14px;">
+          Leave
+        </a>
+      </div>
     </div>
   </header>
 
-  <main class="main-content">
+  <!-- Main Content -->
+  <main class="room-content">
+    <!-- Player Section -->
     <section class="player-section">
+      <!-- Music Player -->
       <div class="music-player">
-        <div class="video-circle" id="videoCircle">
+        <div class="album-art-container" id="albumArtContainer">
           <div class="no-music" id="noMusic">
-            <div class="icon">🎵</div>
-            <p>Search for a song to start jamming!</p>
+            <div class="no-music-icon">🎵</div>
+            <p class="no-music-text">Search for a song to start jamming!</p>
           </div>
           <img class="album-art" id="albumArt" src="" alt="Album Art">
         </div>
-        <!-- Hidden YouTube player for audio only -->
+
+        <!-- Hidden YouTube Player -->
         <div id="hiddenPlayer">
           <div id="player"></div>
         </div>
+
         <div class="track-info" id="trackInfo" style="display: none;">
-          <div class="track-title" id="trackTitle"></div>
-          <div class="track-channel" id="trackChannel"></div>
+          <div class="track-title" id="trackTitle">Song Title</div>
+          <div class="track-artist" id="trackArtist">Artist Name</div>
         </div>
+
+        <div class="player-progress" id="playerProgress" style="display: none;">
+          <div class="progress interactive" id="progressBar">
+            <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+            <div class="progress-handle" id="progressHandle" style="left: 0%"></div>
+          </div>
+          <div class="progress-time">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
         <div class="player-controls" id="playerControls" style="display: none;">
-          <button class="control-btn" onclick="skipBack()" title="Back 10s">⏪</button>
-          <button class="control-btn play-pause-btn" onclick="togglePlay()" id="playPauseBtn">▶️</button>
-          <button class="control-btn" onclick="playNext()" title="Next">⏭️</button>
+          <button class="btn-icon" onclick="skipBack()" title="Back 10s">
+            ⏪
+          </button>
+          <button class="btn-icon large" onclick="togglePlay()" id="playPauseBtn">
+            ▶️
+          </button>
+          <button class="btn-icon" onclick="playNext()" title="Next">
+            ⏭️
+          </button>
         </div>
       </div>
-      
-      <div class="search-section">
-        <input type="text" id="searchInput" placeholder="Search YouTube for music...">
-        <button onclick="searchYouTube()">Search</button>
-      </div>
-      
-      <div class="search-results" id="searchResults"></div>
-      
-      <div class="now-playing" id="nowPlaying">
-        <div class="label">Now Playing</div>
-        <div class="title" id="nowPlayingTitle"></div>
+
+      <!-- Search Section -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <input
+            type="text"
+            id="searchInput"
+            class="input input-search"
+            placeholder="Search as you type..."
+          >
+          <button class="btn btn-primary" onclick="if (searchTimeout) clearTimeout(searchTimeout); searchYouTube();">Search</button>
+        </div>
+
+        <div class="search-results" id="searchResults"></div>
       </div>
     </section>
 
+    <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="panel" style="flex: 0.5;">
-        <h3>👥 Listeners (<span id="userCount">0</span>)</h3>
-        <div class="users-list" id="usersList"></div>
-      </div>
-      
-      <div class="panel" style="flex: 0.5;">
-        <h3>📝 Queue</h3>
-        <div class="queue-list" id="queueList">
-          <p style="color: #666; font-size: 0.85rem;">Queue is empty</p>
+      <!-- Users Panel -->
+      <div class="sidebar-panel users-panel">
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">
+            <span>👥</span>
+            <span>Listeners</span>
+          </h3>
+          <span class="sidebar-count" id="userCount">0</span>
+        </div>
+        <div class="sidebar-content">
+          <div id="usersList"></div>
         </div>
       </div>
-      
-      <div class="panel">
-        <h3>💬 Chat</h3>
+
+      <!-- Queue Panel -->
+      <div class="sidebar-panel queue-panel">
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">
+            <span>📝</span>
+            <span>Queue</span>
+          </h3>
+        </div>
+        <div class="sidebar-content" id="queueList">
+          <div class="queue-empty">Queue is empty</div>
+        </div>
+      </div>
+
+      <!-- Chat Panel -->
+      <div class="sidebar-panel chat-panel">
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">
+            <span>💬</span>
+            <span>Chat</span>
+          </h3>
+        </div>
         <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Say something...">
-          <button onclick="sendChat()">Send</button>
+        <div class="chat-input-wrapper">
+          <input
+            type="text"
+            id="chatInput"
+            class="input"
+            placeholder="Say something..."
+          >
+          <button class="btn btn-primary" onclick="sendChat()" style="padding: 12px 24px;">
+            Send
+          </button>
         </div>
       </div>
     </aside>
@@ -679,22 +189,23 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const roomId = window.location.pathname.split('/').pop();
-    document.getElementById('roomCode').textContent = roomId;
-    
+    document.getElementById('roomCodeDisplay').textContent = roomId;
+
     let socket;
     let player;
     let isHost = false;
     let isSyncing = false;
-    let syncInterval = null; // Store interval reference for cleanup
-    
+    let syncInterval = null;
+    let userName = '';
+
     // YouTube IFrame API
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScript = document.getElementsByTagName('script')[0];
     firstScript.parentNode.insertBefore(tag, firstScript);
-    
+
     let userInteracted = false;
-    
+
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
         height: '360',
@@ -715,19 +226,17 @@
         }
       });
     }
-    
+
     function onPlayerReady(event) {
       console.log('Player ready');
       player.setVolume(100);
-      // Try to unmute - may be blocked by browser until user interaction
       player.unMute();
     }
-    
+
     function onPlayerError(event) {
       console.error('YouTube Player Error:', event.data);
       let errorMessage = 'Video playback error. ';
 
-      // Error codes: 2=invalid video ID, 5=HTML5 error, 100=not found, 101/150=embedding disabled
       switch (event.data) {
         case 2:
           errorMessage += 'Invalid video ID.';
@@ -746,76 +255,70 @@
           errorMessage += 'Unknown error.';
       }
 
-      showError(errorMessage + ' Skipping to next...');
+      showToast('error', errorMessage + ' Skipping to next...');
       addSystemMessage(errorMessage + ' Skipping...');
       socket.emit('play-next');
     }
-    
-    // Enable audio after user interaction
+
     function enableAudio() {
       if (!userInteracted && player) {
         userInteracted = true;
         player.unMute();
         player.setVolume(100);
         document.getElementById('audioPrompt').classList.remove('show');
-        // If a video is loaded, try playing it
         if (player.getVideoData && player.getVideoData().video_id) {
           player.playVideo();
         }
       }
     }
-    
+
     function forceEnableAudio() {
       enableAudio();
       if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
         player.playVideo();
       }
     }
-    
-    // Show audio prompt when a song loads but audio might be blocked
+
     function checkAudioPrompt() {
       if (!userInteracted && player && player.isMuted && player.isMuted()) {
         document.getElementById('audioPrompt').classList.add('show');
       }
     }
-    
-    // Listen for any user interaction to enable audio
+
     document.addEventListener('click', enableAudio, { once: false });
     document.addEventListener('keydown', enableAudio, { once: false });
-    
+
     function onPlayerStateChange(event) {
       if (isSyncing) return;
-      
-      // YT.PlayerState: PLAYING=1, PAUSED=2
+
       if (event.data === YT.PlayerState.PLAYING) {
         updatePlayingState(true);
-        socket.emit('toggle-play', { 
-          isPlaying: true, 
-          currentTime: player.getCurrentTime() 
+        socket.emit('toggle-play', {
+          isPlaying: true,
+          currentTime: player.getCurrentTime()
         });
       } else if (event.data === YT.PlayerState.PAUSED) {
         updatePlayingState(false);
-        socket.emit('toggle-play', { 
-          isPlaying: false, 
-          currentTime: player.getCurrentTime() 
+        socket.emit('toggle-play', {
+          isPlaying: false,
+          currentTime: player.getCurrentTime()
         });
       } else if (event.data === YT.PlayerState.ENDED) {
         updatePlayingState(false);
         socket.emit('play-next');
       }
     }
-    
-    // Join room
+
     function joinRoom() {
-      const name = document.getElementById('userName').value.trim() || 'Anonymous';
+      userName = document.getElementById('userName').value.trim() || 'Anonymous';
       document.getElementById('nameModal').classList.add('hidden');
-      
+
       socket = io();
-      
+
       socket.on('connect', () => {
-        socket.emit('join-room', { roomId, name });
+        socket.emit('join-room', { roomId, name: userName });
       });
-      
+
       socket.on('room-state', (state) => {
         isHost = state.isHost;
         updateUsers(state.users);
@@ -827,13 +330,13 @@
           if (state.isPlaying) updatePlayingState(true);
         }
       });
-      
+
       socket.on('video-changed', (data) => {
         loadVideo(data.id, data.currentTime, data.isPlaying);
         showNowPlaying(data.title, data.thumbnail, data.artist);
         if (data.isPlaying) updatePlayingState(true);
       });
-      
+
       socket.on('play-state-changed', (data) => {
         isSyncing = true;
         updatePlayingState(data.isPlaying);
@@ -846,13 +349,13 @@
         }
         setTimeout(() => isSyncing = false, 500);
       });
-      
+
       socket.on('seeked', (data) => {
         isSyncing = true;
         player.seekTo(data.currentTime, true);
         setTimeout(() => isSyncing = false, 500);
       });
-      
+
       socket.on('sync-response', (data) => {
         const currentTime = player.getCurrentTime();
         const diff = Math.abs(currentTime - data.currentTime);
@@ -862,69 +365,64 @@
           setTimeout(() => isSyncing = false, 500);
         }
       });
-      
+
       socket.on('user-joined', (user) => {
         addSystemMessage(`${user.name} joined the jam`);
       });
-      
+
       socket.on('user-left', (user) => {
         addSystemMessage(`${user.name} left`);
       });
-      
+
       socket.on('queue-updated', (data) => {
         updateQueue(data.queue);
       });
-      
+
       socket.on('chat-message', (data) => {
         addChatMessage(data.user, data.message);
       });
-      
+
       socket.on('became-host', () => {
         isHost = true;
         addSystemMessage('You are now the host');
       });
-      
+
       socket.on('error', (data) => {
-        showError(data.message);
+        showToast('error', data.message);
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       });
 
-      // Connection error handling
       socket.on('connect_error', (error) => {
         console.error('Connection error:', error);
-        showError('Connection error. Retrying...');
+        showToast('error', 'Connection error. Retrying...');
       });
 
       socket.on('disconnect', (reason) => {
         console.log('Disconnected:', reason);
 
-        // Clear sync interval to prevent memory leaks
         if (syncInterval) {
           clearInterval(syncInterval);
           syncInterval = null;
         }
 
-        // Pause playback on disconnect
         if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
           player.pauseVideo();
         }
 
         if (reason === 'io server disconnect') {
-          // Server disconnected, try to reconnect
-          showError('Disconnected from server. Reconnecting...');
+          showToast('error', 'Disconnected from server. Reconnecting...');
           socket.connect();
         } else if (reason === 'transport close' || reason === 'transport error') {
-          showError('Lost connection. Reconnecting...');
+          showToast('error', 'Lost connection. Reconnecting...');
         }
       });
 
       socket.on('reconnect', (attemptNumber) => {
         console.log('Reconnected after', attemptNumber, 'attempts');
-        showError('✓ Reconnected successfully!');
+        showToast('success', '✓ Reconnected successfully!');
 
-        // Restart sync interval
         if (!syncInterval) {
           syncInterval = setInterval(() => {
             if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
@@ -933,8 +431,7 @@
           }, 5000);
         }
 
-        // Request current room state
-        socket.emit('join-room', { roomId, name: userName || 'Anonymous' });
+        socket.emit('join-room', { roomId, name: userName });
       });
 
       socket.on('reconnect_error', (error) => {
@@ -942,24 +439,22 @@
       });
 
       socket.on('reconnect_failed', () => {
-        showError('Failed to reconnect. Please refresh the page.');
+        showToast('error', 'Failed to reconnect. Please refresh the page.');
       });
 
-      // Room closed due to inactivity
       socket.on('inactivity-warning', (data) => {
-        showError('⚠️ ' + data.message);
+        showToast('warning', '⚠️ ' + data.message);
         addSystemMessage(data.message);
       });
 
       socket.on('room-closed', (data) => {
-        showError(data.message);
+        showToast('error', data.message);
         addSystemMessage(data.message);
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
       });
-      
-      // Periodic sync - store reference for cleanup
+
       syncInterval = setInterval(() => {
         if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
           socket.emit('sync-request');
@@ -967,43 +462,36 @@
       }, 5000);
     }
 
-    // Cleanup function to prevent memory leaks
     function cleanup() {
-      // Clear sync interval
       if (syncInterval) {
         clearInterval(syncInterval);
         syncInterval = null;
       }
 
-      // Pause playback
       if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
         player.pauseVideo();
       }
 
-      // Clear references
       if (socket && socket.connected) {
         socket.disconnect();
       }
     }
 
-    // Call cleanup on page unload
     window.addEventListener('beforeunload', cleanup);
-    
+
     function loadVideo(videoId, startTime, autoplay) {
       document.getElementById('noMusic').style.display = 'none';
       isSyncing = true;
-      
-      // Always try to unmute first
+
       if (player.unMute) player.unMute();
       if (player.setVolume) player.setVolume(100);
-      
+
       if (autoplay) {
         player.loadVideoById(videoId, startTime);
       } else {
         player.cueVideoById(videoId, startTime);
       }
-      
-      // Check if audio might be blocked after a short delay
+
       setTimeout(() => {
         isSyncing = false;
         if (!userInteracted && player.isMuted && player.isMuted()) {
@@ -1011,25 +499,21 @@
         }
       }, 1000);
     }
-    
-    function showNowPlaying(title, thumbnail, artist) {
-      document.getElementById('nowPlaying').classList.add('active');
-      document.getElementById('nowPlayingTitle').textContent = title;
 
-      // Update music player UI
+    function showNowPlaying(title, thumbnail, artist) {
       document.getElementById('noMusic').style.display = 'none';
       document.getElementById('trackInfo').style.display = 'block';
       document.getElementById('playerControls').style.display = 'flex';
+      document.getElementById('playerProgress').style.display = 'block';
       document.getElementById('trackTitle').textContent = title;
-      document.getElementById('trackChannel').textContent = artist || 'Unknown';
+      document.getElementById('trackArtist').textContent = artist || 'Unknown Artist';
 
-      // Show album art
       const albumArt = document.getElementById('albumArt');
       albumArt.src = thumbnail;
       albumArt.onerror = () => { albumArt.src = 'https://via.placeholder.com/300?text=No+Art'; };
       albumArt.classList.add('active');
     }
-    
+
     function togglePlay() {
       if (player.getPlayerState() === YT.PlayerState.PLAYING) {
         player.pauseVideo();
@@ -1037,76 +521,161 @@
         player.playVideo();
       }
     }
-    
+
     function skipBack() {
       const currentTime = player.getCurrentTime();
       const newTime = Math.max(0, currentTime - 10);
       player.seekTo(newTime, true);
       socket.emit('seek', { currentTime: newTime });
     }
-    
+
     function playNext() {
       socket.emit('play-next');
     }
-    
+
     function updatePlayingState(isPlaying) {
-      const videoCircle = document.getElementById('videoCircle');
+      const container = document.getElementById('albumArtContainer');
       const playPauseBtn = document.getElementById('playPauseBtn');
-      
+
       if (isPlaying) {
-        videoCircle.classList.add('playing');
+        container.classList.add('playing');
         if (playPauseBtn) playPauseBtn.textContent = '⏸️';
       } else {
-        videoCircle.classList.remove('playing');
+        container.classList.remove('playing');
         if (playPauseBtn) playPauseBtn.textContent = '▶️';
       }
     }
-    
+
     function updateUsers(users) {
       const list = document.getElementById('usersList');
       document.getElementById('userCount').textContent = users.length;
-      
+
       list.innerHTML = users.map((user, i) => `
         <div class="user-item">
-          <div class="user-avatar">${user.name[0].toUpperCase()}</div>
-          <span>${user.name}</span>
+          <div class="avatar">${user.name[0].toUpperCase()}</div>
+          <span class="user-name">${user.name}</span>
           ${i === 0 ? '<span class="host-badge">HOST</span>' : ''}
         </div>
       `).join('');
     }
-    
+
+    // ===== DRAG AND DROP QUEUE REORDERING =====
+
+    let draggedItem = null;
+    let draggedIndex = null;
+
     function updateQueue(queue) {
       const list = document.getElementById('queueList');
       if (queue.length === 0) {
-        list.innerHTML = '<p style="color: #666; font-size: 0.85rem;">Queue is empty</p>';
+        list.innerHTML = '<div class="queue-empty">Queue is empty</div>';
       } else {
-        list.innerHTML = queue.map(item => `
-          <div class="queue-item">
-            <span class="title">${item.title}</span>
-            <span style="color: #666; font-size: 0.75rem;">${item.addedBy}</span>
+        list.innerHTML = queue.map((item, i) => `
+          <div
+            class="queue-item ${i === 0 ? 'current' : ''}"
+            draggable="${i > 0}"
+            data-index="${i}"
+          >
+            ${i > 0 ? '<div class="queue-drag-handle">⋮⋮</div>' : ''}
+            <div class="queue-item-info">
+              <div class="queue-item-title">${escapeHtml(item.title)}</div>
+              <div class="queue-item-added-by">Added by ${item.addedBy}</div>
+            </div>
           </div>
         `).join('');
+
+        // Add drag and drop event listeners
+        setupQueueDragAndDrop();
       }
     }
-    
+
+    function setupQueueDragAndDrop() {
+      const queueItems = document.querySelectorAll('.queue-item[draggable="true"]');
+
+      queueItems.forEach((item) => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+      });
+    }
+
+    function handleDragStart(e) {
+      draggedItem = e.currentTarget;
+      draggedIndex = parseInt(draggedItem.dataset.index);
+      draggedItem.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', draggedItem.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      // Remove all drag-over classes
+      document.querySelectorAll('.queue-item').forEach(item => {
+        item.classList.remove('drag-over');
+      });
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+
+    function handleDragEnter(e) {
+      if (e.currentTarget !== draggedItem) {
+        e.currentTarget.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+
+      e.currentTarget.classList.remove('drag-over');
+
+      if (draggedItem !== e.currentTarget) {
+        const dropIndex = parseInt(e.currentTarget.dataset.index);
+
+        // Emit reorder event to server
+        socket.emit('reorder-queue', {
+          fromIndex: draggedIndex,
+          toIndex: dropIndex
+        });
+      }
+
+      return false;
+    }
+
     function addChatMessage(user, message) {
       const container = document.getElementById('chatMessages');
       const div = document.createElement('div');
       div.className = 'chat-message';
-      div.innerHTML = `<span class="user">${user}</span> <span class="text">${escapeHtml(message)}</span>`;
+      div.innerHTML = `
+        <div class="chat-user">${user}</div>
+        <div class="chat-text">${escapeHtml(message)}</div>
+      `;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
     }
-    
+
     function addSystemMessage(message) {
       const container = document.getElementById('chatMessages');
       const div = document.createElement('div');
-      div.className = 'chat-message';
-      div.innerHTML = `<span style="color: #888; font-style: italic;">${message}</span>`;
+      div.className = 'chat-message system';
+      div.innerHTML = `<div class="chat-text">${message}</div>`;
       container.appendChild(div);
       container.scrollTop = container.scrollHeight;
     }
-    
+
     function sendChat() {
       const input = document.getElementById('chatInput');
       const message = input.value.trim();
@@ -1115,53 +684,123 @@
         input.value = '';
       }
     }
-    
+
     document.getElementById('chatInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendChat();
     });
-    
-    // Search YouTube + SoundCloud via our backend API
-    async function searchYouTube() {
-      const query = document.getElementById('searchInput').value.trim();
-      if (!query) return;
-      
+
+    // ===== LIVE SEARCH WITH DEBOUNCING =====
+
+    let searchTimeout = null;
+    let isSearching = false;
+
+    async function searchYouTube(query = null) {
+      const searchQuery = query || document.getElementById('searchInput').value.trim();
+      const container = document.getElementById('searchResults');
+
+      // Clear results if query is empty
+      if (!searchQuery) {
+        container.classList.remove('active');
+        container.innerHTML = '';
+        return;
+      }
+
+      // Show loading state
+      isSearching = true;
+      container.classList.add('active');
+      container.innerHTML = `
+        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+          <div class="spinner" style="margin: 0 auto 1rem;"></div>
+          <p>Searching YouTube...</p>
+        </div>
+      `;
+
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
         const results = await res.json();
-        
+
         if (results.error) {
-          showError('Search failed: ' + results.error);
-          return;
-        }
-        
-        const container = document.getElementById('searchResults');
-        container.classList.add('active');
-        
-        container.innerHTML = results.map(result => {
-          return `
-            <div class="search-result">
-              <img src="${result.thumbnail}" alt="">
-              <div class="title">
-                ${escapeHtml(result.title)}
-                <div style="font-size: 0.75rem; color: #888;">${result.artist} • ${result.duration || ''}</div>
-              </div>
-              <div class="actions">
-                <button class="play-btn" onclick="playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">▶</button>
-                <button class="queue-btn" onclick="addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">+</button>
-              </div>
+          container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+              <p>❌ Search failed: ${results.error}</p>
             </div>
           `;
-        }).join('');
+          showToast('error', 'Search failed: ' + results.error);
+          return;
+        }
+
+        if (results.length === 0) {
+          container.innerHTML = `
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+              <p>🔍 No results found for "${escapeHtml(searchQuery)}"</p>
+              <p style="font-size: var(--text-sm); margin-top: 0.5rem;">Try a different search term</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = results.map(result => `
+          <div class="search-result" onclick="playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">
+            <img class="search-result-thumbnail" src="${result.thumbnail}" alt="">
+            <div class="search-result-info">
+              <div class="search-result-title">${escapeHtml(result.title)}</div>
+              <div class="search-result-artist">${escapeHtml(result.artist)} ${result.duration ? '• ' + result.duration : ''}</div>
+            </div>
+            <div class="search-result-actions">
+              <button class="btn btn-primary search-result-btn" onclick="event.stopPropagation(); playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">▶ Play</button>
+              <button class="btn btn-secondary search-result-btn" onclick="event.stopPropagation(); addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">+ Queue</button>
+            </div>
+          </div>
+        `).join('');
       } catch (err) {
         console.error('Search failed:', err);
-        showError('Search failed. Please check your connection and try again.');
+        container.innerHTML = `
+          <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+            <p>❌ Connection error. Please try again.</p>
+          </div>
+        `;
+        showToast('error', 'Search failed. Please check your connection and try again.');
+      } finally {
+        isSearching = false;
       }
     }
-    
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchYouTube();
+
+    // Debounced live search
+    function handleSearchInput() {
+      const query = document.getElementById('searchInput').value.trim();
+
+      // Clear existing timeout
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+
+      // If empty, clear results immediately
+      if (!query) {
+        searchYouTube('');
+        return;
+      }
+
+      // Wait 500ms after user stops typing before searching
+      searchTimeout = setTimeout(() => {
+        searchYouTube(query);
+      }, 500);
+    }
+
+    // Setup live search on input
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', handleSearchInput);
+        searchInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            // Clear timeout and search immediately on Enter
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchYouTube();
+          }
+        });
+      }
     });
-    
+
     function playVideo(id, title, thumbnail, artist, source) {
       socket.emit('play-video', { id, title, thumbnail, artist, source });
       document.getElementById('searchResults').classList.remove('active');
@@ -1170,40 +809,147 @@
 
     function addToQueue(id, title, thumbnail, artist, source) {
       socket.emit('add-to-queue', { id, title, thumbnail, artist, source });
+      showToast('success', 'Added to queue!');
     }
-    
+
     function copyRoomLink() {
       navigator.clipboard.writeText(window.location.href).then(() => {
-        showError('✓ Room link copied to clipboard!');
+        showToast('success', '✓ Room link copied to clipboard!');
       }).catch(() => {
-        showError('Failed to copy link. Please copy manually.');
+        showToast('error', 'Failed to copy link. Please copy manually.');
       });
     }
-    
+
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    // Error handling
-    function showError(message) {
-      const toast = document.getElementById('errorToast');
-      const messageEl = document.getElementById('errorMessage');
-      messageEl.textContent = message;
-      toast.classList.add('show');
+    function showToast(type, message) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      const messageEl = document.getElementById('toastMessage');
 
-      // Auto-hide after 5 seconds
+      const icons = {
+        success: '✓',
+        error: '⚠️',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+
+      icon.textContent = icons[type] || icons.info;
+      messageEl.textContent = message;
+
+      toast.classList.remove('success', 'error', 'warning', 'info');
+      toast.classList.add(type, 'show');
+
       setTimeout(() => {
-        closeError();
+        closeToast();
       }, 5000);
     }
 
-    function closeError() {
-      document.getElementById('errorToast').classList.remove('show');
+    function closeToast() {
+      document.getElementById('toast').classList.remove('show');
     }
-    
-    // Handle Enter on name input
+
+    // ===== INTERACTIVE PROGRESS BAR =====
+
+    let progressUpdateInterval = null;
+
+    // Format seconds to MM:SS
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // Update progress bar in real-time
+    function updateProgress() {
+      if (!player || !player.getDuration || !player.getCurrentTime) return;
+
+      const duration = player.getDuration();
+      const currentTime = player.getCurrentTime();
+
+      if (duration > 0) {
+        const progress = (currentTime / duration) * 100;
+        const progressFill = document.getElementById('progressFill');
+        const progressHandle = document.getElementById('progressHandle');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+
+        if (progressFill) progressFill.style.width = `${progress}%`;
+        if (progressHandle) progressHandle.style.left = `${progress}%`;
+        if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
+        if (durationEl) durationEl.textContent = formatTime(duration);
+      }
+    }
+
+    // Start/stop progress updates
+    function startProgressUpdates() {
+      if (progressUpdateInterval) clearInterval(progressUpdateInterval);
+      progressUpdateInterval = setInterval(updateProgress, 100); // Update 10 times per second
+    }
+
+    function stopProgressUpdates() {
+      if (progressUpdateInterval) {
+        clearInterval(progressUpdateInterval);
+        progressUpdateInterval = null;
+      }
+    }
+
+    // Click to seek on progress bar
+    document.addEventListener('DOMContentLoaded', () => {
+      const progressBar = document.getElementById('progressBar');
+
+      if (progressBar) {
+        progressBar.addEventListener('click', (e) => {
+          if (!player || !player.getDuration) return;
+
+          const rect = progressBar.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const width = rect.width;
+          const percentage = clickX / width;
+          const duration = player.getDuration();
+          const seekTime = duration * percentage;
+
+          // Seek to position
+          player.seekTo(seekTime, true);
+          socket.emit('seek', { currentTime: seekTime });
+
+          // Immediately update UI
+          updateProgress();
+        });
+      }
+    });
+
+    // Update showNowPlaying to start progress updates
+    const originalShowNowPlaying = showNowPlaying;
+    showNowPlaying = function(title, thumbnail, artist) {
+      originalShowNowPlaying(title, thumbnail, artist);
+      startProgressUpdates();
+    };
+
+    // Update updatePlayingState to handle progress updates
+    const originalUpdatePlayingState = updatePlayingState;
+    updatePlayingState = function(isPlaying) {
+      originalUpdatePlayingState(isPlaying);
+      if (isPlaying) {
+        startProgressUpdates();
+      } else {
+        stopProgressUpdates();
+        updateProgress(); // One final update when paused
+      }
+    };
+
+    // Cleanup progress interval on page unload
+    const originalCleanup = cleanup;
+    cleanup = function() {
+      stopProgressUpdates();
+      originalCleanup();
+    };
+
     document.getElementById('userName').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') joinRoom();
     });

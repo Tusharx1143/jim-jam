@@ -343,6 +343,34 @@ io.on('connection', (socket) => {
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
   });
 
+  // Reorder queue
+  socket.on('reorder-queue', ({ fromIndex, toIndex }) => {
+    const room = rooms.get(currentRoom);
+    if (!room) return;
+
+    // Validate indices
+    if (
+      typeof fromIndex !== 'number' ||
+      typeof toIndex !== 'number' ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= room.queue.length ||
+      toIndex >= room.queue.length
+    ) {
+      socket.emit('error', { message: 'Invalid queue reorder indices' });
+      return;
+    }
+
+    // Update room activity
+    updateRoomActivity(currentRoom);
+
+    // Reorder the queue
+    const [item] = room.queue.splice(fromIndex, 1);
+    room.queue.splice(toIndex, 0, item);
+
+    io.to(currentRoom).emit('queue-updated', { queue: room.queue });
+  });
+
   // Play next in queue
   socket.on('play-next', () => {
     const room = rooms.get(currentRoom);

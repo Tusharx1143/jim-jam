@@ -1,0 +1,357 @@
+/**
+ * Jim-jam Responsive Styles
+ * Mobile-first, touch-friendly design
+ */
+
+/* ===== MOBILE (< 640px) ===== */
+@media (max-width: 640px) {
+  /* Home Page */
+  .header-container {
+    padding: 0 var(--space-md);
+  }
+
+  .header-nav {
+    gap: var(--space-md);
+  }
+
+  .hero {
+    padding: var(--space-2xl) 0;
+  }
+
+  .hero-icon {
+    font-size: 60px;
+  }
+
+  .hero-title {
+    font-size: var(--text-3xl);
+  }
+
+  .hero-subtitle {
+    font-size: var(--text-base);
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+
+  .join-section {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .join-section .input,
+  .join-section .btn {
+    width: 100%;
+  }
+
+  .features {
+    padding: var(--space-2xl) 0;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .how-it-works {
+    padding: var(--space-2xl) 0;
+  }
+
+  .how-it-works-title {
+    font-size: var(--text-2xl);
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  /* Room Page */
+  .room-header {
+    padding: var(--space-md);
+  }
+
+  .room-header-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+
+  .room-logo {
+    justify-content: center;
+  }
+
+  .room-info {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .room-info .btn,
+  .room-info a {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .room-content {
+    grid-template-columns: 1fr;
+    padding: var(--space-md);
+    gap: var(--space-md);
+  }
+
+  .player-section {
+    gap: var(--space-md);
+  }
+
+  .music-player {
+    padding: var(--space-lg);
+  }
+
+  .album-art-container {
+    width: 200px;
+    height: 200px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .track-title {
+    font-size: var(--text-lg);
+  }
+
+  .player-controls {
+    gap: var(--space-sm);
+  }
+
+  .btn-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .btn-icon.large {
+    width: 56px;
+    height: 56px;
+  }
+
+  .search-input-wrapper {
+    flex-direction: column;
+  }
+
+  .search-input-wrapper .btn {
+    width: 100%;
+  }
+
+  .search-results {
+    max-height: 300px;
+  }
+
+  .search-result {
+    flex-wrap: wrap;
+  }
+
+  .search-result-actions {
+    width: 100%;
+    justify-content: stretch;
+    margin-top: var(--space-sm);
+  }
+
+  .search-result-actions .btn {
+    flex: 1;
+  }
+
+  .sidebar {
+    gap: var(--space-md);
+  }
+
+  .sidebar-panel {
+    padding: var(--space-md);
+  }
+
+  .sidebar-panel.users-panel,
+  .sidebar-panel.queue-panel,
+  .sidebar-panel.chat-panel {
+    max-height: none;
+    min-height: 200px;
+  }
+
+  .chat-input-wrapper {
+    flex-direction: column;
+  }
+
+  .chat-input-wrapper .btn {
+    width: 100%;
+  }
+
+  /* Toast on mobile */
+  .toast {
+    top: auto;
+    bottom: var(--space-lg);
+    right: var(--space-md);
+    left: var(--space-md);
+    max-width: none;
+  }
+
+  /* Audio prompt */
+  .audio-prompt {
+    bottom: var(--space-lg);
+    left: var(--space-md);
+    right: var(--space-md);
+    transform: none;
+    text-align: center;
+  }
+
+  .audio-prompt:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ===== TABLET (640px - 768px) ===== */
+@media (min-width: 640px) and (max-width: 768px) {
+  .room-content {
+    grid-template-columns: 1fr;
+  }
+
+  .album-art-container {
+    width: 250px;
+    height: 250px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== TABLET/SMALL DESKTOP (768px - 1024px) ===== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .room-content {
+    grid-template-columns: 1fr 350px;
+  }
+
+  .album-art-container {
+    width: 250px;
+    height: 250px;
+  }
+
+  .sidebar-panel.queue-panel {
+    min-height: 250px;
+  }
+
+  .sidebar-panel.chat-panel {
+    min-height: 350px;
+  }
+}
+
+/* ===== LARGE DESKTOP (> 1440px) ===== */
+@media (min-width: 1440px) {
+  .room-content {
+    grid-template-columns: 1fr 450px;
+  }
+
+  .album-art-container {
+    width: 350px;
+    height: 350px;
+  }
+
+  .sidebar-panel {
+    padding: var(--space-xl);
+  }
+}
+
+/* ===== TOUCH DEVICE IMPROVEMENTS ===== */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch targets */
+  .btn,
+  .btn-icon,
+  .input {
+    min-height: 48px;
+  }
+
+  /* Better spacing for touch */
+  .list-item,
+  .queue-item,
+  .user-item {
+    padding: var(--space-md);
+  }
+
+  /* Remove hover effects on touch devices */
+  .card:hover,
+  .list-item:hover,
+  .queue-item:hover,
+  .feature-card:hover {
+    border-color: var(--border-subtle);
+    background: inherit;
+  }
+
+  /* Make buttons more prominent */
+  .btn {
+    font-weight: var(--font-semibold);
+  }
+
+  /* Larger search results on touch */
+  .search-result {
+    padding: var(--space-lg);
+  }
+
+  .search-result-thumbnail {
+    width: 100px;
+    height: 56px;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .album-art-container.playing .album-art {
+    animation: none;
+  }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 900px) and (orientation: landscape) {
+  .room-content {
+    grid-template-columns: 1fr 300px;
+  }
+
+  .album-art-container {
+    width: 180px;
+    height: 180px;
+  }
+
+  .sidebar-panel.users-panel,
+  .sidebar-panel.queue-panel,
+  .sidebar-panel.chat-panel {
+    max-height: 250px;
+    min-height: 150px;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .header-nav,
+  .footer,
+  .toast,
+  .audio-prompt,
+  .modal,
+  .btn,
+  .sidebar,
+  .search-container {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .music-player {
+    border: 1px solid black;
+  }
+}

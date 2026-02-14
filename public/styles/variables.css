@@ -1,0 +1,96 @@
+/**
+ * Jim-jam Design System - Variables
+ * Spotify-Minimal Style with Electric Purple & Pink
+ */
+
+:root {
+  /* ===== COLORS ===== */
+
+  /* Backgrounds - Solid, Flat */
+  --bg-primary: #0A0E27;        /* Main background */
+  --bg-secondary: #1A1F3A;      /* Cards, panels */
+  --bg-hover: #252B4A;          /* Hover state */
+  --bg-active: #2D3454;         /* Active/selected */
+
+  /* Accents - Purple & Pink (used sparingly) */
+  --accent-primary: #B794F6;    /* Buttons, links, active items */
+  --accent-secondary: #FF6B9D;  /* Highlights, special actions */
+  --accent-hover: #C7A8F7;      /* Hover on purple elements */
+
+  /* Text - Clear hierarchy */
+  --text-primary: #E2E8F0;      /* Main text */
+  --text-secondary: #94A3B8;    /* Secondary text */
+  --text-muted: #64748B;        /* Placeholders, disabled */
+
+  /* Borders */
+  --border-subtle: #2D3454;     /* Very subtle borders */
+  --border-hover: #3D4564;      /* Hover borders */
+
+  /* Utility Colors */
+  --success: #10B981;           /* Success messages */
+  --error: #EF4444;             /* Error messages */
+  --warning: #F59E0B;           /* Warning messages */
+  --info: #3B82F6;              /* Info messages */
+
+  /* ===== SHADOWS (Minimal) ===== */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  /* ===== SPACING ===== */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ===== TYPOGRAPHY ===== */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Font Sizes */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 32px;
+  --text-4xl: 48px;
+
+  /* Font Weights */
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* ===== BORDERS & RADIUS ===== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* ===== Z-INDEX ===== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-modal: 1030;
+  --z-toast: 1040;
+
+  /* ===== BREAKPOINTS (for reference in JS) ===== */
+  --breakpoint-mobile: 640px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-wide: 1440px;
+}

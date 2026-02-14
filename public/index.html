@@ -4,208 +4,196 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jim-jam 🎵 - Listen Together</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-    
-    .container {
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .logo {
-      font-size: 4rem;
-      margin-bottom: 0.5rem;
-      animation: bounce 2s infinite;
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #e94560, #ff6b6b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .tagline {
-      font-size: 1.2rem;
-      color: #a0a0a0;
-      margin-bottom: 3rem;
-    }
-    
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      align-items: center;
-    }
-    
-    .btn {
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      min-width: 250px;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(90deg, #e94560, #ff6b6b);
-      color: white;
-      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
-    }
-    
-    .btn-secondary {
-      background: transparent;
-      color: white;
-      border: 2px solid #e94560;
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(233, 69, 96, 0.2);
-    }
-    
-    .join-section {
-      margin-top: 2rem;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .join-section input {
-      padding: 1rem 1.5rem;
-      font-size: 1rem;
-      border: 2px solid #333;
-      border-radius: 50px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      width: 200px;
-    }
-    
-    .join-section input::placeholder {
-      color: #666;
-    }
-    
-    .join-section input:focus {
-      outline: none;
-      border-color: #e94560;
-    }
-    
-    .features {
-      margin-top: 4rem;
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .feature {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1.5rem;
-      border-radius: 15px;
-      width: 200px;
-    }
-    
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .feature h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .feature p {
-      font-size: 0.85rem;
-      color: #888;
-    }
-  </style>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/reset.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/home.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
-  <div class="container">
-    <div class="logo">🎵</div>
-    <h1>Jim-jam</h1>
-    <p class="tagline">Listen to YouTube music together, in perfect sync</p>
-    
-    <div class="actions">
-      <button class="btn btn-primary" onclick="createRoom()">Create a Room</button>
-      
-      <div class="join-section">
-        <input type="text" id="roomCode" placeholder="Enter room code">
-        <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="logo">
+        <span class="logo-icon">🎵</span>
+        <span>Jim-jam</span>
+      </a>
+      <nav class="header-nav">
+        <a href="https://github.com/Tusharx1143/jim-jam" target="_blank">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-icon">🎵</div>
+      <h1 class="hero-title">Jim-jam</h1>
+      <p class="hero-subtitle">Listen to YouTube music together, in perfect sync</p>
+
+      <div class="hero-actions">
+        <div class="hero-buttons">
+          <button class="btn btn-primary" onclick="createRoom()">Create a Room</button>
+        </div>
+
+        <div class="join-section">
+          <input
+            type="text"
+            id="roomCode"
+            class="input input-search"
+            placeholder="Enter room code"
+            maxlength="10"
+          >
+          <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+        </div>
       </div>
     </div>
-    
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">🎧</div>
-        <h3>Perfect Sync</h3>
-        <p>Everyone hears the same beat at the same time</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📝</div>
-        <h3>Queue Songs</h3>
-        <p>Build playlists together with your friends</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">💬</div>
-        <h3>Chat</h3>
-        <p>Talk about the music while you listen</p>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🎧</div>
+          <h3 class="feature-title">Perfect Sync</h3>
+          <p class="feature-description">
+            Everyone hears the same beat at the same time. No delays, no buffering.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3 class="feature-title">Queue Songs</h3>
+          <p class="feature-description">
+            Build playlists together with your friends. Everyone can add their favorite tracks.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3 class="feature-title">Live Chat</h3>
+          <p class="feature-description">
+            Talk about the music while you listen. React, share, and vibe together.
+          </p>
+        </div>
       </div>
     </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2 class="how-it-works-title">How It Works</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3 class="step-title">Create a Room</h3>
+          <p class="step-description">
+            Click "Create a Room" to get started. You'll get a unique room code to share.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3 class="step-title">Invite Friends</h3>
+          <p class="step-description">
+            Share the room code or link with your friends. They can join instantly.
+          </p>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3 class="step-title">Start Jamming</h3>
+          <p class="step-description">
+            Search for songs on YouTube, add them to the queue, and enjoy together!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-text">Made with 💜 for music lovers everywhere</p>
+      <div class="footer-links">
+        <a href="https://github.com/Tusharx1143/jim-jam" target="_blank">GitHub</a>
+        <a href="https://github.com/Tusharx1143/jim-jam/issues" target="_blank">Report Issue</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">ℹ️</span>
+    <div class="toast-content" id="toastMessage"></div>
+    <button class="toast-close" onclick="closeToast()">✕</button>
   </div>
 
   <script>
+    // Create room
     async function createRoom() {
       try {
         const res = await fetch('/api/create-room');
-        const { roomId } = await res.json();
-        window.location.href = `/room/${roomId}`;
+        const data = await res.json();
+
+        if (data.roomId) {
+          window.location.href = `/room/${data.roomId}`;
+        } else {
+          showToast('error', 'Failed to create room. Please try again.');
+        }
       } catch (err) {
-        alert('Failed to create room. Please try again.');
+        console.error('Error creating room:', err);
+        showToast('error', 'Failed to create room. Please try again.');
       }
     }
-    
+
+    // Join room
     function joinRoom() {
       const code = document.getElementById('roomCode').value.trim();
       if (code) {
         window.location.href = `/room/${code}`;
       } else {
-        alert('Please enter a room code');
+        showToast('warning', 'Please enter a room code');
       }
     }
-    
+
+    // Toast notification
+    function showToast(type, message) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      const messageEl = document.getElementById('toastMessage');
+
+      // Set icon based on type
+      const icons = {
+        success: '✓',
+        error: '⚠️',
+        warning: '⚠️',
+        info: 'ℹ️'
+      };
+
+      icon.textContent = icons[type] || icons.info;
+      messageEl.textContent = message;
+
+      // Remove previous type classes
+      toast.classList.remove('success', 'error', 'warning', 'info');
+      toast.classList.add(type, 'show');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        closeToast();
+      }, 5000);
+    }
+
+    function closeToast() {
+      document.getElementById('toast').classList.remove('show');
+    }
+
     // Allow Enter key to join
     document.getElementById('roomCode').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') joinRoom();
