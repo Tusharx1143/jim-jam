@@ -5,7 +5,6 @@ const { Server } = require('socket.io');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const ytsr = require('ytsr');
-const scdl = require('soundcloud-scraper');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -44,7 +43,7 @@ function validateVideoData(data) {
 
   const hasValidId = validateString(data.id, 1, 100);
   const hasValidTitle = validateString(data.title, 1, 200);
-  const hasValidSource = data.source === 'youtube' || data.source === 'soundcloud';
+  const hasValidSource = data.source === 'youtube'; // YouTube-only now
 
   // Optional fields - validate if present
   const thumbnailValid = !data.thumbnail || validateString(data.thumbnail, 1, 500);
@@ -99,7 +98,7 @@ const createRoomLimiter = rateLimit({
 });
 // ===================================
 
-// Hybrid search - YouTube + SoundCloud
+// YouTube search
 app.get('/api/search', searchLimiter, async (req, res) => {
   const query = req.query.q;
 
@@ -107,54 +106,27 @@ app.get('/api/search', searchLimiter, async (req, res) => {
   if (!validateString(query, 1, 100)) {
     return res.status(400).json({ error: 'Invalid search query (1-100 characters required)' });
   }
-  
-  const results = [];
-  
+
   // Search YouTube
   try {
-    const ytResults = await ytsr(query, { limit: 5 });
-    ytResults.items
+    const ytResults = await ytsr(query, { limit: 10 });
+    const results = ytResults.items
       .filter(item => item.type === 'video')
-      .forEach(item => {
-        results.push({
-          source: 'youtube',
-          id: item.id,
-          title: item.title,
-          thumbnail: item.bestThumbnail?.url || `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
-          artist: item.author?.name || 'Unknown',
-          duration: item.duration,
-          url: `https://www.youtube.com/watch?v=${item.id}`
-        });
-      });
+      .map(item => ({
+        source: 'youtube',
+        id: item.id,
+        title: item.title,
+        thumbnail: item.bestThumbnail?.url || `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
+        artist: item.author?.name || 'Unknown',
+        duration: item.duration,
+        url: `https://www.youtube.com/watch?v=${item.id}`
+      }));
+
+    res.json(results);
   } catch (err) {
     console.error('YouTube search error:', err);
+    res.status(500).json({ error: 'Search failed' });
   }
-  
-  // Search SoundCloud
-  try {
-    const scResults = await scdl.search({
-      query: query,
-      resourceType: 'tracks',
-      limit: 5
-    });
-    
-    scResults.forEach(track => {
-      results.push({
-        source: 'soundcloud',
-        id: track.id,
-        title: track.title,
-        thumbnail: track.artwork_url || track.user?.avatar_url || 'https://via.placeholder.com/300',
-        artist: track.user?.username || 'Unknown',
-        duration: track.duration ? Math.round(track.duration / 1000) : 0,
-        url: track.permalink_url,
-        streamUrl: track.media?.transcodings?.[0]?.url
-      });
-    });
-  } catch (err) {
-    console.error('SoundCloud search error:', err);
-  }
-  
-  res.json(results.slice(0, 10)); // Return top 10 combined results
 });
 
 // API to create a new room
@@ -234,13 +206,13 @@ io.on('connection', (socket) => {
     console.log(`${userName} joined room ${roomId}`);
   });
 
-  // Play a video/track
-  socket.on('play-video', ({ id, title, thumbnail, artist, source, streamUrl }) => {
+  // Play a video
+  socket.on('play-video', ({ id, title, thumbnail, artist, source }) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
     // Validate video data
-    const videoData = { id, title, thumbnail, artist, source, streamUrl };
+    const videoData = { id, title, thumbnail, artist, source };
     if (!validateVideoData(videoData)) {
       socket.emit('error', { message: 'Invalid video data' });
       return;
@@ -251,8 +223,7 @@ io.on('connection', (socket) => {
       title,
       thumbnail,
       artist,
-      source, // 'youtube' or 'soundcloud'
-      streamUrl // For SoundCloud
+      source
     };
     room.isPlaying = true;
     room.currentTime = 0;
@@ -264,11 +235,10 @@ io.on('connection', (socket) => {
       thumbnail,
       artist,
       source,
-      streamUrl,
       isPlaying: true,
       currentTime: 0
     });
-    console.log(`Playing ${title} (${source}) in room ${currentRoom}`);
+    console.log(`Playing ${title} in room ${currentRoom}`);
   });
 
   // Play/Pause toggle
@@ -322,12 +292,12 @@ io.on('connection', (socket) => {
   });
 
   // Add to queue
-  socket.on('add-to-queue', ({ id, title, thumbnail, artist, source, streamUrl }) => {
+  socket.on('add-to-queue', ({ id, title, thumbnail, artist, source }) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
     // Validate video data
-    const videoData = { id, title, thumbnail, artist, source, streamUrl };
+    const videoData = { id, title, thumbnail, artist, source };
     if (!validateVideoData(videoData)) {
       socket.emit('error', { message: 'Invalid video data for queue' });
       return;
@@ -345,7 +315,6 @@ io.on('connection', (socket) => {
       thumbnail,
       artist,
       source,
-      streamUrl,
       addedBy: userName
     });
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
@@ -368,7 +337,6 @@ io.on('connection', (socket) => {
       thumbnail: next.thumbnail,
       artist: next.artist,
       source: next.source,
-      streamUrl: next.streamUrl,
       isPlaying: true,
       currentTime: 0
     });
