@@ -526,6 +526,61 @@
       font-size: 1rem;
       cursor: pointer;
     }
+
+    /* Error Toast */
+    .error-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff4757, #e94560);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
+      z-index: 1001;
+      display: none;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .error-toast.show {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .error-toast .icon {
+      font-size: 1.5rem;
+    }
+
+    .error-toast .content {
+      flex: 1;
+    }
+
+    .error-toast .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -542,6 +597,13 @@
   <!-- Audio enable prompt -->
   <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
     🔊 Click here to enable audio
+  </div>
+
+  <!-- Error Toast -->
+  <div class="error-toast" id="errorToast">
+    <span class="icon">⚠️</span>
+    <div class="content" id="errorMessage"></div>
+    <button class="close-btn" onclick="closeError()">✕</button>
   </div>
 
   <header class="header">
@@ -662,11 +724,30 @@
     
     function onPlayerError(event) {
       console.error('YouTube Player Error:', event.data);
+      let errorMessage = 'Video playback error. ';
+
       // Error codes: 2=invalid video ID, 5=HTML5 error, 100=not found, 101/150=embedding disabled
-      if (event.data === 101 || event.data === 150) {
-        addSystemMessage('This video cannot be played (embedding disabled). Skipping...');
-        socket.emit('play-next');
+      switch (event.data) {
+        case 2:
+          errorMessage += 'Invalid video ID.';
+          break;
+        case 5:
+          errorMessage += 'HTML5 player error.';
+          break;
+        case 100:
+          errorMessage += 'Video not found.';
+          break;
+        case 101:
+        case 150:
+          errorMessage += 'Embedding disabled for this video.';
+          break;
+        default:
+          errorMessage += 'Unknown error.';
       }
+
+      showError(errorMessage + ' Skipping to next...');
+      addSystemMessage(errorMessage + ' Skipping...');
+      socket.emit('play-next');
     }
     
     // Enable audio after user interaction
@@ -803,8 +884,60 @@
       });
       
       socket.on('error', (data) => {
-        alert(data.message);
-        window.location.href = '/';
+        showError(data.message);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      });
+
+      // Connection error handling
+      socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        showError('Connection error. Retrying...');
+      });
+
+      socket.on('disconnect', (reason) => {
+        console.log('Disconnected:', reason);
+        if (reason === 'io server disconnect') {
+          // Server disconnected, try to reconnect
+          showError('Disconnected from server. Reconnecting...');
+          socket.connect();
+        } else if (reason === 'transport close' || reason === 'transport error') {
+          showError('Lost connection. Reconnecting...');
+        }
+        // Pause playback on disconnect
+        if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        }
+      });
+
+      socket.on('reconnect', (attemptNumber) => {
+        console.log('Reconnected after', attemptNumber, 'attempts');
+        showError('✓ Reconnected successfully!');
+        // Request current room state
+        socket.emit('join-room', { roomId, name: userName || 'Anonymous' });
+      });
+
+      socket.on('reconnect_error', (error) => {
+        console.error('Reconnection error:', error);
+      });
+
+      socket.on('reconnect_failed', () => {
+        showError('Failed to reconnect. Please refresh the page.');
+      });
+
+      // Room closed due to inactivity
+      socket.on('inactivity-warning', (data) => {
+        showError('⚠️ ' + data.message);
+        addSystemMessage(data.message);
+      });
+
+      socket.on('room-closed', (data) => {
+        showError(data.message);
+        addSystemMessage(data.message);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
       });
       
       // Periodic sync
@@ -956,7 +1089,7 @@
         const results = await res.json();
         
         if (results.error) {
-          alert('Search failed: ' + results.error);
+          showError('Search failed: ' + results.error);
           return;
         }
         
@@ -980,7 +1113,7 @@
         }).join('');
       } catch (err) {
         console.error('Search failed:', err);
-        alert('Search failed. Try again.');
+        showError('Search failed. Please check your connection and try again.');
       }
     }
     
@@ -999,14 +1132,34 @@
     }
     
     function copyRoomLink() {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Room link copied!');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showError('✓ Room link copied to clipboard!');
+      }).catch(() => {
+        showError('Failed to copy link. Please copy manually.');
+      });
     }
     
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Error handling
+    function showError(message) {
+      const toast = document.getElementById('errorToast');
+      const messageEl = document.getElementById('errorMessage');
+      messageEl.textContent = message;
+      toast.classList.add('show');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        closeError();
+      }, 5000);
+    }
+
+    function closeError() {
+      document.getElementById('errorToast').classList.remove('show');
     }
     
     // Handle Enter on name input
