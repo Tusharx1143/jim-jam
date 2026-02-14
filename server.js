@@ -73,6 +73,13 @@ function sanitizeHtml(str) {
 function validateBoolean(val) {
   return typeof val === 'boolean';
 }
+
+function updateRoomActivity(roomId) {
+  const room = rooms.get(roomId);
+  if (room) {
+    room.lastActivity = Date.now();
+  }
+}
 // ================================================
 
 // Serve static files
@@ -139,6 +146,7 @@ app.get('/api/create-room', createRoomLimiter, (req, res) => {
     isPlaying: false,
     currentTime: 0,
     lastUpdate: Date.now(),
+    lastActivity: Date.now(), // Track room activity for TTL cleanup
     queue: [],
     host: null
   });
@@ -179,7 +187,10 @@ io.on('connection', (socket) => {
 
     currentRoom = roomId;
     userName = name ? sanitizeHtml(name.trim()) : `User-${socket.id.slice(0, 4)}`;
-    
+
+    // Update room activity
+    updateRoomActivity(roomId);
+
     // Add user to room
     room.users.push({ id: socket.id, name: userName });
     
@@ -218,6 +229,9 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Update room activity
+    updateRoomActivity(currentRoom);
+
     room.currentVideo = {
       id,
       title,
@@ -252,6 +266,9 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Update room activity
+    updateRoomActivity(currentRoom);
+
     room.isPlaying = isPlaying;
     room.currentTime = currentTime;
     room.lastUpdate = Date.now();
@@ -272,6 +289,9 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Invalid seek time' });
       return;
     }
+
+    // Update room activity
+    updateRoomActivity(currentRoom);
 
     room.currentTime = currentTime;
     room.lastUpdate = Date.now();
@@ -308,6 +328,9 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Queue is full (max 50 items)' });
       return;
     }
+
+    // Update room activity
+    updateRoomActivity(currentRoom);
 
     room.queue.push({
       id,
@@ -353,6 +376,9 @@ io.on('connection', (socket) => {
 
     const sanitizedMessage = sanitizeHtml(message.trim());
 
+    // Update room activity
+    updateRoomActivity(currentRoom);
+
     io.to(currentRoom).emit('chat-message', {
       user: userName,
       message: sanitizedMessage,
@@ -385,6 +411,54 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
+
+// ========== Room Cleanup (TTL) ==========
+// Clean up inactive rooms every 10 minutes
+const ROOM_INACTIVE_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours
+const CLEANUP_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const INACTIVITY_WARNING_TIME = 5 * 60 * 1000; // Warn 5 minutes before cleanup
+
+setInterval(() => {
+  const now = Date.now();
+  const roomsToDelete = [];
+
+  for (const [roomId, room] of rooms.entries()) {
+    const inactiveDuration = now - room.lastActivity;
+
+    // Warn users 5 minutes before room closure
+    if (inactiveDuration >= ROOM_INACTIVE_TIMEOUT - INACTIVITY_WARNING_TIME &&
+        inactiveDuration < ROOM_INACTIVE_TIMEOUT &&
+        !room.warningsSent) {
+      io.to(roomId).emit('inactivity-warning', {
+        message: 'Room will be closed in 5 minutes due to inactivity'
+      });
+      room.warningsSent = true;
+      console.log(`⚠️  Warning sent to room ${roomId} (inactive for ${Math.floor(inactiveDuration / 60000)} minutes)`);
+    }
+
+    // Delete rooms inactive for 2+ hours
+    if (inactiveDuration >= ROOM_INACTIVE_TIMEOUT) {
+      roomsToDelete.push(roomId);
+    }
+  }
+
+  // Clean up inactive rooms
+  roomsToDelete.forEach(roomId => {
+    const room = rooms.get(roomId);
+    if (room) {
+      io.to(roomId).emit('room-closed', {
+        message: 'Room closed due to inactivity'
+      });
+      rooms.delete(roomId);
+      console.log(`🗑️  Deleted inactive room ${roomId} (${room.users.length} users)`);
+    }
+  });
+
+  if (roomsToDelete.length > 0) {
+    console.log(`✨ Cleaned up ${roomsToDelete.length} inactive room(s). Active rooms: ${rooms.size}`);
+  }
+}, CLEANUP_INTERVAL);
+// ========================================
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🎵 Jim-jam server running at http://0.0.0.0:${PORT}`);
