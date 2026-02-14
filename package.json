@@ -1,7 +1,7 @@
 {
   "name": "jim-jam",
-  "version": "1.0.0",
-  "description": "Sync YouTube music listening with friends - like Spotify Jam but for YouTube",
+  "version": "2.0.0",
+  "description": "Real-time YouTube music synchronization app - Listen together with friends in perfect sync!",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,14 +12,26 @@
     "sync",
     "youtube",
     "jam",
-    "listen-together"
+    "listen-together",
+    "real-time",
+    "socket.io",
+    "streaming"
   ],
   "author": "Tushar",
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/jim-jam.git"
+  },
   "dependencies": {
+    "dotenv": "^17.3.1",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
     "socket.io": "^4.7.2",
-    "soundcloud-scraper": "^5.0.3",
     "uuid": "^9.0.0",
     "ytsr": "^3.8.4"
   }

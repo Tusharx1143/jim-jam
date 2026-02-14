@@ -526,6 +526,61 @@
       font-size: 1rem;
       cursor: pointer;
     }
+
+    /* Error Toast */
+    .error-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #ff4757, #e94560);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(233, 69, 96, 0.5);
+      z-index: 1001;
+      display: none;
+      max-width: 400px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .error-toast.show {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .error-toast .icon {
+      font-size: 1.5rem;
+    }
+
+    .error-toast .content {
+      flex: 1;
+    }
+
+    .error-toast .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -542,6 +597,13 @@
   <!-- Audio enable prompt -->
   <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
     🔊 Click here to enable audio
+  </div>
+
+  <!-- Error Toast -->
+  <div class="error-toast" id="errorToast">
+    <span class="icon">⚠️</span>
+    <div class="content" id="errorMessage"></div>
+    <button class="close-btn" onclick="closeError()">✕</button>
   </div>
 
   <header class="header">
@@ -621,31 +683,9 @@
     
     let socket;
     let player;
-    let audioPlayer; // For SoundCloud playback
     let isHost = false;
     let isSyncing = false;
-    let currentSource = null; // 'youtube' or 'soundcloud'
-    
-    // Create audio player for SoundCloud
-    audioPlayer = new Audio();
-    audioPlayer.crossOrigin = 'anonymous';
-    audioPlayer.addEventListener('play', () => {
-      if (!isSyncing && currentSource === 'soundcloud') {
-        updatePlayingState(true);
-        socket.emit('toggle-play', { isPlaying: true, currentTime: audioPlayer.currentTime });
-      }
-    });
-    audioPlayer.addEventListener('pause', () => {
-      if (!isSyncing && currentSource === 'soundcloud') {
-        updatePlayingState(false);
-        socket.emit('toggle-play', { isPlaying: false, currentTime: audioPlayer.currentTime });
-      }
-    });
-    audioPlayer.addEventListener('ended', () => {
-      if (currentSource === 'soundcloud') {
-        socket.emit('play-next');
-      }
-    });
+    let syncInterval = null; // Store interval reference for cleanup
     
     // YouTube IFrame API
     const tag = document.createElement('script');
@@ -685,11 +725,30 @@
     
     function onPlayerError(event) {
       console.error('YouTube Player Error:', event.data);
+      let errorMessage = 'Video playback error. ';
+
       // Error codes: 2=invalid video ID, 5=HTML5 error, 100=not found, 101/150=embedding disabled
-      if (event.data === 101 || event.data === 150) {
-        addSystemMessage('This video cannot be played (embedding disabled). Skipping...');
-        socket.emit('play-next');
+      switch (event.data) {
+        case 2:
+          errorMessage += 'Invalid video ID.';
+          break;
+        case 5:
+          errorMessage += 'HTML5 player error.';
+          break;
+        case 100:
+          errorMessage += 'Video not found.';
+          break;
+        case 101:
+        case 150:
+          errorMessage += 'Embedding disabled for this video.';
+          break;
+        default:
+          errorMessage += 'Unknown error.';
       }
+
+      showError(errorMessage + ' Skipping to next...');
+      addSystemMessage(errorMessage + ' Skipping...');
+      socket.emit('play-next');
     }
     
     // Enable audio after user interaction
@@ -761,59 +820,36 @@
         isHost = state.isHost;
         updateUsers(state.users);
         updateQueue(state.queue);
-        
+
         if (state.currentVideo) {
-          currentSource = state.currentVideo.source;
-          if (state.currentVideo.source === 'youtube') {
-            loadVideo(state.currentVideo.id, state.currentTime, state.isPlaying);
-          } else if (state.currentVideo.source === 'soundcloud') {
-            loadSoundCloudTrack(state.currentVideo.id, state.currentVideo.streamUrl, state.currentTime, state.isPlaying);
-          }
-          showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.artist, state.currentVideo.source);
+          loadVideo(state.currentVideo.id, state.currentTime, state.isPlaying);
+          showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.artist);
           if (state.isPlaying) updatePlayingState(true);
         }
       });
       
       socket.on('video-changed', (data) => {
-        currentSource = data.source;
-        if (data.source === 'youtube') {
-          loadVideo(data.id, data.currentTime, data.isPlaying);
-        } else if (data.source === 'soundcloud') {
-          loadSoundCloudTrack(data.id, data.streamUrl, data.currentTime, data.isPlaying);
-        }
-        showNowPlaying(data.title, data.thumbnail, data.artist, data.source);
+        loadVideo(data.id, data.currentTime, data.isPlaying);
+        showNowPlaying(data.title, data.thumbnail, data.artist);
         if (data.isPlaying) updatePlayingState(true);
       });
       
       socket.on('play-state-changed', (data) => {
         isSyncing = true;
         updatePlayingState(data.isPlaying);
-        if (currentSource === 'youtube') {
-          if (data.isPlaying) {
-            player.seekTo(data.currentTime, true);
-            player.playVideo();
-          } else {
-            player.pauseVideo();
-            player.seekTo(data.currentTime, true);
-          }
-        } else if (currentSource === 'soundcloud') {
-          audioPlayer.currentTime = data.currentTime;
-          if (data.isPlaying) {
-            audioPlayer.play();
-          } else {
-            audioPlayer.pause();
-          }
+        if (data.isPlaying) {
+          player.seekTo(data.currentTime, true);
+          player.playVideo();
+        } else {
+          player.pauseVideo();
+          player.seekTo(data.currentTime, true);
         }
         setTimeout(() => isSyncing = false, 500);
       });
       
       socket.on('seeked', (data) => {
         isSyncing = true;
-        if (currentSource === 'youtube') {
-          player.seekTo(data.currentTime, true);
-        } else if (currentSource === 'soundcloud') {
-          audioPlayer.currentTime = data.currentTime;
-        }
+        player.seekTo(data.currentTime, true);
         setTimeout(() => isSyncing = false, 500);
       });
       
@@ -849,17 +885,109 @@
       });
       
       socket.on('error', (data) => {
-        alert(data.message);
-        window.location.href = '/';
+        showError(data.message);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      });
+
+      // Connection error handling
+      socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        showError('Connection error. Retrying...');
+      });
+
+      socket.on('disconnect', (reason) => {
+        console.log('Disconnected:', reason);
+
+        // Clear sync interval to prevent memory leaks
+        if (syncInterval) {
+          clearInterval(syncInterval);
+          syncInterval = null;
+        }
+
+        // Pause playback on disconnect
+        if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        }
+
+        if (reason === 'io server disconnect') {
+          // Server disconnected, try to reconnect
+          showError('Disconnected from server. Reconnecting...');
+          socket.connect();
+        } else if (reason === 'transport close' || reason === 'transport error') {
+          showError('Lost connection. Reconnecting...');
+        }
+      });
+
+      socket.on('reconnect', (attemptNumber) => {
+        console.log('Reconnected after', attemptNumber, 'attempts');
+        showError('✓ Reconnected successfully!');
+
+        // Restart sync interval
+        if (!syncInterval) {
+          syncInterval = setInterval(() => {
+            if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+              socket.emit('sync-request');
+            }
+          }, 5000);
+        }
+
+        // Request current room state
+        socket.emit('join-room', { roomId, name: userName || 'Anonymous' });
+      });
+
+      socket.on('reconnect_error', (error) => {
+        console.error('Reconnection error:', error);
+      });
+
+      socket.on('reconnect_failed', () => {
+        showError('Failed to reconnect. Please refresh the page.');
+      });
+
+      // Room closed due to inactivity
+      socket.on('inactivity-warning', (data) => {
+        showError('⚠️ ' + data.message);
+        addSystemMessage(data.message);
+      });
+
+      socket.on('room-closed', (data) => {
+        showError(data.message);
+        addSystemMessage(data.message);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 3000);
       });
       
-      // Periodic sync
-      setInterval(() => {
+      // Periodic sync - store reference for cleanup
+      syncInterval = setInterval(() => {
         if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
           socket.emit('sync-request');
         }
       }, 5000);
     }
+
+    // Cleanup function to prevent memory leaks
+    function cleanup() {
+      // Clear sync interval
+      if (syncInterval) {
+        clearInterval(syncInterval);
+        syncInterval = null;
+      }
+
+      // Pause playback
+      if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      }
+
+      // Clear references
+      if (socket && socket.connected) {
+        socket.disconnect();
+      }
+    }
+
+    // Call cleanup on page unload
+    window.addEventListener('beforeunload', cleanup);
     
     function loadVideo(videoId, startTime, autoplay) {
       document.getElementById('noMusic').style.display = 'none';
@@ -884,41 +1012,17 @@
       }, 1000);
     }
     
-    function loadSoundCloudTrack(trackId, streamUrl, startTime, autoplay) {
-      document.getElementById('noMusic').style.display = 'none';
-      isSyncing = true;
-      
-      if (streamUrl) {
-        audioPlayer.src = streamUrl;
-        audioPlayer.currentTime = startTime || 0;
-        if (autoplay) {
-          audioPlayer.play().catch(err => {
-            console.error('Failed to play SoundCloud track:', err);
-            addSystemMessage('Failed to play this SoundCloud track. Skipping...');
-            socket.emit('play-next');
-          });
-        }
-      } else {
-        addSystemMessage('Could not load SoundCloud stream. Skipping...');
-        socket.emit('play-next');
-      }
-      
-      setTimeout(() => {
-        isSyncing = false;
-      }, 1000);
-    }
-    
-    function showNowPlaying(title, thumbnail, artist, source) {
+    function showNowPlaying(title, thumbnail, artist) {
       document.getElementById('nowPlaying').classList.add('active');
       document.getElementById('nowPlayingTitle').textContent = title;
-      
+
       // Update music player UI
       document.getElementById('noMusic').style.display = 'none';
       document.getElementById('trackInfo').style.display = 'block';
       document.getElementById('playerControls').style.display = 'flex';
       document.getElementById('trackTitle').textContent = title;
-      document.getElementById('trackChannel').textContent = `${artist || 'Unknown'} (${source.toUpperCase()})`;
-      
+      document.getElementById('trackChannel').textContent = artist || 'Unknown';
+
       // Show album art
       const albumArt = document.getElementById('albumArt');
       albumArt.src = thumbnail;
@@ -927,31 +1031,17 @@
     }
     
     function togglePlay() {
-      if (currentSource === 'youtube') {
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-          player.pauseVideo();
-        } else {
-          player.playVideo();
-        }
-      } else if (currentSource === 'soundcloud') {
-        if (audioPlayer.paused) {
-          audioPlayer.play();
-        } else {
-          audioPlayer.pause();
-        }
+      if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
       }
     }
     
     function skipBack() {
-      let newTime;
-      if (currentSource === 'youtube') {
-        const currentTime = player.getCurrentTime();
-        newTime = Math.max(0, currentTime - 10);
-        player.seekTo(newTime, true);
-      } else if (currentSource === 'soundcloud') {
-        newTime = Math.max(0, audioPlayer.currentTime - 10);
-        audioPlayer.currentTime = newTime;
-      }
+      const currentTime = player.getCurrentTime();
+      const newTime = Math.max(0, currentTime - 10);
+      player.seekTo(newTime, true);
       socket.emit('seek', { currentTime: newTime });
     }
     
@@ -1040,7 +1130,7 @@
         const results = await res.json();
         
         if (results.error) {
-          alert('Search failed: ' + results.error);
+          showError('Search failed: ' + results.error);
           return;
         }
         
@@ -1048,26 +1138,23 @@
         container.classList.add('active');
         
         container.innerHTML = results.map(result => {
-          const sourceLabel = result.source.toUpperCase();
-          const sourceColor = result.source === 'youtube' ? '#ff0000' : '#ff6b00';
           return `
             <div class="search-result">
               <img src="${result.thumbnail}" alt="">
               <div class="title">
                 ${escapeHtml(result.title)}
                 <div style="font-size: 0.75rem; color: #888;">${result.artist} • ${result.duration || ''}</div>
-                <div style="font-size: 0.7rem; color: ${sourceColor}; font-weight: bold; margin-top: 3px;">${sourceLabel}</div>
               </div>
               <div class="actions">
-                <button class="play-btn" onclick="playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}', '${result.streamUrl || ''}')">▶</button>
-                <button class="queue-btn" onclick="addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}', '${result.streamUrl || ''}')">+</button>
+                <button class="play-btn" onclick="playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">▶</button>
+                <button class="queue-btn" onclick="addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">+</button>
               </div>
             </div>
           `;
         }).join('');
       } catch (err) {
         console.error('Search failed:', err);
-        alert('Search failed. Try again.');
+        showError('Search failed. Please check your connection and try again.');
       }
     }
     
@@ -1075,25 +1162,45 @@
       if (e.key === 'Enter') searchYouTube();
     });
     
-    function playVideo(id, title, thumbnail, artist, source, streamUrl) {
-      socket.emit('play-video', { id, title, thumbnail, artist, source, streamUrl });
+    function playVideo(id, title, thumbnail, artist, source) {
+      socket.emit('play-video', { id, title, thumbnail, artist, source });
       document.getElementById('searchResults').classList.remove('active');
       document.getElementById('searchInput').value = '';
     }
-    
-    function addToQueue(id, title, thumbnail, artist, source, streamUrl) {
-      socket.emit('add-to-queue', { id, title, thumbnail, artist, source, streamUrl });
+
+    function addToQueue(id, title, thumbnail, artist, source) {
+      socket.emit('add-to-queue', { id, title, thumbnail, artist, source });
     }
     
     function copyRoomLink() {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Room link copied!');
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        showError('✓ Room link copied to clipboard!');
+      }).catch(() => {
+        showError('Failed to copy link. Please copy manually.');
+      });
     }
     
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
+    }
+
+    // Error handling
+    function showError(message) {
+      const toast = document.getElementById('errorToast');
+      const messageEl = document.getElementById('errorMessage');
+      messageEl.textContent = message;
+      toast.classList.add('show');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        closeError();
+      }, 5000);
+    }
+
+    function closeError() {
+      document.getElementById('errorToast').classList.remove('show');
     }
     
     // Handle Enter on name input
