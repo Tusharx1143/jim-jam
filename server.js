@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const ytsr = require('ytsr');
 const scdl = require('soundcloud-scraper');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
@@ -78,8 +79,28 @@ function validateBoolean(val) {
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ========== Rate Limiting ==========
+// Search API rate limiter: 20 requests per minute per IP
+const searchLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 20, // 20 requests per window
+  message: { error: 'Too many search requests, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Room creation rate limiter: 5 rooms per 5 minutes per IP
+const createRoomLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 5, // 5 requests per window
+  message: { error: 'Too many rooms created, please try again later' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+// ===================================
+
 // Hybrid search - YouTube + SoundCloud
-app.get('/api/search', async (req, res) => {
+app.get('/api/search', searchLimiter, async (req, res) => {
   const query = req.query.q;
 
   // Validate search query
@@ -137,7 +158,7 @@ app.get('/api/search', async (req, res) => {
 });
 
 // API to create a new room
-app.get('/api/create-room', (req, res) => {
+app.get('/api/create-room', createRoomLimiter, (req, res) => {
   const roomId = uuidv4().slice(0, 8);
   rooms.set(roomId, {
     id: roomId,
