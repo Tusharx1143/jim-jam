@@ -25,14 +25,66 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 // Store active rooms
 const rooms = new Map();
 
+// ========== Input Validation Utilities ==========
+function validateString(str, minLength = 1, maxLength = 500) {
+  return typeof str === 'string' &&
+         str.trim().length >= minLength &&
+         str.trim().length <= maxLength;
+}
+
+function validateRoomId(roomId) {
+  // Room IDs are 8-character UUIDs (alphanumeric + dashes)
+  return typeof roomId === 'string' &&
+         /^[a-zA-Z0-9-]{8}$/.test(roomId);
+}
+
+function validateVideoData(data) {
+  if (!data || typeof data !== 'object') return false;
+
+  const hasValidId = validateString(data.id, 1, 100);
+  const hasValidTitle = validateString(data.title, 1, 200);
+  const hasValidSource = data.source === 'youtube' || data.source === 'soundcloud';
+
+  // Optional fields - validate if present
+  const thumbnailValid = !data.thumbnail || validateString(data.thumbnail, 1, 500);
+  const artistValid = !data.artist || validateString(data.artist, 1, 100);
+
+  return hasValidId && hasValidTitle && hasValidSource && thumbnailValid && artistValid;
+}
+
+function validateNumber(num, min = 0, max = Infinity) {
+  return typeof num === 'number' &&
+         !isNaN(num) &&
+         num >= min &&
+         num <= max;
+}
+
+function sanitizeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+function validateBoolean(val) {
+  return typeof val === 'boolean';
+}
+// ================================================
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Hybrid search - YouTube + SoundCloud
 app.get('/api/search', async (req, res) => {
   const query = req.query.q;
-  if (!query) {
-    return res.status(400).json({ error: 'Missing query' });
+
+  // Validate search query
+  if (!validateString(query, 1, 100)) {
+    return res.status(400).json({ error: 'Invalid search query (1-100 characters required)' });
   }
   
   const results = [];
@@ -114,14 +166,26 @@ io.on('connection', (socket) => {
 
   // Join a room
   socket.on('join-room', ({ roomId, name }) => {
+    // Validate roomId
+    if (!validateRoomId(roomId)) {
+      socket.emit('error', { message: 'Invalid room ID format' });
+      return;
+    }
+
     const room = rooms.get(roomId);
     if (!room) {
       socket.emit('error', { message: 'Room not found' });
       return;
     }
 
+    // Validate and sanitize name
+    if (name && !validateString(name, 1, 30)) {
+      socket.emit('error', { message: 'Invalid name (1-30 characters required)' });
+      return;
+    }
+
     currentRoom = roomId;
-    userName = name || `User-${socket.id.slice(0, 4)}`;
+    userName = name ? sanitizeHtml(name.trim()) : `User-${socket.id.slice(0, 4)}`;
     
     // Add user to room
     room.users.push({ id: socket.id, name: userName });
@@ -154,10 +218,17 @@ io.on('connection', (socket) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
-    room.currentVideo = { 
-      id, 
-      title, 
-      thumbnail, 
+    // Validate video data
+    const videoData = { id, title, thumbnail, artist, source, streamUrl };
+    if (!validateVideoData(videoData)) {
+      socket.emit('error', { message: 'Invalid video data' });
+      return;
+    }
+
+    room.currentVideo = {
+      id,
+      title,
+      thumbnail,
       artist,
       source, // 'youtube' or 'soundcloud'
       streamUrl // For SoundCloud
@@ -184,6 +255,12 @@ io.on('connection', (socket) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
+    // Validate inputs
+    if (!validateBoolean(isPlaying) || !validateNumber(currentTime, 0)) {
+      socket.emit('error', { message: 'Invalid play state data' });
+      return;
+    }
+
     room.isPlaying = isPlaying;
     room.currentTime = currentTime;
     room.lastUpdate = Date.now();
@@ -198,6 +275,12 @@ io.on('connection', (socket) => {
   socket.on('seek', ({ currentTime }) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
+
+    // Validate currentTime
+    if (!validateNumber(currentTime, 0)) {
+      socket.emit('error', { message: 'Invalid seek time' });
+      return;
+    }
 
     room.currentTime = currentTime;
     room.lastUpdate = Date.now();
@@ -222,14 +305,27 @@ io.on('connection', (socket) => {
     const room = rooms.get(currentRoom);
     if (!room) return;
 
-    room.queue.push({ 
-      id, 
-      title, 
-      thumbnail, 
-      artist, 
+    // Validate video data
+    const videoData = { id, title, thumbnail, artist, source, streamUrl };
+    if (!validateVideoData(videoData)) {
+      socket.emit('error', { message: 'Invalid video data for queue' });
+      return;
+    }
+
+    // Limit queue size to prevent abuse
+    if (room.queue.length >= 50) {
+      socket.emit('error', { message: 'Queue is full (max 50 items)' });
+      return;
+    }
+
+    room.queue.push({
+      id,
+      title,
+      thumbnail,
+      artist,
       source,
       streamUrl,
-      addedBy: userName 
+      addedBy: userName
     });
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
   });
@@ -260,9 +356,17 @@ io.on('connection', (socket) => {
 
   // Chat message
   socket.on('chat-message', ({ message }) => {
+    // Validate and sanitize message
+    if (!validateString(message, 1, 500)) {
+      socket.emit('error', { message: 'Invalid chat message (1-500 characters required)' });
+      return;
+    }
+
+    const sanitizedMessage = sanitizeHtml(message.trim());
+
     io.to(currentRoom).emit('chat-message', {
       user: userName,
-      message,
+      message: sanitizedMessage,
       timestamp: Date.now()
     });
   });
