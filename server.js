@@ -391,22 +391,31 @@ io.on('connection', (socket) => {
     if (currentRoom) {
       const room = rooms.get(currentRoom);
       if (room) {
+        // Remove user from room
         room.users = room.users.filter(u => u.id !== socket.id);
-        
+
         // If host left, assign new host
         if (room.host === socket.id && room.users.length > 0) {
           room.host = room.users[0].id;
           io.to(room.host).emit('became-host');
         }
-        
-        // Clean up empty rooms
+
+        // Notify others
+        socket.to(currentRoom).emit('user-left', { id: socket.id, name: userName });
+
+        // Leave the socket room
+        socket.leave(currentRoom);
+
+        // Clean up empty rooms immediately
         if (room.users.length === 0) {
           rooms.delete(currentRoom);
           console.log(`Room ${currentRoom} deleted (empty)`);
-        } else {
-          socket.to(currentRoom).emit('user-left', { id: socket.id, name: userName });
         }
       }
+
+      // Clear references to prevent memory leaks
+      currentRoom = null;
+      userName = null;
     }
     console.log('User disconnected:', socket.id);
   });

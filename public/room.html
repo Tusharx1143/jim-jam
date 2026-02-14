@@ -685,6 +685,7 @@
     let player;
     let isHost = false;
     let isSyncing = false;
+    let syncInterval = null; // Store interval reference for cleanup
     
     // YouTube IFrame API
     const tag = document.createElement('script');
@@ -898,6 +899,18 @@
 
       socket.on('disconnect', (reason) => {
         console.log('Disconnected:', reason);
+
+        // Clear sync interval to prevent memory leaks
+        if (syncInterval) {
+          clearInterval(syncInterval);
+          syncInterval = null;
+        }
+
+        // Pause playback on disconnect
+        if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        }
+
         if (reason === 'io server disconnect') {
           // Server disconnected, try to reconnect
           showError('Disconnected from server. Reconnecting...');
@@ -905,15 +918,21 @@
         } else if (reason === 'transport close' || reason === 'transport error') {
           showError('Lost connection. Reconnecting...');
         }
-        // Pause playback on disconnect
-        if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
-          player.pauseVideo();
-        }
       });
 
       socket.on('reconnect', (attemptNumber) => {
         console.log('Reconnected after', attemptNumber, 'attempts');
         showError('✓ Reconnected successfully!');
+
+        // Restart sync interval
+        if (!syncInterval) {
+          syncInterval = setInterval(() => {
+            if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+              socket.emit('sync-request');
+            }
+          }, 5000);
+        }
+
         // Request current room state
         socket.emit('join-room', { roomId, name: userName || 'Anonymous' });
       });
@@ -940,13 +959,35 @@
         }, 3000);
       });
       
-      // Periodic sync
-      setInterval(() => {
+      // Periodic sync - store reference for cleanup
+      syncInterval = setInterval(() => {
         if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
           socket.emit('sync-request');
         }
       }, 5000);
     }
+
+    // Cleanup function to prevent memory leaks
+    function cleanup() {
+      // Clear sync interval
+      if (syncInterval) {
+        clearInterval(syncInterval);
+        syncInterval = null;
+      }
+
+      // Pause playback
+      if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+      }
+
+      // Clear references
+      if (socket && socket.connected) {
+        socket.disconnect();
+      }
+    }
+
+    // Call cleanup on page unload
+    window.addEventListener('beforeunload', cleanup);
     
     function loadVideo(videoId, startTime, autoplay) {
       document.getElementById('noMusic').style.display = 'none';
