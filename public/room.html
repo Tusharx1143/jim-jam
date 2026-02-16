@@ -197,6 +197,79 @@
     let isSyncing = false;
     let syncInterval = null;
     let userName = '';
+    let wasPlayingBeforeHidden = false;
+    let lastKnownTime = 0;
+    let wakeLock = null;
+
+    // Wake Lock API - Keep screen awake during playback (mobile)
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log('Wake Lock acquired - screen will stay on');
+
+          wakeLock.addEventListener('release', () => {
+            console.log('Wake Lock released');
+          });
+        }
+      } catch (err) {
+        // Wake Lock not supported or denied - that's okay
+        console.log('Wake Lock not available:', err.message);
+      }
+    }
+
+    function releaseWakeLock() {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+      }
+    }
+
+    // Page Visibility API - Handle mobile background/foreground
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // User switched away - remember if we were playing
+        if (player && player.getPlayerState) {
+          wasPlayingBeforeHidden = player.getPlayerState() === YT.PlayerState.PLAYING;
+          lastKnownTime = player.getCurrentTime();
+        }
+        // Release wake lock when hidden
+        releaseWakeLock();
+      } else {
+        // User returned - resync immediately
+        if (socket && socket.connected && player) {
+          console.log('User returned to tab - requesting sync');
+
+          // Force immediate sync request
+          socket.emit('sync-request');
+
+          // Show notification
+          showToast('info', 'Syncing playback...');
+
+          // If was playing, try to resume
+          if (wasPlayingBeforeHidden) {
+            setTimeout(() => {
+              if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+                player.playVideo();
+              }
+              // Re-acquire wake lock if playing
+              requestWakeLock();
+            }, 500);
+          }
+
+          // Do extra sync checks for the next 10 seconds to ensure good sync
+          let extraSyncCount = 0;
+          const extraSyncInterval = setInterval(() => {
+            if (extraSyncCount >= 5 || !socket || !socket.connected) {
+              clearInterval(extraSyncInterval);
+              return;
+            }
+            socket.emit('sync-request');
+            extraSyncCount++;
+          }, 2000); // Every 2 seconds for 10 seconds
+        }
+      }
+    });
 
     // YouTube IFrame API
     const tag = document.createElement('script');
@@ -357,12 +430,31 @@
       });
 
       socket.on('sync-response', (data) => {
+        if (!player || !player.getCurrentTime) return;
+
         const currentTime = player.getCurrentTime();
         const diff = Math.abs(currentTime - data.currentTime);
-        if (diff > 2) {
+
+        // More aggressive sync (1 second threshold instead of 2)
+        if (diff > 1) {
+          console.log(`Out of sync by ${diff.toFixed(2)}s - resyncing to ${data.currentTime.toFixed(2)}`);
+
           isSyncing = true;
           player.seekTo(data.currentTime, true);
+
+          // Resume playback if server says we should be playing
+          if (data.isPlaying && player.getPlayerState() !== YT.PlayerState.PLAYING) {
+            player.playVideo();
+          } else if (!data.isPlaying && player.getPlayerState() === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+          }
+
           setTimeout(() => isSyncing = false, 500);
+
+          // Show notification only if significantly out of sync (> 3 seconds)
+          if (diff > 3) {
+            showToast('success', `Synced to ${formatTime(data.currentTime)}`);
+          }
         }
       });
 
@@ -931,22 +1023,25 @@
       startProgressUpdates();
     };
 
-    // Update updatePlayingState to handle progress updates
+    // Update updatePlayingState to handle progress updates and wake lock
     const originalUpdatePlayingState = updatePlayingState;
     updatePlayingState = function(isPlaying) {
       originalUpdatePlayingState(isPlaying);
       if (isPlaying) {
         startProgressUpdates();
+        requestWakeLock(); // Keep screen on during playback
       } else {
         stopProgressUpdates();
         updateProgress(); // One final update when paused
+        releaseWakeLock(); // Allow screen to sleep when paused
       }
     };
 
-    // Cleanup progress interval on page unload
+    // Cleanup progress interval and wake lock on page unload
     const originalCleanup = cleanup;
     cleanup = function() {
       stopProgressUpdates();
+      releaseWakeLock();
       originalCleanup();
     };
 
