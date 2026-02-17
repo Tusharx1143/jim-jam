@@ -145,7 +145,7 @@
   </main>
 
   <!-- Fixed Bottom Player Bar -->
-  <div class="player-bar">
+  <div class="player-bar" id="playerBar">
     <!-- Left: track info -->
     <div class="player-bar-track">
       <img class="player-bar-thumb" id="playerBarThumb" src="" alt="">
@@ -192,6 +192,7 @@
     // ===== STATE =====
     let player = null;
     let playerReady = false;
+    let pendingTrack = null;
     let currentTrack = null;
     let progressInterval = null;
     let searchTimeout = null;
@@ -213,7 +214,14 @@
           playsinline: 1,
         },
         events: {
-          onReady: () => { playerReady = true; },
+          onReady: () => {
+            playerReady = true;
+            if (pendingTrack) {
+              const t = pendingTrack;
+              pendingTrack = null;
+              playSong(t.videoId, t.title, t.thumbnail, t.artist);
+            }
+          },
           onStateChange: onPlayerStateChange,
           onError: onPlayerError
         }
@@ -309,9 +317,13 @@
     // ===== PLAY SONG =====
     function playSong(videoId, title, thumbnail, artist) {
       if (!playerReady) {
-        showToast('warning', 'Player not ready yet, please wait...');
+        // Queue it — will auto-play once onReady fires (common on mobile)
+        pendingTrack = { videoId, title, thumbnail, artist };
+        showToast('info', 'Starting player, song will begin shortly...');
         return;
       }
+
+      pendingTrack = null;
       currentTrack = { videoId, title, thumbnail, artist };
 
       // Load and play
@@ -334,6 +346,13 @@
       barThumb.classList.add('visible');
       document.getElementById('playerBarTitle').textContent = title;
       document.getElementById('playerBarArtist').textContent = artist || 'YouTube';
+
+      // Show player bar (slide up from bottom on first song)
+      const bar = document.getElementById('playerBar');
+      if (!bar.classList.contains('visible')) {
+        bar.classList.add('visible');
+        document.body.classList.add('player-active');
+      }
 
       // Show jam CTA and bar jam button
       document.getElementById('jamCta').style.display = '';

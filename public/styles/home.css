@@ -9,6 +9,11 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  padding-bottom: 0;
+  transition: padding-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.player-active {
   padding-bottom: var(--player-height);
 }
 
@@ -343,6 +348,12 @@ body {
   align-items: center;
   padding: 0 var(--space-xl);
   gap: var(--space-xl);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.player-bar.visible {
+  transform: translateY(0);
 }
 
 /* Left — track info */
