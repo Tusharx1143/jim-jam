@@ -174,13 +174,13 @@ body {
   padding: 12px 32px;
 }
 
-/* Hidden YouTube player */
+/* Hidden YouTube player — must be off-screen but full size so YT initializes */
 #hiddenPlayer {
   position: fixed;
   left: -9999px;
   top: -9999px;
-  width: 1px;
-  height: 1px;
+  width: 640px;
+  height: 360px;
   pointer-events: none;
 }
 

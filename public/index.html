@@ -192,8 +192,8 @@
     // ===== YOUTUBE PLAYER =====
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('hiddenPlayer', {
-        height: '1',
-        width: '1',
+        height: '360',
+        width: '640',
         playerVars: {
           autoplay: 0,
           controls: 0,
@@ -307,7 +307,7 @@
       currentTrack = { videoId, title, thumbnail, artist };
 
       // Load and play
-      player.loadVideoById({ videoId, suggestedQuality: 'small' });
+      player.loadVideoById(videoId);
 
       // Update album art
       const artImg = document.getElementById('albumArt');
