@@ -191,6 +191,7 @@
   <script>
     // ===== STATE =====
     let player = null;
+    let ytApiLoaded = false;
     let playerReady = false;
     let pendingTrack = null;
     let currentTrack = null;
@@ -199,12 +200,25 @@
     let isPlaying = false;
 
     // ===== YOUTUBE PLAYER =====
+    // Called by YouTube IFrame API when its script is ready
     function onYouTubeIframeAPIReady() {
+      ytApiLoaded = true;
+      // If user clicked play before the API loaded, create player now
+      if (pendingTrack) {
+        _createPlayer(pendingTrack.videoId);
+      }
+    }
+
+    // Lazily create the player the first time a song is played.
+    // Passing videoId to the constructor guarantees onReady fires.
+    function _createPlayer(videoId) {
+      if (player) return;
       player = new YT.Player('hiddenPlayer', {
         height: '360',
         width: '640',
+        videoId: videoId,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
           controls: 0,
           disablekb: 1,
           fs: 0,
@@ -219,7 +233,12 @@
             if (pendingTrack) {
               const t = pendingTrack;
               pendingTrack = null;
-              playSong(t.videoId, t.title, t.thumbnail, t.artist);
+              // If user switched song while player was loading, seek to it;
+              // otherwise the constructor's autoplay already started it.
+              if (t.videoId !== videoId) {
+                player.loadVideoById(t.videoId);
+              }
+              _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
             }
           },
           onStateChange: onPlayerStateChange,
@@ -316,45 +335,55 @@
 
     // ===== PLAY SONG =====
     function playSong(videoId, title, thumbnail, artist) {
-      if (!playerReady) {
-        // Queue it — will auto-play once onReady fires (common on mobile)
-        pendingTrack = { videoId, title, thumbnail, artist };
-        showToast('info', 'Starting player, song will begin shortly...');
-        return;
+      // Always store as pending so onReady can pick it up if needed
+      pendingTrack = { videoId, title, thumbnail, artist };
+
+      if (playerReady) {
+        // Player already initialised — just load the new video
+        pendingTrack = null;
+        currentTrack = { videoId, title, thumbnail, artist };
+        player.loadVideoById(videoId);
+        _applyTrackUI(videoId, title, thumbnail, artist);
+      } else if (!player && ytApiLoaded) {
+        // First play, API ready — create player now with this video
+        _createPlayer(videoId);
+      } else if (!player && !ytApiLoaded) {
+        // API script still loading — onYouTubeIframeAPIReady will create player
+        showToast('info', 'Loading player…');
       }
+      // else: player exists but onReady hasn't fired yet — pendingTrack will be picked up
+    }
 
-      pendingTrack = null;
-      currentTrack = { videoId, title, thumbnail, artist };
+    // Update all UI elements for the now-playing track
+    function _applyTrackUI(videoId, title, thumbnail, artist) {
+      const thumb = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 
-      // Load and play
-      player.loadVideoById(videoId);
-
-      // Update album art
+      // Album art
       const artImg = document.getElementById('albumArt');
-      artImg.src = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+      artImg.src = thumb;
       artImg.classList.add('active');
       document.getElementById('noMusic').style.display = 'none';
 
-      // Update track info
+      // Track info
       document.getElementById('trackTitle').textContent = title;
       document.getElementById('trackArtist').textContent = artist || 'YouTube';
       document.getElementById('trackInfo').style.display = '';
 
-      // Update player bar
+      // Player bar thumbnail + labels
       const barThumb = document.getElementById('playerBarThumb');
-      barThumb.src = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+      barThumb.src = thumb;
       barThumb.classList.add('visible');
       document.getElementById('playerBarTitle').textContent = title;
       document.getElementById('playerBarArtist').textContent = artist || 'YouTube';
 
-      // Show player bar (slide up from bottom on first song)
+      // Slide player bar up on first song
       const bar = document.getElementById('playerBar');
       if (!bar.classList.contains('visible')) {
         bar.classList.add('visible');
         document.body.classList.add('player-active');
       }
 
-      // Show jam CTA and bar jam button
+      // Show jam CTA + bar jam button
       document.getElementById('jamCta').style.display = '';
       document.getElementById('playerBarJamBtn').style.display = '';
 
