@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
   <meta name="theme-color" content="#0a0a0f">
-  <title>Jim-jam 🎵 - Listen Together</title>
+  <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
 
   <!-- CSS Files -->
   <link rel="stylesheet" href="/styles/variables.css">
@@ -19,119 +19,6 @@
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-container">
-      <a href="/" class="logo">
-        <span class="logo-icon">🎵</span>
-        <span>Jim-jam</span>
-      </a>
-      <nav class="header-nav">
-        <a href="https://github.com/Tusharx1143/jim-jam" target="_blank">GitHub</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-icon">🎵</div>
-      <h1 class="hero-title">Jim-jam</h1>
-      <p class="hero-subtitle">Listen to YouTube music together, in perfect sync</p>
-
-      <div class="hero-actions">
-        <div class="hero-buttons">
-          <button class="btn btn-primary" onclick="createRoom()">Create a Room</button>
-        </div>
-
-        <div class="join-section">
-          <input
-            type="text"
-            id="roomCode"
-            class="input input-search"
-            placeholder="Enter room code"
-            maxlength="10"
-          >
-          <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="features">
-    <div class="container">
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🎧</div>
-          <h3 class="feature-title">Perfect Sync</h3>
-          <p class="feature-description">
-            Everyone hears the same beat at the same time. No delays, no buffering.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📝</div>
-          <h3 class="feature-title">Queue Songs</h3>
-          <p class="feature-description">
-            Build playlists together with your friends. Everyone can add their favorite tracks.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">💬</div>
-          <h3 class="feature-title">Live Chat</h3>
-          <p class="feature-description">
-            Talk about the music while you listen. React, share, and vibe together.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works Section -->
-  <section class="how-it-works">
-    <div class="container">
-      <h2 class="how-it-works-title">How It Works</h2>
-
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <h3 class="step-title">Create a Room</h3>
-          <p class="step-description">
-            Click "Create a Room" to get started. You'll get a unique room code to share.
-          </p>
-        </div>
-
-        <div class="step">
-          <div class="step-number">2</div>
-          <h3 class="step-title">Invite Friends</h3>
-          <p class="step-description">
-            Share the room code or link with your friends. They can join instantly.
-          </p>
-        </div>
-
-        <div class="step">
-          <div class="step-number">3</div>
-          <h3 class="step-title">Start Jamming</h3>
-          <p class="step-description">
-            Search for songs on YouTube, add them to the queue, and enjoy together!
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p class="footer-text">Made with 💜 for music lovers everywhere</p>
-      <div class="footer-links">
-        <a href="https://github.com/Tusharx1143/jim-jam" target="_blank">GitHub</a>
-        <a href="https://github.com/Tusharx1143/jim-jam/issues" target="_blank">Report Issue</a>
-      </div>
-    </div>
-  </footer>
 
   <!-- Toast Notification -->
   <div class="toast" id="toast">
@@ -140,27 +27,406 @@
     <button class="toast-close" onclick="closeToast()">✕</button>
   </div>
 
+  <!-- Join Jam Modal -->
+  <div class="modal hidden" id="joinModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Join a Jam</h2>
+        <p class="modal-description">Enter the room code to join your friends</p>
+      </div>
+      <input
+        type="text"
+        id="joinRoomCode"
+        class="input"
+        placeholder="Room code (e.g. ABC123)"
+        maxlength="10"
+        autofocus
+      >
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="joinJam()">Join Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="logo">
+        <span class="logo-icon">🎵</span>
+        <span>Jim-jam</span>
+      </a>
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
+        <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
+          Start a Jam
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Player Layout -->
+  <main class="home-main">
+
+    <!-- Left: Now Playing -->
+    <section class="now-playing-panel">
+      <div class="now-playing-area">
+        <div class="album-art-container" id="albumArtContainer">
+          <div class="no-music" id="noMusic">
+            <span class="no-music-icon">🎵</span>
+            <p class="no-music-text">Search for a song to start listening</p>
+          </div>
+          <img class="album-art" id="albumArt" src="" alt="Album Art">
+        </div>
+
+        <div class="track-info" id="trackInfo" style="display: none;">
+          <div class="track-title" id="trackTitle">Song Title</div>
+          <div class="track-artist" id="trackArtist">Artist Name</div>
+        </div>
+
+        <!-- Jam CTA (shown when song is playing) -->
+        <div class="jam-cta" id="jamCta" style="display: none;">
+          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
+          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
+            🎧 Start a Jam
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Discovery / Search -->
+    <section class="discovery-panel">
+      <div class="discovery-header">
+        <h2 class="discovery-title">Discover Music</h2>
+        <p class="discovery-subtitle">Search any song from YouTube</p>
+      </div>
+
+      <!-- Search -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <input
+            type="text"
+            id="searchInput"
+            class="input input-search"
+            placeholder="Search songs, artists, albums..."
+            autocomplete="off"
+          >
+          <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <!-- Trending / placeholder when no search -->
+      <div class="no-search-placeholder" id="noSearchPlaceholder">
+        <div class="placeholder-items">
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">🔍</span>
+            <span>Search for your favorite songs</span>
+          </div>
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">🎧</span>
+            <span>Play anything from YouTube</span>
+          </div>
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">👥</span>
+            <span>Start a Jam to listen with friends</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Fixed Bottom Player Bar -->
+  <div class="player-bar">
+    <!-- Left: track info -->
+    <div class="player-bar-track">
+      <img class="player-bar-thumb" id="playerBarThumb" src="" alt="">
+      <div class="player-bar-info">
+        <div class="player-bar-title" id="playerBarTitle">Nothing playing</div>
+        <div class="player-bar-artist" id="playerBarArtist">Search a song to start</div>
+      </div>
+    </div>
+
+    <!-- Center: controls + progress -->
+    <div class="player-bar-main">
+      <div class="player-controls" id="playerControls">
+        <button class="btn-icon" onclick="seekBack()" title="Back 10s">⏪</button>
+        <button class="btn-icon large" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+        <button class="btn-icon" onclick="seekForward()" title="Forward 10s">⏩</button>
+      </div>
+      <div class="player-progress" id="playerProgress" style="display: none;">
+        <div class="progress interactive" id="progressBar" onclick="seekTo(event)">
+          <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+          <div class="progress-handle" id="progressHandle" style="left: 0%"></div>
+        </div>
+        <div class="progress-time">
+          <span id="currentTime">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: jam button -->
+    <div class="player-bar-right">
+      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()" style="display: none;">
+        🎧 Jam
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden YouTube player -->
+  <div id="hiddenPlayer"></div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <script>
-    // Create room
-    async function createRoom() {
+    // ===== STATE =====
+    let player = null;
+    let playerReady = false;
+    let currentTrack = null;
+    let progressInterval = null;
+    let searchTimeout = null;
+    let isPlaying = false;
+
+    // ===== YOUTUBE PLAYER =====
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('hiddenPlayer', {
+        height: '1',
+        width: '1',
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => { playerReady = true; },
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError
+        }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById('playPauseBtn').textContent = '⏸️';
+        document.getElementById('albumArtContainer').classList.add('playing');
+        startProgressTracking();
+        document.getElementById('playerProgress').style.display = '';
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        document.getElementById('playPauseBtn').textContent = '▶️';
+        document.getElementById('albumArtContainer').classList.remove('playing');
+        stopProgressTracking();
+      } else if (event.data === YT.PlayerState.ENDED) {
+        isPlaying = false;
+        document.getElementById('playPauseBtn').textContent = '▶️';
+        document.getElementById('albumArtContainer').classList.remove('playing');
+        stopProgressTracking();
+      }
+    }
+
+    function onPlayerError() {
+      showToast('error', 'Could not play this track. Try another.');
+    }
+
+    // ===== PLAYBACK CONTROLS =====
+    function togglePlay() {
+      if (!player || !playerReady || !currentTrack) return;
+      if (isPlaying) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    }
+
+    function seekBack() {
+      if (!player || !playerReady) return;
+      player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+    }
+
+    function seekForward() {
+      if (!player || !playerReady) return;
+      player.seekTo(player.getCurrentTime() + 10, true);
+    }
+
+    function seekTo(event) {
+      if (!player || !playerReady) return;
+      const bar = event.currentTarget;
+      const rect = bar.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      const duration = player.getDuration();
+      if (duration > 0) {
+        player.seekTo(ratio * duration, true);
+      }
+    }
+
+    // ===== PROGRESS TRACKING =====
+    function startProgressTracking() {
+      stopProgressTracking();
+      progressInterval = setInterval(updateProgress, 500);
+    }
+
+    function stopProgressTracking() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+
+    function updateProgress() {
+      if (!player || !playerReady) return;
+      const current = player.getCurrentTime() || 0;
+      const total = player.getDuration() || 0;
+      if (total > 0) {
+        const pct = (current / total) * 100;
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressHandle').style.left = pct + '%';
+      }
+      document.getElementById('currentTime').textContent = formatTime(current);
+      document.getElementById('duration').textContent = formatTime(total);
+    }
+
+    function formatTime(secs) {
+      const s = Math.floor(secs);
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    // ===== PLAY SONG =====
+    function playSong(videoId, title, thumbnail, artist) {
+      if (!playerReady) {
+        showToast('warning', 'Player not ready yet, please wait...');
+        return;
+      }
+      currentTrack = { videoId, title, thumbnail, artist };
+
+      // Load and play
+      player.loadVideoById({ videoId, suggestedQuality: 'small' });
+
+      // Update album art
+      const artImg = document.getElementById('albumArt');
+      artImg.src = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+      artImg.classList.add('active');
+      document.getElementById('noMusic').style.display = 'none';
+
+      // Update track info
+      document.getElementById('trackTitle').textContent = title;
+      document.getElementById('trackArtist').textContent = artist || 'YouTube';
+      document.getElementById('trackInfo').style.display = '';
+
+      // Update player bar
+      const barThumb = document.getElementById('playerBarThumb');
+      barThumb.src = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+      barThumb.classList.add('visible');
+      document.getElementById('playerBarTitle').textContent = title;
+      document.getElementById('playerBarArtist').textContent = artist || 'YouTube';
+
+      // Show jam CTA and bar jam button
+      document.getElementById('jamCta').style.display = '';
+      document.getElementById('playerBarJamBtn').style.display = '';
+
+      // Hide search placeholder
+      document.getElementById('noSearchPlaceholder').style.display = 'none';
+
+      closeSearchResults();
+    }
+
+    // ===== SEARCH =====
+    async function searchYouTube() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      const resultsEl = document.getElementById('searchResults');
+      resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Searching...</div>';
+      resultsEl.classList.add('active');
+      document.getElementById('noSearchPlaceholder').style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!data.results || data.results.length === 0) {
+          resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">No results found</div>';
+          return;
+        }
+
+        resultsEl.innerHTML = data.results.map(r => `
+          <div class="search-result" onclick="playSong('${r.videoId}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
+            <img class="search-result-thumbnail" src="${r.thumbnail}" alt="" loading="lazy"
+                 onerror="this.src='https://img.youtube.com/vi/${r.videoId}/mqdefault.jpg'">
+            <div class="search-result-info">
+              <div class="search-result-title">${escapeHtml(r.title)}</div>
+              <div class="search-result-artist">${escapeHtml(r.artist || r.channel || '')}</div>
+            </div>
+            <div class="search-result-actions">
+              <button class="btn btn-primary search-result-btn"
+                onclick="event.stopPropagation(); playSong('${r.videoId}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
+                ▶ Play
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Search failed. Try again.</div>';
+      }
+    }
+
+    function closeSearchResults() {
+      const resultsEl = document.getElementById('searchResults');
+      resultsEl.classList.remove('active');
+    }
+
+    // ===== JAM CONTROLS =====
+    async function startJam() {
+      const btn = document.getElementById('startJamBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+
       try {
         const res = await fetch('/api/create-room');
         const data = await res.json();
 
         if (data.roomId) {
-          window.location.href = `/room/${data.roomId}`;
+          let url = `/room/${data.roomId}`;
+          if (currentTrack) {
+            const p = new URLSearchParams({
+              vid: currentTrack.videoId,
+              title: currentTrack.title,
+              thumb: currentTrack.thumbnail || '',
+              artist: currentTrack.artist || ''
+            });
+            url += '?' + p.toString();
+          }
+          window.location.href = url;
         } else {
-          showToast('error', 'Failed to create room. Please try again.');
+          showToast('error', 'Failed to create jam. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Start a Jam';
         }
       } catch (err) {
-        console.error('Error creating room:', err);
-        showToast('error', 'Failed to create room. Please try again.');
+        showToast('error', 'Failed to create jam. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Start a Jam';
       }
     }
 
-    // Join room
-    function joinRoom() {
-      const code = document.getElementById('roomCode').value.trim();
+    function openJoinModal() {
+      document.getElementById('joinModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('joinRoomCode').focus(), 50);
+    }
+
+    function closeJoinModal() {
+      document.getElementById('joinModal').classList.add('hidden');
+    }
+
+    function joinJam() {
+      const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
       if (code) {
         window.location.href = `/room/${code}`;
       } else {
@@ -168,40 +434,62 @@
       }
     }
 
-    // Toast notification
+    // ===== HELPERS =====
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     function showToast(type, message) {
       const toast = document.getElementById('toast');
-      const icon = document.getElementById('toastIcon');
-      const messageEl = document.getElementById('toastMessage');
-
-      // Set icon based on type
-      const icons = {
-        success: '✓',
-        error: '⚠️',
-        warning: '⚠️',
-        info: 'ℹ️'
-      };
-
-      icon.textContent = icons[type] || icons.info;
-      messageEl.textContent = message;
-
-      // Remove previous type classes
+      const icons = { success: '✓', error: '⚠️', warning: '⚠️', info: 'ℹ️' };
+      document.getElementById('toastIcon').textContent = icons[type] || icons.info;
+      document.getElementById('toastMessage').textContent = message;
       toast.classList.remove('success', 'error', 'warning', 'info');
       toast.classList.add(type, 'show');
-
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        closeToast();
-      }, 5000);
+      setTimeout(closeToast, 5000);
     }
 
     function closeToast() {
       document.getElementById('toast').classList.remove('show');
     }
 
-    // Allow Enter key to join
-    document.getElementById('roomCode').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') joinRoom();
+    // ===== EVENT LISTENERS =====
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchYouTube();
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      if (searchTimeout) clearTimeout(searchTimeout);
+      const q = document.getElementById('searchInput').value.trim();
+      if (q.length >= 3) {
+        searchTimeout = setTimeout(searchYouTube, 500);
+      } else if (!q) {
+        closeSearchResults();
+        document.getElementById('noSearchPlaceholder').style.display = '';
+      }
+    });
+
+    document.getElementById('joinRoomCode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinJam();
+    });
+
+    // Close modal on backdrop click
+    document.getElementById('joinModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('joinModal')) closeJoinModal();
+    });
+
+    // Close search results on outside click
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        closeSearchResults();
+      }
     });
   </script>
 </body>

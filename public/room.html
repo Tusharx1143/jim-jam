@@ -210,6 +210,16 @@
     const roomId = window.location.pathname.split('/').pop();
     document.getElementById('roomCodeDisplay').textContent = roomId;
 
+    // Parse carry-over song from home page (e.g. ?vid=xxx&title=...&thumb=...&artist=...)
+    const _urlParams = new URLSearchParams(window.location.search);
+    const _initVideo = _urlParams.get('vid') ? {
+      id: _urlParams.get('vid'),
+      title: decodeURIComponent(_urlParams.get('title') || 'Unknown Title'),
+      thumbnail: decodeURIComponent(_urlParams.get('thumb') || ''),
+      artist: decodeURIComponent(_urlParams.get('artist') || ''),
+      source: 'youtube'
+    } : null;
+
     let socket;
     let player;
     let isHost = false;
@@ -385,6 +395,9 @@
           loadVideo(state.currentVideo.id, state.currentTime, state.isPlaying);
           showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.artist);
           if (state.isPlaying) updatePlayingState(true);
+        } else if (isHost && _initVideo) {
+          // Auto-play the song carried over from the home page
+          socket.emit('play-video', _initVideo);
         }
       });
 

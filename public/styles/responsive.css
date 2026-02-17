@@ -13,37 +13,32 @@
 
   /* Home */
   .header-container { padding: 0 var(--space-md); }
-  .header-nav { gap: var(--space-md); }
+  .header-actions { gap: 6px; }
+  .header-actions .btn-ghost { display: none; }
 
-  .hero { padding: 60px 0 48px; }
-  .hero-icon { font-size: 52px; }
-
-  .hero-buttons {
-    flex-direction: column;
-    width: 100%;
-    padding: 0 var(--space-md);
-  }
-
-  .hero-buttons .btn { width: 100%; }
-
-  .join-section {
-    flex-direction: column;
-    width: 100%;
-    padding: 0 var(--space-md);
-  }
-
-  .join-section .input,
-  .join-section .btn { width: 100%; }
-
-  .features-grid {
+  .home-main {
     grid-template-columns: 1fr;
-    padding: 0 var(--space-md);
   }
 
-  .steps {
-    grid-template-columns: 1fr;
-    padding: 0 var(--space-md);
+  .now-playing-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-md);
   }
+
+  .album-art-container {
+    width: 180px;
+    height: 180px;
+  }
+
+  .jam-cta { max-width: 100%; }
+
+  .discovery-panel {
+    padding: var(--space-md);
+  }
+
+  .search-input-wrapper { flex-direction: column; }
+  .search-input-wrapper .btn { width: 100%; }
 
   /* Room */
   .room-header {
@@ -162,11 +157,12 @@
 
 /* ===== TABLET (640px - 768px) ===== */
 @media (min-width: 640px) and (max-width: 768px) {
-  .room-content {
+  /* Home */
+  .home-main {
     grid-template-columns: 1fr;
   }
 
-  .player-section {
+  .now-playing-panel {
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -176,13 +172,25 @@
     height: 240px;
   }
 
-  .features-grid {
-    grid-template-columns: repeat(2, 1fr);
+  /* Room */
+  .room-content {
+    grid-template-columns: 1fr;
+  }
+
+  .player-section {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
 /* ===== SMALL DESKTOP (768px - 1024px) ===== */
 @media (min-width: 768px) and (max-width: 1024px) {
+  /* Home */
+  .home-main {
+    grid-template-columns: 1fr 320px;
+  }
+
+  /* Room */
   .room-content {
     grid-template-columns: 1fr 300px;
   }
@@ -199,6 +207,10 @@
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
+  .home-main {
+    grid-template-columns: 1fr 480px;
+  }
+
   .room-content {
     grid-template-columns: 1fr 420px;
   }
