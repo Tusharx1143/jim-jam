@@ -3,7 +3,7 @@
  * Cache-first for static assets, network-first for pages, skip API/sockets
  */
 
-const CACHE_NAME = 'jimjam-v1';
+const CACHE_NAME = 'jimjam-v2';
 
 const PRECACHE_ASSETS = [
   '/styles/variables.css',
@@ -14,8 +14,8 @@ const PRECACHE_ASSETS = [
   '/styles/room.css',
   '/styles/responsive.css',
   '/manifest.json',
-  '/icons/icon.svg',
-  '/icons/icon-maskable.svg',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
 ];
 
 // ===== INSTALL — pre-cache static assets =====
