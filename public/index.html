@@ -333,8 +333,6 @@
 
       // Hide search placeholder
       document.getElementById('noSearchPlaceholder').style.display = 'none';
-
-      closeSearchResults();
     }
 
     // ===== SEARCH =====
@@ -357,18 +355,19 @@
         }
 
         resultsEl.innerHTML = data.map(r => `
-          <div class="search-result" onclick="playSong('${r.id}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
-            <img class="search-result-thumbnail" src="${r.thumbnail}" alt="" loading="lazy"
-                 onerror="this.src='https://img.youtube.com/vi/${r.id}/mqdefault.jpg'">
+          <div class="search-result"
+               data-vid="${escapeHtml(r.id)}"
+               data-title="${escapeHtml(r.title)}"
+               data-thumb="${escapeHtml(r.thumbnail || '')}"
+               data-artist="${escapeHtml(r.artist || '')}">
+            <img class="search-result-thumbnail" src="${escapeHtml(r.thumbnail || '')}" alt="" loading="lazy"
+                 onerror="this.src='https://img.youtube.com/vi/${escapeHtml(r.id)}/mqdefault.jpg'">
             <div class="search-result-info">
               <div class="search-result-title">${escapeHtml(r.title)}</div>
               <div class="search-result-artist">${escapeHtml(r.artist || '')}</div>
             </div>
             <div class="search-result-actions">
-              <button class="btn btn-primary search-result-btn"
-                onclick="event.stopPropagation(); playSong('${r.id}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
-                ▶ Play
-              </button>
+              <button class="btn btn-primary search-result-btn">▶ Play</button>
             </div>
           </div>
         `).join('');
@@ -458,6 +457,14 @@
     }
 
     // ===== EVENT LISTENERS =====
+
+    // Delegated click for search results (avoids inline onclick quoting issues)
+    document.getElementById('searchResults').addEventListener('click', (e) => {
+      const row = e.target.closest('.search-result');
+      if (!row) return;
+      playSong(row.dataset.vid, row.dataset.title, row.dataset.thumb, row.dataset.artist);
+    });
+
     document.getElementById('searchInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         if (searchTimeout) clearTimeout(searchTimeout);
@@ -485,12 +492,6 @@
       if (e.target === document.getElementById('joinModal')) closeJoinModal();
     });
 
-    // Close search results on outside click
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-container')) {
-        closeSearchResults();
-      }
-    });
   </script>
 </body>
 </html>
