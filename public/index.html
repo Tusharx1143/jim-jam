@@ -351,22 +351,22 @@
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
 
-        if (!data.results || data.results.length === 0) {
+        if (!Array.isArray(data) || data.length === 0) {
           resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">No results found</div>';
           return;
         }
 
-        resultsEl.innerHTML = data.results.map(r => `
-          <div class="search-result" onclick="playSong('${r.videoId}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
+        resultsEl.innerHTML = data.map(r => `
+          <div class="search-result" onclick="playSong('${r.id}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
             <img class="search-result-thumbnail" src="${r.thumbnail}" alt="" loading="lazy"
-                 onerror="this.src='https://img.youtube.com/vi/${r.videoId}/mqdefault.jpg'">
+                 onerror="this.src='https://img.youtube.com/vi/${r.id}/mqdefault.jpg'">
             <div class="search-result-info">
               <div class="search-result-title">${escapeHtml(r.title)}</div>
-              <div class="search-result-artist">${escapeHtml(r.artist || r.channel || '')}</div>
+              <div class="search-result-artist">${escapeHtml(r.artist || '')}</div>
             </div>
             <div class="search-result-actions">
               <button class="btn btn-primary search-result-btn"
-                onclick="event.stopPropagation(); playSong('${r.videoId}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
+                onclick="event.stopPropagation(); playSong('${r.id}', ${JSON.stringify(r.title)}, ${JSON.stringify(r.thumbnail)}, ${JSON.stringify(r.artist || '')})">
                 ▶ Play
               </button>
             </div>
