@@ -1,0 +1,36 @@
+{
+  "name": "Jim-Jam",
+  "short_name": "Jim-Jam",
+  "description": "Listen to YouTube music together, in perfect sync",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#a855f7",
+  "orientation": "portrait-primary",
+  "categories": ["music", "entertainment", "social"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Start a Jam",
+      "short_name": "Start Jam",
+      "description": "Create a new listening room",
+      "url": "/?action=create",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "any" }]
+    }
+  ]
+}

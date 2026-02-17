@@ -7,8 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta name="theme-color" content="#a855f7">
+  <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
   <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon.svg">
 
   <!-- CSS Files -->
   <link rel="stylesheet" href="/styles/variables.css">
@@ -56,6 +61,9 @@
         <span>Jim-jam</span>
       </a>
       <div class="header-actions">
+        <button class="btn btn-ghost install-btn" id="installBtn" style="display:none" onclick="installApp()">
+          ⬇ Install
+        </button>
         <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
         <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
           Start a Jam
@@ -491,6 +499,37 @@
     document.getElementById('joinModal').addEventListener('click', (e) => {
       if (e.target === document.getElementById('joinModal')) closeJoinModal();
     });
+
+    // ===== PWA — Service Worker + Install Prompt =====
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    // Capture install prompt (Android Chrome / Edge)
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById('installBtn').style.display = '';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      document.getElementById('installBtn').style.display = 'none';
+      showToast('success', 'Jim-Jam installed! Find it on your home screen.');
+    });
+
+    function installApp() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(() => {
+        deferredInstallPrompt = null;
+        document.getElementById('installBtn').style.display = 'none';
+      });
+    }
 
   </script>
 </body>
