@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <!-- Music note icon -->
+  <path fill="white"
+    d="M330 148 L330 286
+       C330 307 312 324 291 324
+       C270 324 252 307 252 286
+       C252 265 270 248 291 248
+       C299 248 307 250 314 255
+       L314 170
+       L202 198
+       L202 320
+       C202 341 184 358 163 358
+       C142 358 124 341 124 320
+       C124 299 142 282 163 282
+       C171 282 179 284 186 289
+       L186 172
+       C186 158 196 147 210 143
+       Z"
+  />
+</svg>

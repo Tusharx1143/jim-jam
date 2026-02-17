@@ -1,0 +1,29 @@
+{
+  "appId": "com.jimjam.app",
+  "appName": "Jim-Jam",
+  "webDir": "www",
+  "server": {
+    "url": "https://jim-jam.onrender.com",
+    "androidScheme": "https"
+  },
+  "android": {
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "scrollEnabled": true,
+    "allowsLinkPreview": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0a0a0f",
+      "showSpinner": false,
+      "androidSpinnerStyle": "large",
+      "iosSpinnerStyle": "small",
+      "splashFullScreen": true,
+      "splashImmersive": true
+    }
+  }
+}

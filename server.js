@@ -9,7 +9,39 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// Allow requests from Capacitor mobile apps and browsers
+const allowedOrigins = [
+  /^https:\/\/jim-jam\.onrender\.com$/,       // Render deployment
+  /^http:\/\/localhost(:\d+)?$/,
+  /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,    // Local network (for dev)
+  /^capacitor:\/\//,                           // Capacitor iOS/Android
+  /^ionic:\/\//,
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.some(r => r.test(origin))) {
+    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.some(r => r.test(origin))) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    },
+    methods: ['GET', 'POST']
+  }
+});
 
 // Environment variable validation
 if (!process.env.YOUTUBE_API_KEY) {
@@ -340,6 +372,34 @@ io.on('connection', (socket) => {
       source,
       addedBy: userName
     });
+    io.to(currentRoom).emit('queue-updated', { queue: room.queue });
+  });
+
+  // Reorder queue
+  socket.on('reorder-queue', ({ fromIndex, toIndex }) => {
+    const room = rooms.get(currentRoom);
+    if (!room) return;
+
+    // Validate indices
+    if (
+      typeof fromIndex !== 'number' ||
+      typeof toIndex !== 'number' ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= room.queue.length ||
+      toIndex >= room.queue.length
+    ) {
+      socket.emit('error', { message: 'Invalid queue reorder indices' });
+      return;
+    }
+
+    // Update room activity
+    updateRoomActivity(currentRoom);
+
+    // Reorder the queue
+    const [item] = room.queue.splice(fromIndex, 1);
+    room.queue.splice(toIndex, 0, item);
+
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
   });
 

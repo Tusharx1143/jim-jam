@@ -2,214 +2,583 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jim-jam 🎵 - Listen Together</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-    
-    .container {
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    .logo {
-      font-size: 4rem;
-      margin-bottom: 0.5rem;
-      animation: bounce 2s infinite;
-    }
-    
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(90deg, #e94560, #ff6b6b);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .tagline {
-      font-size: 1.2rem;
-      color: #a0a0a0;
-      margin-bottom: 3rem;
-    }
-    
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      align-items: center;
-    }
-    
-    .btn {
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      min-width: 250px;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(90deg, #e94560, #ff6b6b);
-      color: white;
-      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
-    }
-    
-    .btn-secondary {
-      background: transparent;
-      color: white;
-      border: 2px solid #e94560;
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(233, 69, 96, 0.2);
-    }
-    
-    .join-section {
-      margin-top: 2rem;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .join-section input {
-      padding: 1rem 1.5rem;
-      font-size: 1rem;
-      border: 2px solid #333;
-      border-radius: 50px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      width: 200px;
-    }
-    
-    .join-section input::placeholder {
-      color: #666;
-    }
-    
-    .join-section input:focus {
-      outline: none;
-      border-color: #e94560;
-    }
-    
-    .features {
-      margin-top: 4rem;
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .feature {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1.5rem;
-      border-radius: 15px;
-      width: 200px;
-    }
-    
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .feature h3 {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .feature p {
-      font-size: 0.85rem;
-      color: #888;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Jim-Jam">
+  <meta name="theme-color" content="#a855f7">
+  <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
+  <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="/styles/variables.css">
+  <link rel="stylesheet" href="/styles/reset.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  <link rel="stylesheet" href="/styles/home.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
-  <div class="container">
-    <div class="logo">🎵</div>
-    <h1>Jim-jam</h1>
-    <p class="tagline">Listen to YouTube music together, in perfect sync</p>
-    
-    <div class="actions">
-      <button class="btn btn-primary" onclick="createRoom()">Create a Room</button>
-      
-      <div class="join-section">
-        <input type="text" id="roomCode" placeholder="Enter room code">
-        <button class="btn btn-secondary" onclick="joinRoom()">Join</button>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-icon" id="toastIcon">ℹ️</span>
+    <div class="toast-content" id="toastMessage"></div>
+    <button class="toast-close" onclick="closeToast()">✕</button>
+  </div>
+
+  <!-- Join Jam Modal -->
+  <div class="modal hidden" id="joinModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Join a Jam</h2>
+        <p class="modal-description">Enter the room code to join your friends</p>
       </div>
-    </div>
-    
-    <div class="features">
-      <div class="feature">
-        <div class="feature-icon">🎧</div>
-        <h3>Perfect Sync</h3>
-        <p>Everyone hears the same beat at the same time</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">📝</div>
-        <h3>Queue Songs</h3>
-        <p>Build playlists together with your friends</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">💬</div>
-        <h3>Chat</h3>
-        <p>Talk about the music while you listen</p>
+      <input
+        type="text"
+        id="joinRoomCode"
+        class="input"
+        placeholder="Room code (e.g. ABC123)"
+        maxlength="10"
+        autofocus
+      >
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="joinJam()">Join Now</button>
       </div>
     </div>
   </div>
 
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="/" class="logo">
+        <span class="logo-icon">🎵</span>
+        <span>Jim-jam</span>
+      </a>
+      <div class="header-actions">
+        <button class="btn btn-ghost install-btn" id="installBtn" style="display:none" onclick="installApp()">
+          ⬇ Install
+        </button>
+        <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
+        <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
+          Start a Jam
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Player Layout -->
+  <main class="home-main">
+
+    <!-- Left: Now Playing -->
+    <section class="now-playing-panel">
+      <div class="now-playing-area">
+        <div class="album-art-container" id="albumArtContainer">
+          <div class="no-music" id="noMusic">
+            <span class="no-music-icon">🎵</span>
+            <p class="no-music-text">Search for a song to start listening</p>
+          </div>
+          <img class="album-art" id="albumArt" src="" alt="Album Art">
+        </div>
+
+        <div class="track-info" id="trackInfo" style="display: none;">
+          <div class="track-title" id="trackTitle">Song Title</div>
+          <div class="track-artist" id="trackArtist">Artist Name</div>
+        </div>
+
+        <!-- Jam CTA (shown when song is playing) -->
+        <div class="jam-cta" id="jamCta" style="display: none;">
+          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
+          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
+            🎧 Start a Jam
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Discovery / Search -->
+    <section class="discovery-panel">
+      <div class="discovery-header">
+        <h2 class="discovery-title">Discover Music</h2>
+        <p class="discovery-subtitle">Search any song from YouTube</p>
+      </div>
+
+      <!-- Search -->
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <input
+            type="text"
+            id="searchInput"
+            class="input input-search"
+            placeholder="Search songs, artists, albums..."
+            autocomplete="off"
+          >
+          <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <!-- Trending / placeholder when no search -->
+      <div class="no-search-placeholder" id="noSearchPlaceholder">
+        <div class="placeholder-items">
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">🔍</span>
+            <span>Search for your favorite songs</span>
+          </div>
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">🎧</span>
+            <span>Play anything from YouTube</span>
+          </div>
+          <div class="placeholder-hint">
+            <span class="placeholder-icon">👥</span>
+            <span>Start a Jam to listen with friends</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Fixed Bottom Player Bar -->
+  <div class="player-bar" id="playerBar">
+    <!-- Left: track info -->
+    <div class="player-bar-track">
+      <img class="player-bar-thumb" id="playerBarThumb" src="" alt="">
+      <div class="player-bar-info">
+        <div class="player-bar-title" id="playerBarTitle">Nothing playing</div>
+        <div class="player-bar-artist" id="playerBarArtist">Search a song to start</div>
+      </div>
+    </div>
+
+    <!-- Center: controls + progress -->
+    <div class="player-bar-main">
+      <div class="player-controls" id="playerControls">
+        <button class="btn-icon" onclick="seekBack()" title="Back 10s">⏪</button>
+        <button class="btn-icon large" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+        <button class="btn-icon" onclick="seekForward()" title="Forward 10s">⏩</button>
+      </div>
+      <div class="player-progress" id="playerProgress" style="display: none;">
+        <div class="progress interactive" id="progressBar" onclick="seekTo(event)">
+          <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+          <div class="progress-handle" id="progressHandle" style="left: 0%"></div>
+        </div>
+        <div class="progress-time">
+          <span id="currentTime">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: jam button -->
+    <div class="player-bar-right">
+      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()" style="display: none;">
+        🎧 Jam
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden YouTube player -->
+  <div id="hiddenPlayer"></div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <script>
-    async function createRoom() {
-      try {
-        const res = await fetch('/api/create-room');
-        const { roomId } = await res.json();
-        window.location.href = `/room/${roomId}`;
-      } catch (err) {
-        alert('Failed to create room. Please try again.');
+    // ===== STATE =====
+    let player = null;
+    let ytApiLoaded = false;
+    let playerReady = false;
+    let pendingTrack = null;
+    let currentTrack = null;
+    let progressInterval = null;
+    let searchTimeout = null;
+    let isPlaying = false;
+
+    // ===== YOUTUBE PLAYER =====
+    // Called by YouTube IFrame API when its script is ready
+    function onYouTubeIframeAPIReady() {
+      ytApiLoaded = true;
+      // If user clicked play before the API loaded, create player now
+      if (pendingTrack) {
+        _createPlayer(pendingTrack.videoId);
       }
     }
-    
-    function joinRoom() {
-      const code = document.getElementById('roomCode').value.trim();
+
+    // Lazily create the player the first time a song is played.
+    // Passing videoId to the constructor guarantees onReady fires.
+    function _createPlayer(videoId) {
+      if (player) return;
+      player = new YT.Player('hiddenPlayer', {
+        height: '360',
+        width: '640',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => {
+            playerReady = true;
+            if (pendingTrack) {
+              const t = pendingTrack;
+              pendingTrack = null;
+              // If user switched song while player was loading, seek to it;
+              // otherwise the constructor's autoplay already started it.
+              if (t.videoId !== videoId) {
+                player.loadVideoById(t.videoId);
+              }
+              _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
+            }
+          },
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError
+        }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById('playPauseBtn').textContent = '⏸️';
+        document.getElementById('albumArtContainer').classList.add('playing');
+        startProgressTracking();
+        document.getElementById('playerProgress').style.display = '';
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        document.getElementById('playPauseBtn').textContent = '▶️';
+        document.getElementById('albumArtContainer').classList.remove('playing');
+        stopProgressTracking();
+      } else if (event.data === YT.PlayerState.ENDED) {
+        isPlaying = false;
+        document.getElementById('playPauseBtn').textContent = '▶️';
+        document.getElementById('albumArtContainer').classList.remove('playing');
+        stopProgressTracking();
+      }
+    }
+
+    function onPlayerError() {
+      showToast('error', 'Could not play this track. Try another.');
+    }
+
+    // ===== PLAYBACK CONTROLS =====
+    function togglePlay() {
+      if (!player || !playerReady || !currentTrack) return;
+      if (isPlaying) {
+        player.pauseVideo();
+      } else {
+        player.playVideo();
+      }
+    }
+
+    function seekBack() {
+      if (!player || !playerReady) return;
+      player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+    }
+
+    function seekForward() {
+      if (!player || !playerReady) return;
+      player.seekTo(player.getCurrentTime() + 10, true);
+    }
+
+    function seekTo(event) {
+      if (!player || !playerReady) return;
+      const bar = event.currentTarget;
+      const rect = bar.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      const duration = player.getDuration();
+      if (duration > 0) {
+        player.seekTo(ratio * duration, true);
+      }
+    }
+
+    // ===== PROGRESS TRACKING =====
+    function startProgressTracking() {
+      stopProgressTracking();
+      progressInterval = setInterval(updateProgress, 500);
+    }
+
+    function stopProgressTracking() {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+    }
+
+    function updateProgress() {
+      if (!player || !playerReady) return;
+      const current = player.getCurrentTime() || 0;
+      const total = player.getDuration() || 0;
+      if (total > 0) {
+        const pct = (current / total) * 100;
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressHandle').style.left = pct + '%';
+      }
+      document.getElementById('currentTime').textContent = formatTime(current);
+      document.getElementById('duration').textContent = formatTime(total);
+    }
+
+    function formatTime(secs) {
+      const s = Math.floor(secs);
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
+
+    // ===== PLAY SONG =====
+    function playSong(videoId, title, thumbnail, artist) {
+      // Always store as pending so onReady can pick it up if needed
+      pendingTrack = { videoId, title, thumbnail, artist };
+
+      if (playerReady) {
+        // Player already initialised — just load the new video
+        pendingTrack = null;
+        currentTrack = { videoId, title, thumbnail, artist };
+        player.loadVideoById(videoId);
+        _applyTrackUI(videoId, title, thumbnail, artist);
+      } else if (!player && ytApiLoaded) {
+        // First play, API ready — create player now with this video
+        _createPlayer(videoId);
+      } else if (!player && !ytApiLoaded) {
+        // API script still loading — onYouTubeIframeAPIReady will create player
+        showToast('info', 'Loading player…');
+      }
+      // else: player exists but onReady hasn't fired yet — pendingTrack will be picked up
+    }
+
+    // Update all UI elements for the now-playing track
+    function _applyTrackUI(videoId, title, thumbnail, artist) {
+      const thumb = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+      // Album art
+      const artImg = document.getElementById('albumArt');
+      artImg.src = thumb;
+      artImg.classList.add('active');
+      document.getElementById('noMusic').style.display = 'none';
+
+      // Track info
+      document.getElementById('trackTitle').textContent = title;
+      document.getElementById('trackArtist').textContent = artist || 'YouTube';
+      document.getElementById('trackInfo').style.display = '';
+
+      // Player bar thumbnail + labels
+      const barThumb = document.getElementById('playerBarThumb');
+      barThumb.src = thumb;
+      barThumb.classList.add('visible');
+      document.getElementById('playerBarTitle').textContent = title;
+      document.getElementById('playerBarArtist').textContent = artist || 'YouTube';
+
+      // Slide player bar up on first song
+      const bar = document.getElementById('playerBar');
+      if (!bar.classList.contains('visible')) {
+        bar.classList.add('visible');
+        document.body.classList.add('player-active');
+      }
+
+      // Show jam CTA + bar jam button
+      document.getElementById('jamCta').style.display = '';
+      document.getElementById('playerBarJamBtn').style.display = '';
+
+      // Hide search placeholder
+      document.getElementById('noSearchPlaceholder').style.display = 'none';
+    }
+
+    // ===== SEARCH =====
+    async function searchYouTube() {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      const resultsEl = document.getElementById('searchResults');
+      resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Searching...</div>';
+      resultsEl.classList.add('active');
+      document.getElementById('noSearchPlaceholder').style.display = 'none';
+
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">No results found</div>';
+          return;
+        }
+
+        resultsEl.innerHTML = data.map(r => `
+          <div class="search-result"
+               data-vid="${escapeHtml(r.id)}"
+               data-title="${escapeHtml(r.title)}"
+               data-thumb="${escapeHtml(r.thumbnail || '')}"
+               data-artist="${escapeHtml(r.artist || '')}">
+            <img class="search-result-thumbnail" src="${escapeHtml(r.thumbnail || '')}" alt="" loading="lazy"
+                 onerror="this.src='https://img.youtube.com/vi/${escapeHtml(r.id)}/mqdefault.jpg'">
+            <div class="search-result-info">
+              <div class="search-result-title">${escapeHtml(r.title)}</div>
+              <div class="search-result-artist">${escapeHtml(r.artist || '')}</div>
+            </div>
+            <div class="search-result-actions">
+              <button class="btn btn-primary search-result-btn">▶ Play</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Search failed. Try again.</div>';
+      }
+    }
+
+    function closeSearchResults() {
+      const resultsEl = document.getElementById('searchResults');
+      resultsEl.classList.remove('active');
+    }
+
+    // ===== JAM CONTROLS =====
+    async function startJam() {
+      const btn = document.getElementById('startJamBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+
+      try {
+        const res = await fetch('/api/create-room');
+        const data = await res.json();
+
+        if (data.roomId) {
+          let url = `/room/${data.roomId}`;
+          if (currentTrack) {
+            const p = new URLSearchParams({
+              vid: currentTrack.videoId,
+              title: currentTrack.title,
+              thumb: currentTrack.thumbnail || '',
+              artist: currentTrack.artist || ''
+            });
+            url += '?' + p.toString();
+          }
+          window.location.href = url;
+        } else {
+          showToast('error', 'Failed to create jam. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Start a Jam';
+        }
+      } catch (err) {
+        showToast('error', 'Failed to create jam. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Start a Jam';
+      }
+    }
+
+    function openJoinModal() {
+      document.getElementById('joinModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('joinRoomCode').focus(), 50);
+    }
+
+    function closeJoinModal() {
+      document.getElementById('joinModal').classList.add('hidden');
+    }
+
+    function joinJam() {
+      const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
       if (code) {
         window.location.href = `/room/${code}`;
       } else {
-        alert('Please enter a room code');
+        showToast('warning', 'Please enter a room code');
       }
     }
-    
-    // Allow Enter key to join
-    document.getElementById('roomCode').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') joinRoom();
+
+    // ===== HELPERS =====
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function showToast(type, message) {
+      const toast = document.getElementById('toast');
+      const icons = { success: '✓', error: '⚠️', warning: '⚠️', info: 'ℹ️' };
+      document.getElementById('toastIcon').textContent = icons[type] || icons.info;
+      document.getElementById('toastMessage').textContent = message;
+      toast.classList.remove('success', 'error', 'warning', 'info');
+      toast.classList.add(type, 'show');
+      setTimeout(closeToast, 5000);
+    }
+
+    function closeToast() {
+      document.getElementById('toast').classList.remove('show');
+    }
+
+    // ===== EVENT LISTENERS =====
+
+    // Delegated click for search results (avoids inline onclick quoting issues)
+    document.getElementById('searchResults').addEventListener('click', (e) => {
+      const row = e.target.closest('.search-result');
+      if (!row) return;
+      playSong(row.dataset.vid, row.dataset.title, row.dataset.thumb, row.dataset.artist);
     });
+
+    document.getElementById('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        if (searchTimeout) clearTimeout(searchTimeout);
+        searchYouTube();
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', () => {
+      if (searchTimeout) clearTimeout(searchTimeout);
+      const q = document.getElementById('searchInput').value.trim();
+      if (q.length >= 3) {
+        searchTimeout = setTimeout(searchYouTube, 500);
+      } else if (!q) {
+        closeSearchResults();
+        document.getElementById('noSearchPlaceholder').style.display = '';
+      }
+    });
+
+    document.getElementById('joinRoomCode').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinJam();
+    });
+
+    // Close modal on backdrop click
+    document.getElementById('joinModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('joinModal')) closeJoinModal();
+    });
+
+    // ===== PWA — Service Worker + Install Prompt =====
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
+    // Capture install prompt (Android Chrome / Edge)
+    let deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      document.getElementById('installBtn').style.display = '';
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      document.getElementById('installBtn').style.display = 'none';
+      showToast('success', 'Jim-Jam installed! Find it on your home screen.');
+    });
+
+    function installApp() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then(() => {
+        deferredInstallPrompt = null;
+        document.getElementById('installBtn').style.display = 'none';
+      });
+    }
+
   </script>
 </body>
 </html>
