@@ -272,13 +272,7 @@
       } else {
         if (socket && socket.connected && player) {
           socket.emit('sync-request');
-          showToast('info', 'Syncing playback...');
-          if (wasPlayingBeforeHidden) {
-            setTimeout(() => {
-              if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) player.playVideo();
-              requestWakeLock();
-            }, 500);
-          }
+          requestWakeLock();
           let extraSyncCount = 0;
           const extraSyncInterval = setInterval(() => {
             if (extraSyncCount >= 5 || !socket || !socket.connected) {
@@ -430,17 +424,24 @@
         if (!player || !player.getCurrentTime) return;
         const currentTime = player.getCurrentTime();
         const diff = Math.abs(currentTime - data.currentTime);
-        if (diff > 1) {
-          isSyncing = true;
+        const playerState = player.getPlayerState();
+
+        isSyncing = true;
+
+        // Always correct play/pause state
+        if (!data.isPlaying && playerState === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+          if (diff > 1) player.seekTo(data.currentTime, true);
+        } else if (data.isPlaying && playerState !== YT.PlayerState.PLAYING) {
+          if (diff > 1) player.seekTo(data.currentTime, true);
+          player.playVideo();
+        } else if (diff > 1) {
+          // Same play/pause state but time is off — just seek
           player.seekTo(data.currentTime, true);
-          if (data.isPlaying && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-            player.playVideo();
-          } else if (!data.isPlaying && player.getPlayerState() === YT.PlayerState.PLAYING) {
-            player.pauseVideo();
-          }
-          setTimeout(() => isSyncing = false, 500);
           if (diff > 3) showToast('success', `Synced to ${formatTime(data.currentTime)}`);
         }
+
+        setTimeout(() => isSyncing = false, 500);
       });
 
       socket.on('user-joined', (user) => { addSystemMessage(`${user.name} joined the jam`); });
@@ -451,7 +452,6 @@
 
       socket.on('became-host', () => {
         isHost = true;
-        addSystemMessage('You are now the host');
       });
 
       socket.on('error', (data) => {
@@ -594,11 +594,10 @@
       document.getElementById('userCount').textContent = users.length;
       document.getElementById('listenerCount').textContent = users.length;
 
-      list.innerHTML = users.map((user, i) => `
+      list.innerHTML = users.map(user => `
         <div class="user-item">
           <div class="avatar">${user.name[0].toUpperCase()}</div>
           <span class="user-name">${user.name}</span>
-          ${i === 0 ? '<span class="host-badge">HOST</span>' : ''}
         </div>
       `).join('');
     }
