@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Jim-Jam">
+  <meta name="theme-color" content="#0a0a0f">
   <title>Jim-jam Room 🎵</title>
 
   <!-- CSS Files -->
@@ -14,11 +19,12 @@
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
+
   <!-- Name Modal -->
   <div class="modal" id="nameModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">🎵 Join the Jam</h2>
+        <h2 class="modal-title">Join the Jam</h2>
         <p class="modal-description">What should we call you?</p>
       </div>
       <input
@@ -30,14 +36,14 @@
         autofocus
       >
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+        <button class="btn btn-primary" onclick="joinRoom()">Let's Go</button>
       </div>
     </div>
   </div>
 
   <!-- Audio Enable Prompt -->
   <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
-    🔊 Click here to enable audio
+    🔊 Tap to enable audio
   </div>
 
   <!-- Toast Notification -->
@@ -59,10 +65,10 @@
         <span class="room-code-display">
           Room: <strong id="roomCodeDisplay"></strong>
         </span>
-        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;" onclick="copyRoomLink()">
+        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="copyRoomLink()">
           Copy Link
         </button>
-        <a href="/" class="btn btn-ghost" style="padding: 8px 16px; font-size: 14px;">
+        <a href="/" class="btn btn-ghost" style="padding: 8px 14px; font-size: 13px;">
           Leave
         </a>
       </div>
@@ -71,105 +77,67 @@
 
   <!-- Main Content -->
   <main class="room-content">
-    <!-- Player Section -->
+
+    <!-- Player Section (left) -->
     <section class="player-section">
-      <!-- Music Player -->
-      <div class="music-player">
+
+      <!-- Now Playing — big album art -->
+      <div class="now-playing-area">
         <div class="album-art-container" id="albumArtContainer">
           <div class="no-music" id="noMusic">
-            <div class="no-music-icon">🎵</div>
+            <span class="no-music-icon">🎵</span>
             <p class="no-music-text">Search for a song to start jamming!</p>
           </div>
           <img class="album-art" id="albumArt" src="" alt="Album Art">
-        </div>
-
-        <!-- Hidden YouTube Player -->
-        <div id="hiddenPlayer">
-          <div id="player"></div>
         </div>
 
         <div class="track-info" id="trackInfo" style="display: none;">
           <div class="track-title" id="trackTitle">Song Title</div>
           <div class="track-artist" id="trackArtist">Artist Name</div>
         </div>
-
-        <div class="player-progress" id="playerProgress" style="display: none;">
-          <div class="progress interactive" id="progressBar">
-            <div class="progress-bar" id="progressFill" style="width: 0%"></div>
-            <div class="progress-handle" id="progressHandle" style="left: 0%"></div>
-          </div>
-          <div class="progress-time">
-            <span id="currentTime">0:00</span>
-            <span id="duration">0:00</span>
-          </div>
-        </div>
-
-        <div class="player-controls" id="playerControls" style="display: none;">
-          <button class="btn-icon" onclick="skipBack()" title="Back 10s">
-            ⏪
-          </button>
-          <button class="btn-icon large" onclick="togglePlay()" id="playPauseBtn">
-            ▶️
-          </button>
-          <button class="btn-icon" onclick="playNext()" title="Next">
-            ⏭️
-          </button>
-        </div>
       </div>
 
-      <!-- Search Section -->
+      <!-- Search -->
       <div class="search-container">
         <div class="search-input-wrapper">
           <input
             type="text"
             id="searchInput"
             class="input input-search"
-            placeholder="Search as you type..."
+            placeholder="Search YouTube..."
           >
           <button class="btn btn-primary" onclick="if (searchTimeout) clearTimeout(searchTimeout); searchYouTube();">Search</button>
         </div>
-
         <div class="search-results" id="searchResults"></div>
       </div>
+
     </section>
 
-    <!-- Sidebar -->
+    <!-- Sidebar (right) — tabbed -->
     <aside class="sidebar">
-      <!-- Users Panel -->
-      <div class="sidebar-panel users-panel">
-        <div class="sidebar-header">
-          <h3 class="sidebar-title">
-            <span>👥</span>
-            <span>Listeners</span>
-          </h3>
-          <span class="sidebar-count" id="userCount">0</span>
-        </div>
-        <div class="sidebar-content">
-          <div id="usersList"></div>
-        </div>
+
+      <!-- Tab bar -->
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab active" data-tab="queue" onclick="switchTab('queue')">
+          Queue
+        </button>
+        <button class="sidebar-tab" data-tab="chat" onclick="switchTab('chat')">
+          Chat
+        </button>
+        <button class="sidebar-tab" data-tab="users" onclick="switchTab('users')">
+          People <span class="sidebar-tab-count" id="userCount">0</span>
+        </button>
       </div>
 
       <!-- Queue Panel -->
-      <div class="sidebar-panel queue-panel">
-        <div class="sidebar-header">
-          <h3 class="sidebar-title">
-            <span>📝</span>
-            <span>Queue</span>
-          </h3>
-        </div>
+      <div class="sidebar-panel queue-panel" id="queuePanel">
         <div class="sidebar-content" id="queueList">
           <div class="queue-empty">Queue is empty</div>
         </div>
       </div>
 
       <!-- Chat Panel -->
-      <div class="sidebar-panel chat-panel">
-        <div class="sidebar-header">
-          <h3 class="sidebar-title">
-            <span>💬</span>
-            <span>Chat</span>
-          </h3>
-        </div>
+      <div class="sidebar-panel chat-panel hidden-panel" id="chatPanel">
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-input-wrapper">
           <input
@@ -178,13 +146,64 @@
             class="input"
             placeholder="Say something..."
           >
-          <button class="btn btn-primary" onclick="sendChat()" style="padding: 12px 24px;">
+          <button class="btn btn-primary" onclick="sendChat()" style="padding: 12px 20px;">
             Send
           </button>
         </div>
       </div>
+
+      <!-- Users Panel -->
+      <div class="sidebar-panel users-panel hidden-panel" id="usersPanel">
+        <div class="sidebar-content">
+          <div id="usersList"></div>
+        </div>
+      </div>
+
     </aside>
   </main>
+
+  <!-- Fixed Bottom Player Bar -->
+  <div class="player-bar">
+    <!-- Left: track thumbnail + info -->
+    <div class="player-bar-track">
+      <img class="player-bar-thumb" id="playerBarThumb" src="" alt="">
+      <div class="player-bar-info">
+        <div class="player-bar-title" id="playerBarTitle"></div>
+        <div class="player-bar-artist" id="playerBarArtist"></div>
+      </div>
+    </div>
+
+    <!-- Center: controls + progress -->
+    <div class="player-bar-main">
+      <div class="player-controls" id="playerControls" style="display: none;">
+        <button class="btn-icon" onclick="skipBack()" title="Back 10s">⏪</button>
+        <button class="btn-icon large" onclick="togglePlay()" id="playPauseBtn">▶️</button>
+        <button class="btn-icon" onclick="playNext()" title="Next">⏭️</button>
+      </div>
+      <div class="player-progress" id="playerProgress" style="display: none;">
+        <div class="progress interactive" id="progressBar">
+          <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+          <div class="progress-handle" id="progressHandle" style="left: 0%"></div>
+        </div>
+        <div class="progress-time">
+          <span id="currentTime">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: listener count -->
+    <div class="player-bar-right">
+      <span class="player-bar-listeners">
+        👥 <span id="listenerCount">0</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Hidden YouTube Player -->
+  <div id="hiddenPlayer">
+    <div id="player"></div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -201,63 +220,55 @@
     let lastKnownTime = 0;
     let wakeLock = null;
 
-    // Wake Lock API - Keep screen awake during playback (mobile)
+    // ===== SIDEBAR TABS =====
+
+    function switchTab(tab) {
+      document.querySelectorAll('.sidebar-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+      document.querySelectorAll('.sidebar-panel').forEach(p => {
+        p.classList.add('hidden-panel');
+      });
+      const panel = document.getElementById(tab + 'Panel');
+      if (panel) panel.classList.remove('hidden-panel');
+    }
+
+    // ===== WAKE LOCK =====
+
     async function requestWakeLock() {
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
-          console.log('Wake Lock acquired - screen will stay on');
-
-          wakeLock.addEventListener('release', () => {
-            console.log('Wake Lock released');
-          });
+          wakeLock.addEventListener('release', () => { console.log('Wake Lock released'); });
         }
       } catch (err) {
-        // Wake Lock not supported or denied - that's okay
         console.log('Wake Lock not available:', err.message);
       }
     }
 
     function releaseWakeLock() {
-      if (wakeLock) {
-        wakeLock.release();
-        wakeLock = null;
-      }
+      if (wakeLock) { wakeLock.release(); wakeLock = null; }
     }
 
-    // Page Visibility API - Handle mobile background/foreground
+    // ===== PAGE VISIBILITY =====
+
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        // User switched away - remember if we were playing
         if (player && player.getPlayerState) {
           wasPlayingBeforeHidden = player.getPlayerState() === YT.PlayerState.PLAYING;
           lastKnownTime = player.getCurrentTime();
         }
-        // Release wake lock when hidden
         releaseWakeLock();
       } else {
-        // User returned - resync immediately
         if (socket && socket.connected && player) {
-          console.log('User returned to tab - requesting sync');
-
-          // Force immediate sync request
           socket.emit('sync-request');
-
-          // Show notification
           showToast('info', 'Syncing playback...');
-
-          // If was playing, try to resume
           if (wasPlayingBeforeHidden) {
             setTimeout(() => {
-              if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-                player.playVideo();
-              }
-              // Re-acquire wake lock if playing
+              if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) player.playVideo();
               requestWakeLock();
             }, 500);
           }
-
-          // Do extra sync checks for the next 10 seconds to ensure good sync
           let extraSyncCount = 0;
           const extraSyncInterval = setInterval(() => {
             if (extraSyncCount >= 5 || !socket || !socket.connected) {
@@ -266,12 +277,13 @@
             }
             socket.emit('sync-request');
             extraSyncCount++;
-          }, 2000); // Every 2 seconds for 10 seconds
+          }, 2000);
         }
       }
     });
 
-    // YouTube IFrame API
+    // ===== YOUTUBE IFRAME API =====
+
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScript = document.getElementsByTagName('script')[0];
@@ -290,6 +302,7 @@
           modestbranding: 1,
           playsinline: 1,
           enablejsapi: 1,
+          fs: 0,
           origin: window.location.origin
         },
         events: {
@@ -301,33 +314,20 @@
     }
 
     function onPlayerReady(event) {
-      console.log('Player ready');
       player.setVolume(100);
       player.unMute();
     }
 
     function onPlayerError(event) {
-      console.error('YouTube Player Error:', event.data);
       let errorMessage = 'Video playback error. ';
-
       switch (event.data) {
-        case 2:
-          errorMessage += 'Invalid video ID.';
-          break;
-        case 5:
-          errorMessage += 'HTML5 player error.';
-          break;
-        case 100:
-          errorMessage += 'Video not found.';
-          break;
+        case 2:   errorMessage += 'Invalid video ID.'; break;
+        case 5:   errorMessage += 'HTML5 player error.'; break;
+        case 100: errorMessage += 'Video not found.'; break;
         case 101:
-        case 150:
-          errorMessage += 'Embedding disabled for this video.';
-          break;
-        default:
-          errorMessage += 'Unknown error.';
+        case 150: errorMessage += 'Embedding disabled for this video.'; break;
+        default:  errorMessage += 'Unknown error.';
       }
-
       showToast('error', errorMessage + ' Skipping to next...');
       addSystemMessage(errorMessage + ' Skipping...');
       socket.emit('play-next');
@@ -339,23 +339,13 @@
         player.unMute();
         player.setVolume(100);
         document.getElementById('audioPrompt').classList.remove('show');
-        if (player.getVideoData && player.getVideoData().video_id) {
-          player.playVideo();
-        }
+        if (player.getVideoData && player.getVideoData().video_id) player.playVideo();
       }
     }
 
     function forceEnableAudio() {
       enableAudio();
-      if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-        player.playVideo();
-      }
-    }
-
-    function checkAudioPrompt() {
-      if (!userInteracted && player && player.isMuted && player.isMuted()) {
-        document.getElementById('audioPrompt').classList.add('show');
-      }
+      if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) player.playVideo();
     }
 
     document.addEventListener('click', enableAudio, { once: false });
@@ -363,24 +353,19 @@
 
     function onPlayerStateChange(event) {
       if (isSyncing) return;
-
       if (event.data === YT.PlayerState.PLAYING) {
         updatePlayingState(true);
-        socket.emit('toggle-play', {
-          isPlaying: true,
-          currentTime: player.getCurrentTime()
-        });
+        socket.emit('toggle-play', { isPlaying: true, currentTime: player.getCurrentTime() });
       } else if (event.data === YT.PlayerState.PAUSED) {
         updatePlayingState(false);
-        socket.emit('toggle-play', {
-          isPlaying: false,
-          currentTime: player.getCurrentTime()
-        });
+        socket.emit('toggle-play', { isPlaying: false, currentTime: player.getCurrentTime() });
       } else if (event.data === YT.PlayerState.ENDED) {
         updatePlayingState(false);
         socket.emit('play-next');
       }
     }
+
+    // ===== ROOM JOIN =====
 
     function joinRoom() {
       userName = document.getElementById('userName').value.trim() || 'Anonymous';
@@ -396,7 +381,6 @@
         isHost = state.isHost;
         updateUsers(state.users);
         updateQueue(state.queue);
-
         if (state.currentVideo) {
           loadVideo(state.currentVideo.id, state.currentTime, state.isPlaying);
           showNowPlaying(state.currentVideo.title, state.currentVideo.thumbnail, state.currentVideo.artist);
@@ -431,48 +415,26 @@
 
       socket.on('sync-response', (data) => {
         if (!player || !player.getCurrentTime) return;
-
         const currentTime = player.getCurrentTime();
         const diff = Math.abs(currentTime - data.currentTime);
-
-        // More aggressive sync (1 second threshold instead of 2)
         if (diff > 1) {
-          console.log(`Out of sync by ${diff.toFixed(2)}s - resyncing to ${data.currentTime.toFixed(2)}`);
-
           isSyncing = true;
           player.seekTo(data.currentTime, true);
-
-          // Resume playback if server says we should be playing
           if (data.isPlaying && player.getPlayerState() !== YT.PlayerState.PLAYING) {
             player.playVideo();
           } else if (!data.isPlaying && player.getPlayerState() === YT.PlayerState.PLAYING) {
             player.pauseVideo();
           }
-
           setTimeout(() => isSyncing = false, 500);
-
-          // Show notification only if significantly out of sync (> 3 seconds)
-          if (diff > 3) {
-            showToast('success', `Synced to ${formatTime(data.currentTime)}`);
-          }
+          if (diff > 3) showToast('success', `Synced to ${formatTime(data.currentTime)}`);
         }
       });
 
-      socket.on('user-joined', (user) => {
-        addSystemMessage(`${user.name} joined the jam`);
-      });
+      socket.on('user-joined', (user) => { addSystemMessage(`${user.name} joined the jam`); });
+      socket.on('user-left',   (user) => { addSystemMessage(`${user.name} left`); });
 
-      socket.on('user-left', (user) => {
-        addSystemMessage(`${user.name} left`);
-      });
-
-      socket.on('queue-updated', (data) => {
-        updateQueue(data.queue);
-      });
-
-      socket.on('chat-message', (data) => {
-        addChatMessage(data.user, data.message);
-      });
+      socket.on('queue-updated', (data) => { updateQueue(data.queue); });
+      socket.on('chat-message',  (data) => { addChatMessage(data.user, data.message); });
 
       socket.on('became-host', () => {
         isHost = true;
@@ -481,30 +443,18 @@
 
       socket.on('error', (data) => {
         showToast('error', data.message);
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000);
+        setTimeout(() => { window.location.href = '/'; }, 2000);
       });
 
-      socket.on('connect_error', (error) => {
-        console.error('Connection error:', error);
-        showToast('error', 'Connection error. Retrying...');
-      });
+      socket.on('connect_error', () => { showToast('error', 'Connection error. Retrying...'); });
 
       socket.on('disconnect', (reason) => {
-        console.log('Disconnected:', reason);
-
-        if (syncInterval) {
-          clearInterval(syncInterval);
-          syncInterval = null;
-        }
-
+        if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
         if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
           player.pauseVideo();
         }
-
         if (reason === 'io server disconnect') {
-          showToast('error', 'Disconnected from server. Reconnecting...');
+          showToast('error', 'Disconnected. Reconnecting...');
           socket.connect();
         } else if (reason === 'transport close' || reason === 'transport error') {
           showToast('error', 'Lost connection. Reconnecting...');
@@ -512,9 +462,7 @@
       });
 
       socket.on('reconnect', (attemptNumber) => {
-        console.log('Reconnected after', attemptNumber, 'attempts');
-        showToast('success', '✓ Reconnected successfully!');
-
+        showToast('success', 'Reconnected!');
         if (!syncInterval) {
           syncInterval = setInterval(() => {
             if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
@@ -522,29 +470,20 @@
             }
           }, 5000);
         }
-
         socket.emit('join-room', { roomId, name: userName });
       });
 
-      socket.on('reconnect_error', (error) => {
-        console.error('Reconnection error:', error);
-      });
-
-      socket.on('reconnect_failed', () => {
-        showToast('error', 'Failed to reconnect. Please refresh the page.');
-      });
+      socket.on('reconnect_failed', () => { showToast('error', 'Failed to reconnect. Please refresh.'); });
 
       socket.on('inactivity-warning', (data) => {
-        showToast('warning', '⚠️ ' + data.message);
+        showToast('warning', data.message);
         addSystemMessage(data.message);
       });
 
       socket.on('room-closed', (data) => {
         showToast('error', data.message);
         addSystemMessage(data.message);
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3000);
+        setTimeout(() => { window.location.href = '/'; }, 3000);
       });
 
       syncInterval = setInterval(() => {
@@ -555,35 +494,27 @@
     }
 
     function cleanup() {
-      if (syncInterval) {
-        clearInterval(syncInterval);
-        syncInterval = null;
-      }
-
+      if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
       if (player && player.getPlayerState && player.getPlayerState() === YT.PlayerState.PLAYING) {
         player.pauseVideo();
       }
-
-      if (socket && socket.connected) {
-        socket.disconnect();
-      }
+      if (socket && socket.connected) socket.disconnect();
     }
 
     window.addEventListener('beforeunload', cleanup);
 
+    // ===== PLAYER CONTROLS =====
+
     function loadVideo(videoId, startTime, autoplay) {
       document.getElementById('noMusic').style.display = 'none';
       isSyncing = true;
-
       if (player.unMute) player.unMute();
       if (player.setVolume) player.setVolume(100);
-
       if (autoplay) {
         player.loadVideoById(videoId, startTime);
       } else {
         player.cueVideoById(videoId, startTime);
       }
-
       setTimeout(() => {
         isSyncing = false;
         if (!userInteracted && player.isMuted && player.isMuted()) {
@@ -604,6 +535,13 @@
       albumArt.src = thumbnail;
       albumArt.onerror = () => { albumArt.src = 'https://via.placeholder.com/300?text=No+Art'; };
       albumArt.classList.add('active');
+
+      // Update bottom player bar
+      const barThumb = document.getElementById('playerBarThumb');
+      barThumb.src = thumbnail;
+      barThumb.classList.add('visible');
+      document.getElementById('playerBarTitle').textContent = title;
+      document.getElementById('playerBarArtist').textContent = artist || 'Unknown Artist';
     }
 
     function togglePlay() {
@@ -615,8 +553,7 @@
     }
 
     function skipBack() {
-      const currentTime = player.getCurrentTime();
-      const newTime = Math.max(0, currentTime - 10);
+      const newTime = Math.max(0, player.getCurrentTime() - 10);
       player.seekTo(newTime, true);
       socket.emit('seek', { currentTime: newTime });
     }
@@ -628,7 +565,6 @@
     function updatePlayingState(isPlaying) {
       const container = document.getElementById('albumArtContainer');
       const playPauseBtn = document.getElementById('playPauseBtn');
-
       if (isPlaying) {
         container.classList.add('playing');
         if (playPauseBtn) playPauseBtn.textContent = '⏸️';
@@ -638,9 +574,12 @@
       }
     }
 
+    // ===== USERS =====
+
     function updateUsers(users) {
       const list = document.getElementById('usersList');
       document.getElementById('userCount').textContent = users.length;
+      document.getElementById('listenerCount').textContent = users.length;
 
       list.innerHTML = users.map((user, i) => `
         <div class="user-item">
@@ -651,7 +590,7 @@
       `).join('');
     }
 
-    // ===== DRAG AND DROP QUEUE REORDERING =====
+    // ===== QUEUE + DRAG AND DROP =====
 
     let draggedItem = null;
     let draggedIndex = null;
@@ -674,27 +613,23 @@
             </div>
           </div>
         `).join('');
-
-        // Add drag and drop event listeners
         setupQueueDragAndDrop();
       }
     }
 
     function setupQueueDragAndDrop() {
-      const queueItems = document.querySelectorAll('.queue-item[draggable="true"]');
-
-      queueItems.forEach((item) => {
+      document.querySelectorAll('.queue-item[draggable="true"]').forEach(item => {
         item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragend', handleDragEnd);
-        item.addEventListener('dragover', handleDragOver);
-        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragend',   handleDragEnd);
+        item.addEventListener('dragover',  handleDragOver);
+        item.addEventListener('drop',      handleDrop);
         item.addEventListener('dragenter', handleDragEnter);
         item.addEventListener('dragleave', handleDragLeave);
       });
     }
 
     function handleDragStart(e) {
-      draggedItem = e.currentTarget;
+      draggedItem  = e.currentTarget;
       draggedIndex = parseInt(draggedItem.dataset.index);
       draggedItem.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -703,49 +638,24 @@
 
     function handleDragEnd(e) {
       e.currentTarget.classList.remove('dragging');
-      // Remove all drag-over classes
-      document.querySelectorAll('.queue-item').forEach(item => {
-        item.classList.remove('drag-over');
-      });
+      document.querySelectorAll('.queue-item').forEach(item => item.classList.remove('drag-over'));
     }
 
-    function handleDragOver(e) {
-      if (e.preventDefault) {
-        e.preventDefault();
-      }
-      e.dataTransfer.dropEffect = 'move';
-      return false;
-    }
-
-    function handleDragEnter(e) {
-      if (e.currentTarget !== draggedItem) {
-        e.currentTarget.classList.add('drag-over');
-      }
-    }
-
-    function handleDragLeave(e) {
-      e.currentTarget.classList.remove('drag-over');
-    }
+    function handleDragOver(e) { if (e.preventDefault) e.preventDefault(); e.dataTransfer.dropEffect = 'move'; return false; }
+    function handleDragEnter(e) { if (e.currentTarget !== draggedItem) e.currentTarget.classList.add('drag-over'); }
+    function handleDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
 
     function handleDrop(e) {
-      if (e.stopPropagation) {
-        e.stopPropagation();
-      }
-
+      if (e.stopPropagation) e.stopPropagation();
       e.currentTarget.classList.remove('drag-over');
-
       if (draggedItem !== e.currentTarget) {
         const dropIndex = parseInt(e.currentTarget.dataset.index);
-
-        // Emit reorder event to server
-        socket.emit('reorder-queue', {
-          fromIndex: draggedIndex,
-          toIndex: dropIndex
-        });
+        socket.emit('reorder-queue', { fromIndex: draggedIndex, toIndex: dropIndex });
       }
-
       return false;
     }
+
+    // ===== CHAT =====
 
     function addChatMessage(user, message) {
       const container = document.getElementById('chatMessages');
@@ -777,11 +687,13 @@
       }
     }
 
-    document.getElementById('chatInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendChat();
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('chatInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChat();
+      });
     });
 
-    // ===== LIVE SEARCH WITH DEBOUNCING =====
+    // ===== SEARCH =====
 
     let searchTimeout = null;
     let isSearching = false;
@@ -790,14 +702,12 @@
       const searchQuery = query || document.getElementById('searchInput').value.trim();
       const container = document.getElementById('searchResults');
 
-      // Clear results if query is empty
       if (!searchQuery) {
         container.classList.remove('active');
         container.innerHTML = '';
         return;
       }
 
-      // Show loading state
       isSearching = true;
       container.classList.add('active');
       container.innerHTML = `
@@ -812,22 +722,13 @@
         const results = await res.json();
 
         if (results.error) {
-          container.innerHTML = `
-            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-              <p>❌ Search failed: ${results.error}</p>
-            </div>
-          `;
+          container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text-muted)"><p>Search failed: ${results.error}</p></div>`;
           showToast('error', 'Search failed: ' + results.error);
           return;
         }
 
         if (results.length === 0) {
-          container.innerHTML = `
-            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-              <p>🔍 No results found for "${escapeHtml(searchQuery)}"</p>
-              <p style="font-size: var(--text-sm); margin-top: 0.5rem;">Try a different search term</p>
-            </div>
-          `;
+          container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text-muted)"><p>No results found for "${escapeHtml(searchQuery)}"</p></div>`;
           return;
         }
 
@@ -836,7 +737,7 @@
             <img class="search-result-thumbnail" src="${result.thumbnail}" alt="">
             <div class="search-result-info">
               <div class="search-result-title">${escapeHtml(result.title)}</div>
-              <div class="search-result-artist">${escapeHtml(result.artist)} ${result.duration ? '• ' + result.duration : ''}</div>
+              <div class="search-result-artist">${escapeHtml(result.artist)} ${result.duration ? '· ' + result.duration : ''}</div>
             </div>
             <div class="search-result-actions">
               <button class="btn btn-primary search-result-btn" onclick="event.stopPropagation(); playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">▶ Play</button>
@@ -845,50 +746,26 @@
           </div>
         `).join('');
       } catch (err) {
-        console.error('Search failed:', err);
-        container.innerHTML = `
-          <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-            <p>❌ Connection error. Please try again.</p>
-          </div>
-        `;
-        showToast('error', 'Search failed. Please check your connection and try again.');
+        container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text-muted)"><p>Connection error. Please try again.</p></div>`;
+        showToast('error', 'Search failed. Check your connection.');
       } finally {
         isSearching = false;
       }
     }
 
-    // Debounced live search
     function handleSearchInput() {
       const query = document.getElementById('searchInput').value.trim();
-
-      // Clear existing timeout
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
-      }
-
-      // If empty, clear results immediately
-      if (!query) {
-        searchYouTube('');
-        return;
-      }
-
-      // Wait 500ms after user stops typing before searching
-      searchTimeout = setTimeout(() => {
-        searchYouTube(query);
-      }, 500);
+      if (searchTimeout) clearTimeout(searchTimeout);
+      if (!query) { searchYouTube(''); return; }
+      searchTimeout = setTimeout(() => searchYouTube(query), 500);
     }
 
-    // Setup live search on input
     document.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('searchInput');
       if (searchInput) {
         searchInput.addEventListener('input', handleSearchInput);
         searchInput.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') {
-            // Clear timeout and search immediately on Enter
-            if (searchTimeout) clearTimeout(searchTimeout);
-            searchYouTube();
-          }
+          if (e.key === 'Enter') { if (searchTimeout) clearTimeout(searchTimeout); searchYouTube(); }
         });
       }
     });
@@ -906,9 +783,9 @@
 
     function copyRoomLink() {
       navigator.clipboard.writeText(window.location.href).then(() => {
-        showToast('success', '✓ Room link copied to clipboard!');
+        showToast('success', 'Room link copied!');
       }).catch(() => {
-        showToast('error', 'Failed to copy link. Please copy manually.');
+        showToast('error', 'Failed to copy link.');
       });
     }
 
@@ -920,36 +797,24 @@
 
     function showToast(type, message) {
       const toast = document.getElementById('toast');
-      const icon = document.getElementById('toastIcon');
+      const icon  = document.getElementById('toastIcon');
       const messageEl = document.getElementById('toastMessage');
-
-      const icons = {
-        success: '✓',
-        error: '⚠️',
-        warning: '⚠️',
-        info: 'ℹ️'
-      };
-
+      const icons = { success: '✓', error: '⚠️', warning: '⚠️', info: 'ℹ️' };
       icon.textContent = icons[type] || icons.info;
       messageEl.textContent = message;
-
       toast.classList.remove('success', 'error', 'warning', 'info');
       toast.classList.add(type, 'show');
-
-      setTimeout(() => {
-        closeToast();
-      }, 5000);
+      setTimeout(() => closeToast(), 5000);
     }
 
     function closeToast() {
       document.getElementById('toast').classList.remove('show');
     }
 
-    // ===== INTERACTIVE PROGRESS BAR =====
+    // ===== PROGRESS BAR =====
 
     let progressUpdateInterval = null;
 
-    // Format seconds to MM:SS
     function formatTime(seconds) {
       if (!seconds || isNaN(seconds)) return '0:00';
       const mins = Math.floor(seconds / 60);
@@ -957,31 +822,26 @@
       return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Update progress bar in real-time
     function updateProgress() {
       if (!player || !player.getDuration || !player.getCurrentTime) return;
-
-      const duration = player.getDuration();
+      const duration    = player.getDuration();
       const currentTime = player.getCurrentTime();
-
       if (duration > 0) {
         const progress = (currentTime / duration) * 100;
-        const progressFill = document.getElementById('progressFill');
+        const progressFill   = document.getElementById('progressFill');
         const progressHandle = document.getElementById('progressHandle');
-        const currentTimeEl = document.getElementById('currentTime');
-        const durationEl = document.getElementById('duration');
-
-        if (progressFill) progressFill.style.width = `${progress}%`;
-        if (progressHandle) progressHandle.style.left = `${progress}%`;
-        if (currentTimeEl) currentTimeEl.textContent = formatTime(currentTime);
-        if (durationEl) durationEl.textContent = formatTime(duration);
+        const currentTimeEl  = document.getElementById('currentTime');
+        const durationEl     = document.getElementById('duration');
+        if (progressFill)   progressFill.style.width  = `${progress}%`;
+        if (progressHandle) progressHandle.style.left  = `${progress}%`;
+        if (currentTimeEl)  currentTimeEl.textContent  = formatTime(currentTime);
+        if (durationEl)     durationEl.textContent     = formatTime(duration);
       }
     }
 
-    // Start/stop progress updates
     function startProgressUpdates() {
       if (progressUpdateInterval) clearInterval(progressUpdateInterval);
-      progressUpdateInterval = setInterval(updateProgress, 100); // Update 10 times per second
+      progressUpdateInterval = setInterval(updateProgress, 100);
     }
 
     function stopProgressUpdates() {
@@ -991,58 +851,44 @@
       }
     }
 
-    // Click to seek on progress bar
     document.addEventListener('DOMContentLoaded', () => {
       const progressBar = document.getElementById('progressBar');
-
       if (progressBar) {
         progressBar.addEventListener('click', (e) => {
           if (!player || !player.getDuration) return;
-
           const rect = progressBar.getBoundingClientRect();
-          const clickX = e.clientX - rect.left;
-          const width = rect.width;
-          const percentage = clickX / width;
-          const duration = player.getDuration();
-          const seekTime = duration * percentage;
-
-          // Seek to position
+          const seekTime = (e.clientX - rect.left) / rect.width * player.getDuration();
           player.seekTo(seekTime, true);
           socket.emit('seek', { currentTime: seekTime });
-
-          // Immediately update UI
           updateProgress();
         });
       }
     });
 
-    // Update showNowPlaying to start progress updates
-    const originalShowNowPlaying = showNowPlaying;
+    const _originalShowNowPlaying = showNowPlaying;
     showNowPlaying = function(title, thumbnail, artist) {
-      originalShowNowPlaying(title, thumbnail, artist);
+      _originalShowNowPlaying(title, thumbnail, artist);
       startProgressUpdates();
     };
 
-    // Update updatePlayingState to handle progress updates and wake lock
-    const originalUpdatePlayingState = updatePlayingState;
+    const _originalUpdatePlayingState = updatePlayingState;
     updatePlayingState = function(isPlaying) {
-      originalUpdatePlayingState(isPlaying);
+      _originalUpdatePlayingState(isPlaying);
       if (isPlaying) {
         startProgressUpdates();
-        requestWakeLock(); // Keep screen on during playback
+        requestWakeLock();
       } else {
         stopProgressUpdates();
-        updateProgress(); // One final update when paused
-        releaseWakeLock(); // Allow screen to sleep when paused
+        updateProgress();
+        releaseWakeLock();
       }
     };
 
-    // Cleanup progress interval and wake lock on page unload
-    const originalCleanup = cleanup;
+    const _originalCleanup = cleanup;
     cleanup = function() {
       stopProgressUpdates();
       releaseWakeLock();
-      originalCleanup();
+      _originalCleanup();
     };
 
     document.getElementById('userName').addEventListener('keypress', (e) => {

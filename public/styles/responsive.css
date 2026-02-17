@@ -1,90 +1,62 @@
 /**
- * Jim-jam Responsive Styles
- * Mobile-first, touch-friendly design
+ * Jim-Jam Responsive Styles
+ * Mobile-first design for all breakpoints
  */
 
 /* ===== MOBILE (< 640px) ===== */
 @media (max-width: 640px) {
-  /* Home Page */
-  .header-container {
-    padding: 0 var(--space-md);
+
+  /* Player bar compact on mobile */
+  :root {
+    --player-height: 70px;
   }
 
-  .header-nav {
-    gap: var(--space-md);
-  }
+  /* Home */
+  .header-container { padding: 0 var(--space-md); }
+  .header-nav { gap: var(--space-md); }
 
-  .hero {
-    padding: var(--space-2xl) 0;
-  }
-
-  .hero-icon {
-    font-size: 60px;
-  }
-
-  .hero-title {
-    font-size: var(--text-3xl);
-  }
-
-  .hero-subtitle {
-    font-size: var(--text-base);
-  }
+  .hero { padding: 60px 0 48px; }
+  .hero-icon { font-size: 52px; }
 
   .hero-buttons {
     flex-direction: column;
     width: 100%;
+    padding: 0 var(--space-md);
   }
 
-  .hero-buttons .btn {
-    width: 100%;
-  }
+  .hero-buttons .btn { width: 100%; }
 
   .join-section {
     flex-direction: column;
     width: 100%;
+    padding: 0 var(--space-md);
   }
 
   .join-section .input,
-  .join-section .btn {
-    width: 100%;
-  }
-
-  .features {
-    padding: var(--space-2xl) 0;
-  }
+  .join-section .btn { width: 100%; }
 
   .features-grid {
     grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
-  .how-it-works {
-    padding: var(--space-2xl) 0;
-  }
-
-  .how-it-works-title {
-    font-size: var(--text-2xl);
+    padding: 0 var(--space-md);
   }
 
   .steps {
     grid-template-columns: 1fr;
-    gap: var(--space-xl);
+    padding: 0 var(--space-md);
   }
 
-  /* Room Page */
+  /* Room */
   .room-header {
-    padding: var(--space-md);
+    padding: 10px var(--space-md);
   }
 
   .room-header-container {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--space-md);
+    gap: var(--space-sm);
   }
 
-  .room-logo {
-    justify-content: center;
-  }
+  .room-logo { justify-content: center; }
 
   .room-info {
     justify-content: center;
@@ -92,65 +64,36 @@
     gap: var(--space-sm);
   }
 
-  .room-info .btn,
-  .room-info a {
-    flex: 1;
-    min-width: 100px;
-  }
-
   .room-content {
     grid-template-columns: 1fr;
-    padding: var(--space-md);
-    gap: var(--space-md);
   }
 
   .player-section {
-    gap: var(--space-md);
-  }
-
-  .music-player {
-    padding: var(--space-lg);
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-md);
   }
 
   .album-art-container {
     width: 200px;
     height: 200px;
-    margin-bottom: var(--space-lg);
   }
 
-  .track-title {
-    font-size: var(--text-lg);
-  }
-
-  .player-controls {
-    gap: var(--space-sm);
-  }
-
-  .btn-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .btn-icon.large {
-    width: 56px;
-    height: 56px;
+  .sidebar-tab {
+    font-size: 10px;
+    padding: var(--space-sm) 4px;
+    letter-spacing: 0.04em;
   }
 
   .search-input-wrapper {
     flex-direction: column;
   }
 
-  .search-input-wrapper .btn {
-    width: 100%;
-  }
+  .search-input-wrapper .btn { width: 100%; }
 
-  .search-results {
-    max-height: 300px;
-  }
+  .search-results { max-height: 260px; }
 
-  .search-result {
-    flex-wrap: wrap;
-  }
+  .search-result { flex-wrap: wrap; }
 
   .search-result-actions {
     width: 100%;
@@ -158,37 +101,46 @@
     margin-top: var(--space-sm);
   }
 
-  .search-result-actions .btn {
-    flex: 1;
+  .search-result-actions .btn { flex: 1; }
+
+  /* Bottom player bar on mobile — compact horizontal */
+  .player-bar {
+    padding: 0 var(--space-md);
+    gap: var(--space-sm);
   }
 
-  .sidebar {
-    gap: var(--space-md);
+  .player-bar-track {
+    flex: 0 0 auto;
+    max-width: 140px;
   }
 
-  .sidebar-panel {
-    padding: var(--space-md);
+  .player-bar-thumb {
+    width: 40px;
+    height: 40px;
   }
 
-  .sidebar-panel.users-panel,
-  .sidebar-panel.queue-panel,
-  .sidebar-panel.chat-panel {
-    max-height: none;
-    min-height: 200px;
-  }
+  .player-bar-title { font-size: 12px; }
+  .player-bar-artist { font-size: 10px; }
 
-  .chat-input-wrapper {
-    flex-direction: column;
-  }
+  .player-bar-right { display: none; }
 
-  .chat-input-wrapper .btn {
-    width: 100%;
-  }
+  .player-bar-main { gap: 4px; }
 
-  /* Toast on mobile */
+  .player-controls { gap: var(--space-sm); }
+
+  .btn-icon { width: 36px; height: 36px; }
+  .btn-icon.large { width: 44px; height: 44px; font-size: 18px; }
+
+  .progress-time { display: none; }
+
+  /* Chat */
+  .chat-input-wrapper { flex-direction: column; }
+  .chat-input-wrapper .btn { width: 100%; }
+
+  /* Toast */
   .toast {
     top: auto;
-    bottom: var(--space-lg);
+    bottom: calc(var(--player-height) + var(--space-sm));
     right: var(--space-md);
     left: var(--space-md);
     max-width: none;
@@ -196,11 +148,11 @@
 
   /* Audio prompt */
   .audio-prompt {
-    bottom: var(--space-lg);
     left: var(--space-md);
     right: var(--space-md);
     transform: none;
     text-align: center;
+    bottom: calc(var(--player-height) + var(--space-md));
   }
 
   .audio-prompt:hover {
@@ -214,9 +166,14 @@
     grid-template-columns: 1fr;
   }
 
+  .player-section {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
   .album-art-container {
-    width: 250px;
-    height: 250px;
+    width: 240px;
+    height: 240px;
   }
 
   .features-grid {
@@ -224,134 +181,126 @@
   }
 }
 
-/* ===== TABLET/SMALL DESKTOP (768px - 1024px) ===== */
+/* ===== SMALL DESKTOP (768px - 1024px) ===== */
 @media (min-width: 768px) and (max-width: 1024px) {
   .room-content {
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: 1fr 300px;
   }
 
   .album-art-container {
-    width: 250px;
-    height: 250px;
+    width: 220px;
+    height: 220px;
   }
 
-  .sidebar-panel.queue-panel {
-    min-height: 250px;
-  }
-
-  .sidebar-panel.chat-panel {
-    min-height: 350px;
+  .player-bar-right {
+    flex: 0 0 120px;
   }
 }
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
   .room-content {
-    grid-template-columns: 1fr 450px;
+    grid-template-columns: 1fr 420px;
   }
 
   .album-art-container {
-    width: 350px;
-    height: 350px;
+    width: 320px;
+    height: 320px;
   }
 
-  .sidebar-panel {
-    padding: var(--space-xl);
+  .player-bar-track {
+    flex: 0 0 300px;
   }
 }
 
 /* ===== TOUCH DEVICE IMPROVEMENTS ===== */
 @media (hover: none) and (pointer: coarse) {
-  /* Increase touch targets */
   .btn,
   .btn-icon,
   .input {
     min-height: 48px;
   }
 
-  /* Better spacing for touch */
-  .list-item,
+  .btn-icon.large {
+    width: 56px;
+    height: 56px;
+  }
+
   .queue-item,
   .user-item {
+    padding: var(--space-sm);
+  }
+
+  .search-result {
     padding: var(--space-md);
   }
 
-  /* Remove hover effects on touch devices */
-  .card:hover,
-  .list-item:hover,
-  .queue-item:hover,
-  .feature-card:hover {
-    border-color: var(--border-subtle);
-    background: inherit;
-  }
-
-  /* Make buttons more prominent */
-  .btn {
-    font-weight: var(--font-semibold);
-  }
-
-  /* Larger search results on touch */
-  .search-result {
-    padding: var(--space-lg);
-  }
-
   .search-result-thumbnail {
-    width: 100px;
-    height: 56px;
-  }
-}
-
-/* ===== REDUCED MOTION ===== */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    width: 88px;
+    height: 50px;
   }
 
-  .album-art-container.playing .album-art {
-    animation: none;
+  /* Disable hover transforms on touch */
+  .feature-card:hover,
+  .btn-primary:hover {
+    transform: none;
   }
 }
 
 /* ===== LANDSCAPE MOBILE ===== */
 @media (max-width: 900px) and (orientation: landscape) {
+  :root {
+    --player-height: 60px;
+  }
+
   .room-content {
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 1fr 280px;
   }
 
   .album-art-container {
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
   }
 
-  .sidebar-panel.users-panel,
-  .sidebar-panel.queue-panel,
-  .sidebar-panel.chat-panel {
-    max-height: 250px;
-    min-height: 150px;
+  .now-playing-area {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xl);
+    padding: var(--space-md) 0;
+  }
+
+  .track-info {
+    text-align: left;
+    margin-top: 0;
   }
 }
 
-/* ===== PRINT STYLES ===== */
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== PRINT ===== */
 @media print {
-  .header-nav,
-  .footer,
+  .room-header,
+  .sidebar,
+  .search-container,
+  .player-bar,
   .toast,
   .audio-prompt,
-  .modal,
-  .btn,
-  .sidebar,
-  .search-container {
+  .modal {
     display: none !important;
   }
 
   body {
+    padding-bottom: 0;
     background: white;
     color: black;
-  }
-
-  .music-player {
-    border: 1px solid black;
   }
 }

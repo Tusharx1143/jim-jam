@@ -1,96 +1,99 @@
 /**
- * Jim-jam Design System - Variables
- * Spotify-Minimal Style with Electric Purple & Pink
+ * Jim-Jam Design System — Variables
+ * Spotify-inspired premium dark theme
  */
 
 :root {
-  /* ===== COLORS ===== */
+  /* ===== BACKGROUNDS ===== */
+  --bg-primary:   #0a0a0f;   /* Page background */
+  --bg-secondary: #13131f;   /* Cards, panels */
+  --bg-elevated:  #1a1a2a;   /* Raised surfaces */
+  --bg-hover:     #1e1e30;   /* Hover state */
+  --bg-active:    #252540;   /* Selected / active */
+  --bg-player:    rgba(13, 13, 20, 0.97); /* Bottom player bar */
 
-  /* Backgrounds - Solid, Flat */
-  --bg-primary: #0A0E27;        /* Main background */
-  --bg-secondary: #1A1F3A;      /* Cards, panels */
-  --bg-hover: #252B4A;          /* Hover state */
-  --bg-active: #2D3454;         /* Active/selected */
+  /* ===== ACCENTS ===== */
+  --accent-primary:   #a855f7;                  /* Vivid purple */
+  --accent-hover:     #c084fc;                  /* Lighter on hover */
+  --accent-secondary: #f472b6;                  /* Pink highlight */
+  --accent-glow:      rgba(168, 85, 247, 0.22); /* Soft glow */
+  --accent-glow-strong: rgba(168, 85, 247, 0.4);
 
-  /* Accents - Purple & Pink (used sparingly) */
-  --accent-primary: #B794F6;    /* Buttons, links, active items */
-  --accent-secondary: #FF6B9D;  /* Highlights, special actions */
-  --accent-hover: #C7A8F7;      /* Hover on purple elements */
+  /* ===== GRADIENTS ===== */
+  --gradient-accent:  linear-gradient(135deg, #e2e8f0 0%, #a855f7 55%, #f472b6 100%);
+  --gradient-hero:    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 70%);
+  --gradient-art:     radial-gradient(circle at bottom, rgba(168,85,247,0.25) 0%, transparent 60%);
 
-  /* Text - Clear hierarchy */
-  --text-primary: #E2E8F0;      /* Main text */
-  --text-secondary: #94A3B8;    /* Secondary text */
-  --text-muted: #64748B;        /* Placeholders, disabled */
+  /* ===== TEXT ===== */
+  --text-primary:   #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted:     #4b5563;
 
-  /* Borders */
-  --border-subtle: #2D3454;     /* Very subtle borders */
-  --border-hover: #3D4564;      /* Hover borders */
+  /* ===== BORDERS ===== */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-hover:  rgba(255, 255, 255, 0.12);
 
-  /* Utility Colors */
-  --success: #10B981;           /* Success messages */
-  --error: #EF4444;             /* Error messages */
-  --warning: #F59E0B;           /* Warning messages */
-  --info: #3B82F6;              /* Info messages */
+  /* ===== UTILITY ===== */
+  --success: #22c55e;
+  --error:   #ef4444;
+  --warning: #f59e0b;
+  --info:    #3b82f6;
 
-  /* ===== SHADOWS (Minimal) ===== */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.15);
+  /* ===== SHADOWS ===== */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
+  --shadow-art: 0 24px 64px rgba(0,0,0,0.6), 0 0 40px var(--accent-glow);
 
   /* ===== SPACING ===== */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
   --space-2xl: 48px;
   --space-3xl: 64px;
 
   /* ===== TYPOGRAPHY ===== */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-mono:   'JetBrains Mono', 'Courier New', monospace;
 
-  /* Font Sizes */
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px;
-  --text-lg: 18px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 32px;
-  --text-4xl: 48px;
+  --text-xs:   11px;
+  --text-sm:   13px;
+  --text-base: 15px;
+  --text-lg:   17px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  32px;
+  --text-4xl:  48px;
 
-  /* Font Weights */
-  --font-regular: 400;
-  --font-medium: 500;
+  --font-regular:  400;
+  --font-medium:   500;
   --font-semibold: 600;
-  --font-bold: 700;
+  --font-bold:     700;
 
-  /* Line Heights */
-  --leading-tight: 1.2;
-  --leading-normal: 1.5;
+  --leading-tight:   1.2;
+  --leading-normal:  1.5;
   --leading-relaxed: 1.75;
 
-  /* ===== BORDERS & RADIUS ===== */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  20px;
   --radius-full: 9999px;
 
   /* ===== TRANSITIONS ===== */
-  --transition-fast: 0.15s ease;
+  --transition-fast: 0.12s ease;
   --transition-base: 0.2s ease;
-  --transition-slow: 0.3s ease;
+  --transition-slow: 0.35s ease;
 
   /* ===== Z-INDEX ===== */
   --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-modal: 1030;
-  --z-toast: 1040;
+  --z-sticky:   1020;
+  --z-player:   1025;
+  --z-modal:    1030;
+  --z-toast:    1040;
 
-  /* ===== BREAKPOINTS (for reference in JS) ===== */
-  --breakpoint-mobile: 640px;
-  --breakpoint-tablet: 768px;
-  --breakpoint-desktop: 1024px;
-  --breakpoint-wide: 1440px;
+  /* ===== PLAYER BAR ===== */
+  --player-height: 88px;
 }

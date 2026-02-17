@@ -9,7 +9,39 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// Allow requests from Capacitor mobile apps and browsers
+const allowedOrigins = [
+  /^https:\/\/jim-jam\.onrender\.com$/,       // Render deployment
+  /^http:\/\/localhost(:\d+)?$/,
+  /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,    // Local network (for dev)
+  /^capacitor:\/\//,                           // Capacitor iOS/Android
+  /^ionic:\/\//,
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.some(r => r.test(origin))) {
+    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
+const io = new Server(server, {
+  cors: {
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.some(r => r.test(origin))) {
+        cb(null, true);
+      } else {
+        cb(null, false);
+      }
+    },
+    methods: ['GET', 'POST']
+  }
+});
 
 // Environment variable validation
 if (!process.env.YOUTUBE_API_KEY) {
