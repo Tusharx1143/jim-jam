@@ -64,6 +64,8 @@ body {
   margin: 0 auto;
   width: 100%;
   min-height: 0;
+  /* Panels must not exceed viewport so inner scroll works */
+  overflow: hidden;
 }
 
 /* ===== NOW PLAYING PANEL (left) ===== */
@@ -191,6 +193,7 @@ body {
   padding: var(--space-xl) var(--space-lg);
   gap: var(--space-lg);
   overflow: hidden;
+  min-height: 0;
 }
 
 .discovery-header {
@@ -212,10 +215,10 @@ body {
 
 /* Search container — full height within panel */
 .search-container {
-  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: var(--space-sm);
   min-height: 0;
 }
 
@@ -226,18 +229,13 @@ body {
 }
 
 .search-results {
-  position: absolute;
-  top: calc(100% + var(--space-sm));
-  left: 0;
-  right: 0;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  max-height: 400px;
-  overflow-y: auto;
-  z-index: var(--z-dropdown);
   display: none;
-  box-shadow: var(--shadow-md);
 }
 
 .search-results.active { display: block; }
