@@ -58,6 +58,8 @@
     gap: var(--space-sm);
   }
 
+  #connectionText { display: none; }
+
   .room-content {
     grid-template-columns: 1fr;
   }
@@ -191,6 +193,9 @@
   .player-bar-right {
     flex: 0 0 120px;
   }
+
+  .volume-slider { width: 60px; }
+  .connection-text { display: none; }
 }
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */

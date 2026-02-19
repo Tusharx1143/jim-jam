@@ -174,8 +174,12 @@
       </div>
     </div>
 
-    <!-- Right: jam button -->
+    <!-- Right: volume + jam button -->
     <div class="player-bar-right">
+      <div class="volume-control">
+        <button class="btn-icon" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value)">
+      </div>
       <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()" style="display: none;">
         🎧 Jam
       </button>
@@ -398,7 +402,7 @@
       if (!query) return;
 
       const resultsEl = document.getElementById('searchResults');
-      resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Searching...</div>';
+      resultsEl.innerHTML = '<div class="skeleton-results">' + Array(4).fill('<div class="skeleton-item"><div class="skeleton-thumb"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('') + '</div>';
       resultsEl.classList.add('active');
       document.getElementById('noSearchPlaceholder').style.display = 'none';
 
@@ -421,8 +425,9 @@
                  onerror="this.src='https://img.youtube.com/vi/${escapeHtml(r.id)}/mqdefault.jpg'">
             <div class="search-result-info">
               <div class="search-result-title">${escapeHtml(r.title)}</div>
-              <div class="search-result-artist">${escapeHtml(r.artist || '')}</div>
+              <div class="search-result-artist">${escapeHtml(r.artist || '')}${r.duration ? ' · ' + r.duration : ''}</div>
             </div>
+            ${r.duration ? '<span class="search-result-duration">' + r.duration + '</span>' : ''}
             <div class="search-result-actions">
               <button class="btn btn-primary search-result-btn">▶ Play</button>
             </div>
@@ -579,6 +584,41 @@
         document.getElementById('installBtn').style.display = 'none';
       });
     }
+
+    // ===== VOLUME CONTROL =====
+    function setVolume(val) {
+      if (!player || !playerReady) return;
+      player.setVolume(parseInt(val));
+      updateVolumeIcon(val);
+    }
+
+    function toggleMute() {
+      if (!player || !playerReady) return;
+      const slider = document.getElementById('volumeSlider');
+      if (player.isMuted()) {
+        player.unMute();
+        if (slider) slider.value = player.getVolume();
+        updateVolumeIcon(player.getVolume());
+      } else {
+        player.mute();
+        if (slider) slider.value = 0;
+        updateVolumeIcon(0);
+      }
+    }
+
+    function updateVolumeIcon(val) {
+      const btns = document.querySelectorAll('.volume-control .btn-icon');
+      btns.forEach(b => b.textContent = val == 0 ? '🔇' : val < 50 ? '🔉' : '🔊');
+    }
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+      else if (e.code === 'ArrowLeft') { e.preventDefault(); seekBack(); }
+      else if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); }
+      else if (e.code === 'KeyM') { toggleMute(); }
+    });
 
   </script>
 </body>
