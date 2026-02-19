@@ -24,6 +24,9 @@
 </head>
 <body>
 
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">You're offline — check your connection</div>
+
   <!-- Name Modal -->
   <div class="modal" id="nameModal">
     <div class="modal-content">
@@ -82,6 +85,20 @@
       </div>
     </div>
   </header>
+
+  <!-- Mini Player (shows on scroll) -->
+  <div class="mini-player" id="miniPlayer">
+    <img class="mini-player-thumb" id="miniPlayerThumb" src="" alt="">
+    <div class="mini-player-info">
+      <div class="mini-player-title" id="miniPlayerTitle"></div>
+      <div class="mini-player-artist" id="miniPlayerArtist"></div>
+    </div>
+    <div class="mini-player-controls">
+      <button class="btn-icon" onclick="skipBack()">⏪</button>
+      <button class="btn-icon" onclick="togglePlay()" id="miniPlayPauseBtn">▶️</button>
+      <button class="btn-icon" onclick="playNext()">⏭️</button>
+    </div>
+  </div>
 
   <!-- Main Content -->
   <main class="room-content">
@@ -1052,6 +1069,62 @@
           break;
       }
     });
+
+    // ===== MINI PLAYER ON SCROLL =====
+    let miniPlayerActive = false;
+    let currentVideoTitle = '';
+    let currentVideoArtist = '';
+    let currentVideoThumb = '';
+
+    const _originalShowNowPlaying2 = showNowPlaying;
+    showNowPlaying = function(title, thumbnail, artist) {
+      _originalShowNowPlaying2(title, thumbnail, artist);
+      currentVideoTitle = title;
+      currentVideoArtist = artist || 'Unknown Artist';
+      currentVideoThumb = thumbnail;
+      // Update mini player info
+      document.getElementById('miniPlayerTitle').textContent = title;
+      document.getElementById('miniPlayerArtist').textContent = artist || 'Unknown Artist';
+      document.getElementById('miniPlayerThumb').src = thumbnail;
+    };
+
+    const _originalUpdatePlayingState2 = updatePlayingState;
+    updatePlayingState = function(isPlaying) {
+      _originalUpdatePlayingState2(isPlaying);
+      const miniBtn = document.getElementById('miniPlayPauseBtn');
+      if (miniBtn) miniBtn.textContent = isPlaying ? '⏸️' : '▶️';
+    };
+
+    function checkMiniPlayer() {
+      const playerSection = document.querySelector('.player-section');
+      if (!playerSection || !currentVideoTitle) return;
+      const rect = playerSection.getBoundingClientRect();
+      const shouldShow = rect.bottom < 0;
+      const miniPlayer = document.getElementById('miniPlayer');
+      if (shouldShow && !miniPlayerActive) {
+        miniPlayer.classList.add('show');
+        miniPlayerActive = true;
+      } else if (!shouldShow && miniPlayerActive) {
+        miniPlayer.classList.remove('show');
+        miniPlayerActive = false;
+      }
+    }
+
+    window.addEventListener('scroll', checkMiniPlayer, { passive: true });
+
+    // ===== OFFLINE INDICATOR =====
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (navigator.onLine) {
+        banner.classList.remove('show');
+      } else {
+        banner.classList.add('show');
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     document.getElementById('userName').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') joinRoom();

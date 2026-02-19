@@ -39,6 +39,12 @@
   .search-input-wrapper { flex-direction: column; }
   .search-input-wrapper .btn { width: 100%; }
 
+  /* Recently played chips scroll horizontally */
+  .recent-chip-title { max-width: 80px; }
+
+  /* Trending compact */
+  .trending-item { padding: var(--space-xs) var(--space-sm); }
+
   /* Room */
   .room-header {
     padding: 10px var(--space-md);
@@ -171,6 +177,11 @@
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
   }
+}
+
+/* Hide mini-player on desktop (player section always visible in 2-col) */
+@media (min-width: 768px) {
+  .mini-player { display: none !important; }
 }
 
 /* ===== SMALL DESKTOP (768px - 1024px) ===== */

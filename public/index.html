@@ -25,6 +25,12 @@
 </head>
 <body>
 
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">You're offline — check your connection</div>
+
+  <!-- Page Transition Overlay -->
+  <div class="page-transition" id="pageTransition"></div>
+
   <!-- Toast Notification -->
   <div class="toast" id="toast">
     <span class="toast-icon" id="toastIcon">ℹ️</span>
@@ -83,7 +89,7 @@
       </div>
 
       <!-- Search -->
-      <div class="search-container">
+      <div class="search-container" style="position: relative;">
         <div class="search-input-wrapper">
           <input
             type="text"
@@ -94,24 +100,29 @@
           >
           <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
         </div>
+        <!-- Search History Dropdown -->
+        <div class="search-history" id="searchHistory">
+          <div class="search-history-header">
+            <span class="search-history-label">Recent Searches</span>
+            <button class="search-history-clear" onclick="clearSearchHistory()">Clear</button>
+          </div>
+          <div id="searchHistoryList"></div>
+        </div>
         <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <!-- Recently Played -->
+      <div class="recently-played" id="recentlyPlayed" style="display: none;">
+        <div class="recently-played-title">Recently Played</div>
+        <div class="recently-played-list" id="recentlyPlayedList"></div>
       </div>
 
       <!-- Placeholder when no search -->
       <div class="no-search-placeholder" id="noSearchPlaceholder">
-        <div class="placeholder-items">
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🔍</span>
-            <span>Search for your favorite songs</span>
-          </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🎧</span>
-            <span>Play anything from YouTube</span>
-          </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">👥</span>
-            <span>Start a Jam to listen with friends</span>
-          </div>
+        <!-- Trending Section -->
+        <div class="trending-section" id="trendingSection">
+          <div class="trending-title">Suggested for you</div>
+          <div class="trending-list" id="trendingList"></div>
         </div>
       </div>
     </section>
@@ -128,7 +139,15 @@
         </div>
 
         <div class="track-info" id="trackInfo" style="display: none;">
-          <div class="track-title" id="trackTitle">Song Title</div>
+          <div class="track-title">
+            <span id="trackTitle">Song Title</span>
+            <span class="visualizer" id="visualizer">
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+            </span>
+          </div>
           <div class="track-artist" id="trackArtist">Artist Name</div>
         </div>
 
@@ -619,6 +638,222 @@
       else if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); }
       else if (e.code === 'KeyM') { toggleMute(); }
     });
+
+    // ===== RECENTLY PLAYED (localStorage) =====
+    const MAX_RECENT = 8;
+
+    function getRecentlyPlayed() {
+      try { return JSON.parse(localStorage.getItem('jj_recent') || '[]'); } catch { return []; }
+    }
+
+    function saveRecentlyPlayed(track) {
+      const recent = getRecentlyPlayed().filter(t => t.videoId !== track.videoId);
+      recent.unshift(track);
+      if (recent.length > MAX_RECENT) recent.length = MAX_RECENT;
+      localStorage.setItem('jj_recent', JSON.stringify(recent));
+      renderRecentlyPlayed();
+    }
+
+    function renderRecentlyPlayed() {
+      const recent = getRecentlyPlayed();
+      const container = document.getElementById('recentlyPlayed');
+      const list = document.getElementById('recentlyPlayedList');
+      if (recent.length === 0) { container.style.display = 'none'; return; }
+      container.style.display = '';
+      list.innerHTML = recent.map(t => `
+        <div class="recent-chip" data-vid="${escapeHtml(t.videoId)}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail || '')}" data-artist="${escapeHtml(t.artist || '')}">
+          <img class="recent-chip-thumb" src="${escapeHtml(t.thumbnail || '')}" alt="" onerror="this.src='https://img.youtube.com/vi/${escapeHtml(t.videoId)}/mqdefault.jpg'">
+          <span class="recent-chip-title">${escapeHtml(t.title)}</span>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('recentlyPlayedList').addEventListener('click', (e) => {
+      const chip = e.target.closest('.recent-chip');
+      if (!chip) return;
+      playSong(chip.dataset.vid, chip.dataset.title, chip.dataset.thumb, chip.dataset.artist);
+    });
+
+    // Hook into playSong to save recently played
+    const _originalPlaySong = playSong;
+    playSong = function(videoId, title, thumbnail, artist) {
+      _originalPlaySong(videoId, title, thumbnail, artist);
+      saveRecentlyPlayed({ videoId, title, thumbnail, artist });
+    };
+
+    renderRecentlyPlayed();
+
+    // ===== TRENDING / SUGGESTED =====
+    const suggestedTracks = [
+      { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', artist: 'Rick Astley', thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg' },
+      { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/mqdefault.jpg' },
+      { id: 'kJQP7kiw5Fk', title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', thumbnail: 'https://img.youtube.com/vi/kJQP7kiw5Fk/mqdefault.jpg' },
+      { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', artist: 'Alan Walker', thumbnail: 'https://img.youtube.com/vi/60ItHLz5WEA/mqdefault.jpg' },
+      { id: 'JGwWNGJdvx8', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://img.youtube.com/vi/JGwWNGJdvx8/mqdefault.jpg' },
+    ];
+
+    function renderTrending() {
+      const list = document.getElementById('trendingList');
+      list.innerHTML = suggestedTracks.map((t, i) => `
+        <div class="trending-item" data-vid="${t.id}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail)}" data-artist="${escapeHtml(t.artist)}">
+          <span class="trending-rank">${i + 1}</span>
+          <img class="trending-item-thumb" src="${t.thumbnail}" alt="" loading="lazy">
+          <div class="trending-item-info">
+            <div class="trending-item-title">${escapeHtml(t.title)}</div>
+            <div class="trending-item-artist">${escapeHtml(t.artist)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('trendingList').addEventListener('click', (e) => {
+      const item = e.target.closest('.trending-item');
+      if (!item) return;
+      playSong(item.dataset.vid, item.dataset.title, item.dataset.thumb, item.dataset.artist);
+    });
+
+    renderTrending();
+
+    // ===== SEARCH HISTORY =====
+    const MAX_SEARCH_HISTORY = 8;
+
+    function getSearchHistory() {
+      try { return JSON.parse(localStorage.getItem('jj_search_history') || '[]'); } catch { return []; }
+    }
+
+    function saveSearchQuery(query) {
+      if (!query || query.length < 2) return;
+      const history = getSearchHistory().filter(q => q.toLowerCase() !== query.toLowerCase());
+      history.unshift(query);
+      if (history.length > MAX_SEARCH_HISTORY) history.length = MAX_SEARCH_HISTORY;
+      localStorage.setItem('jj_search_history', JSON.stringify(history));
+    }
+
+    function clearSearchHistory() {
+      localStorage.removeItem('jj_search_history');
+      document.getElementById('searchHistory').classList.remove('show');
+    }
+
+    function renderSearchHistory() {
+      const history = getSearchHistory();
+      const container = document.getElementById('searchHistory');
+      const list = document.getElementById('searchHistoryList');
+      if (history.length === 0) { container.classList.remove('show'); return; }
+      list.innerHTML = history.map(q => `
+        <div class="search-history-item" data-query="${escapeHtml(q)}">
+          <span class="search-history-icon">🕐</span>
+          <span>${escapeHtml(q)}</span>
+        </div>
+      `).join('');
+      container.classList.add('show');
+    }
+
+    document.getElementById('searchHistoryList').addEventListener('click', (e) => {
+      const item = e.target.closest('.search-history-item');
+      if (!item) return;
+      document.getElementById('searchInput').value = item.dataset.query;
+      document.getElementById('searchHistory').classList.remove('show');
+      searchYouTube();
+    });
+
+    // Show history on focus, hide on blur
+    document.getElementById('searchInput').addEventListener('focus', () => {
+      const q = document.getElementById('searchInput').value.trim();
+      if (!q && getSearchHistory().length > 0) renderSearchHistory();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        document.getElementById('searchHistory').classList.remove('show');
+      }
+    });
+
+    // Hook searchYouTube to save queries
+    const _originalSearchYouTube = searchYouTube;
+    searchYouTube = async function() {
+      const query = document.getElementById('searchInput').value.trim();
+      document.getElementById('searchHistory').classList.remove('show');
+      await _originalSearchYouTube();
+      if (query) saveSearchQuery(query);
+    };
+
+    // ===== AUDIO VISUALIZER =====
+    const _originalOnPlayerStateChange = onPlayerStateChange;
+    onPlayerStateChange = function(event) {
+      _originalOnPlayerStateChange(event);
+      const viz = document.getElementById('visualizer');
+      if (!viz) return;
+      if (event.data === YT.PlayerState.PLAYING) {
+        viz.classList.add('active');
+      } else {
+        viz.classList.remove('active');
+      }
+    };
+
+    // ===== PAGE TRANSITION =====
+    function navigateWithTransition(url) {
+      const overlay = document.getElementById('pageTransition');
+      overlay.classList.add('active');
+      setTimeout(() => { window.location.href = url; }, 300);
+    }
+
+    // Override startJam to use transition
+    const _originalStartJam = startJam;
+    startJam = async function() {
+      const btn = document.getElementById('startJamBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      try {
+        const res = await fetch('/api/create-room');
+        const data = await res.json();
+        if (data.roomId) {
+          let url = `/room/${data.roomId}`;
+          if (currentTrack) {
+            const p = new URLSearchParams({
+              vid: currentTrack.videoId,
+              title: currentTrack.title,
+              thumb: currentTrack.thumbnail || '',
+              artist: currentTrack.artist || ''
+            });
+            url += '?' + p.toString();
+          }
+          navigateWithTransition(url);
+        } else {
+          showToast('error', 'Failed to create jam. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Start a Jam';
+        }
+      } catch (err) {
+        showToast('error', 'Failed to create jam. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Start a Jam';
+      }
+    };
+
+    // Override joinJam to use transition
+    const _originalJoinJam = joinJam;
+    joinJam = function() {
+      const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
+      if (code) {
+        navigateWithTransition(`/room/${code}`);
+      } else {
+        showToast('warning', 'Please enter a room code');
+      }
+    };
+
+    // ===== OFFLINE INDICATOR =====
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (navigator.onLine) {
+        banner.classList.remove('show');
+      } else {
+        banner.classList.add('show');
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
   </script>
 </body>
