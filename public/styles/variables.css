@@ -24,6 +24,15 @@
   --gradient-hero:    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 70%);
   --gradient-art:     radial-gradient(circle at bottom, rgba(168,85,247,0.25) 0%, transparent 60%);
 
+  /* ===== APP THEME ===== */
+  --bg-home:           linear-gradient(180deg, #3a1c8f 0%, #1e0d6d 40%, #130a45 100%);
+  --bg-room:           #0d1027;
+  --header-home-bg:    rgba(30, 13, 109, 0.92);
+  --btn-success:       #22c55e;
+  --btn-success-hover: #16a34a;
+  --btn-info:          #3b82f6;
+  --btn-info-hover:    #2563eb;
+
   /* ===== TEXT ===== */
   --text-primary:   #ffffff;
   --text-secondary: #9ca3af;

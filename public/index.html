@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
-  <meta name="theme-color" content="#a855f7">
+  <meta name="theme-color" content="#3a1c8f">
   <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
   <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
 
@@ -32,7 +32,7 @@
     <button class="toast-close" onclick="closeToast()">✕</button>
   </div>
 
-  <!-- Join Jam Modal -->
+  <!-- Join Jam Modal (kept for JS compatibility — primary join is inline below) -->
   <div class="modal hidden" id="joinModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -41,14 +41,13 @@
       </div>
       <input
         type="text"
-        id="joinRoomCode"
+        id="joinRoomCodeModal"
         class="input"
         placeholder="Room code (e.g. ABC123)"
         maxlength="10"
-        autofocus
       >
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="joinJam()">Join Now</button>
+        <button class="btn btn-primary" onclick="joinJamModal()">Join Now</button>
       </div>
     </div>
   </div>
@@ -56,91 +55,84 @@
   <!-- Header -->
   <header class="header">
     <div class="header-container">
+      <button class="header-menu" aria-label="Menu">☰</button>
       <a href="/" class="logo">
         <span class="logo-icon">🎵</span>
-        <span>Jim-jam</span>
+        <span>Jim-Jam</span>
       </a>
       <div class="header-actions">
-        <button class="btn btn-ghost install-btn" id="installBtn" style="display:none" onclick="installApp()">
-          ⬇ Install
-        </button>
-        <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
-        <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
-          Start a Jam
-        </button>
+        <button class="header-icon-btn" id="installBtn" style="display:none" onclick="installApp()" title="Install App">⬇</button>
+        <button class="header-icon-btn" aria-label="Headphones">🎧</button>
       </div>
     </div>
   </header>
 
-  <!-- Main Player Layout -->
+  <!-- Main Content -->
   <main class="home-main">
 
-    <!-- Left: Now Playing -->
-    <section class="now-playing-panel">
-      <div class="now-playing-area">
-        <div class="album-art-container" id="albumArtContainer">
-          <div class="no-music" id="noMusic">
-            <span class="no-music-icon">🎵</span>
-            <p class="no-music-text">Search for a song to start listening</p>
-          </div>
-          <img class="album-art" id="albumArt" src="" alt="Album Art">
-        </div>
+    <!-- Tagline -->
+    <p class="home-tagline">Listen to <strong>YouTube</strong> music in real-time sync with your friends.</p>
 
-        <div class="track-info" id="trackInfo" style="display: none;">
-          <div class="track-title" id="trackTitle">Song Title</div>
-          <div class="track-artist" id="trackArtist">Artist Name</div>
-        </div>
-
-        <!-- Jam CTA (shown when song is playing) -->
-        <div class="jam-cta" id="jamCta" style="display: none;">
-          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
-          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
-            🎧 Start a Jam
-          </button>
-        </div>
+    <!-- Search -->
+    <div>
+      <div class="home-search">
+        <input
+          type="text"
+          id="searchInput"
+          class="input"
+          placeholder="Search for a song or video..."
+          autocomplete="off"
+        >
+        <button class="btn" onclick="searchYouTube()">🔍</button>
       </div>
-    </section>
+      <div class="search-results" id="searchResults"></div>
+    </div>
 
-    <!-- Right: Discovery / Search -->
-    <section class="discovery-panel">
-      <div class="discovery-header">
-        <h2 class="discovery-title">Discover Music</h2>
-        <p class="discovery-subtitle">Search any song from YouTube</p>
+    <!-- Quick Play -->
+    <div class="quick-play-section">
+      <p class="section-label">Quick Play</p>
+      <div class="quick-play-row" onclick="scrollToSearch()">
+        <div class="quick-play-icon">▶</div>
+        <span class="quick-play-label">Play Solo</span>
+        <span class="quick-play-chevron">›</span>
       </div>
+    </div>
 
-      <!-- Search -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input
-            type="text"
-            id="searchInput"
-            class="input input-search"
-            placeholder="Search songs, artists, albums..."
-            autocomplete="off"
-          >
-          <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
-        </div>
-        <div class="search-results" id="searchResults"></div>
-      </div>
+    <!-- Start a Jam -->
+    <div class="jam-section">
+      <p class="section-label">Start a Jam</p>
+      <button class="btn btn-success" onclick="startJam()" id="startJamBtn">
+        ▶ Create a Jam Room
+      </button>
+    </div>
 
-      <!-- Trending / placeholder when no search -->
-      <div class="no-search-placeholder" id="noSearchPlaceholder">
-        <div class="placeholder-items">
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🔍</span>
-            <span>Search for your favorite songs</span>
-          </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🎧</span>
-            <span>Play anything from YouTube</span>
-          </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">👥</span>
-            <span>Start a Jam to listen with friends</span>
-          </div>
-        </div>
+    <!-- Join a Jam -->
+    <div class="join-section">
+      <p class="section-label">Join a Jam</p>
+      <div class="join-input-row">
+        <input
+          type="text"
+          id="joinRoomCode"
+          class="input"
+          placeholder="Enter Room Code"
+          maxlength="10"
+          autocomplete="off"
+        >
+        <button class="btn btn-info" onclick="joinJam()">Join Room</button>
       </div>
-    </section>
+    </div>
+
+    <!-- Hidden elements required by JS (album art, track info, jam CTA) -->
+    <div id="albumArtContainer" aria-hidden="true">
+      <img class="album-art" id="albumArt" src="" alt="Album Art">
+    </div>
+    <div id="trackInfo" aria-hidden="true">
+      <div id="trackTitle"></div>
+      <div id="trackArtist"></div>
+    </div>
+    <div id="jamCta" aria-hidden="true">
+      <button class="btn btn-primary" onclick="startJam()">🎧 Start a Jam</button>
+    </div>
 
   </main>
 
@@ -251,18 +243,15 @@
       if (event.data === YT.PlayerState.PLAYING) {
         isPlaying = true;
         document.getElementById('playPauseBtn').textContent = '⏸️';
-        document.getElementById('albumArtContainer').classList.add('playing');
         startProgressTracking();
         document.getElementById('playerProgress').style.display = '';
       } else if (event.data === YT.PlayerState.PAUSED) {
         isPlaying = false;
         document.getElementById('playPauseBtn').textContent = '▶️';
-        document.getElementById('albumArtContainer').classList.remove('playing');
         stopProgressTracking();
       } else if (event.data === YT.PlayerState.ENDED) {
         isPlaying = false;
         document.getElementById('playPauseBtn').textContent = '▶️';
-        document.getElementById('albumArtContainer').classList.remove('playing');
         stopProgressTracking();
       }
     }
@@ -358,17 +347,6 @@
     function _applyTrackUI(videoId, title, thumbnail, artist) {
       const thumb = thumbnail || `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
 
-      // Album art
-      const artImg = document.getElementById('albumArt');
-      artImg.src = thumb;
-      artImg.classList.add('active');
-      document.getElementById('noMusic').style.display = 'none';
-
-      // Track info
-      document.getElementById('trackTitle').textContent = title;
-      document.getElementById('trackArtist').textContent = artist || 'YouTube';
-      document.getElementById('trackInfo').style.display = '';
-
       // Player bar thumbnail + labels
       const barThumb = document.getElementById('playerBarThumb');
       barThumb.src = thumb;
@@ -383,12 +361,8 @@
         document.body.classList.add('player-active');
       }
 
-      // Show jam CTA + bar jam button
-      document.getElementById('jamCta').style.display = '';
+      // Show bar jam button
       document.getElementById('playerBarJamBtn').style.display = '';
-
-      // Hide search placeholder
-      document.getElementById('noSearchPlaceholder').style.display = 'none';
     }
 
     // ===== SEARCH =====
@@ -399,7 +373,6 @@
       const resultsEl = document.getElementById('searchResults');
       resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Searching...</div>';
       resultsEl.classList.add('active');
-      document.getElementById('noSearchPlaceholder').style.display = 'none';
 
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
@@ -437,6 +410,13 @@
       resultsEl.classList.remove('active');
     }
 
+    // Scroll search input into view and focus
+    function scrollToSearch() {
+      const input = document.getElementById('searchInput');
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
+    }
+
     // ===== JAM CONTROLS =====
     async function startJam() {
       const btn = document.getElementById('startJamBtn');
@@ -462,22 +442,33 @@
         } else {
           showToast('error', 'Failed to create jam. Please try again.');
           btn.disabled = false;
-          btn.textContent = 'Start a Jam';
+          btn.textContent = '▶ Create a Jam Room';
         }
       } catch (err) {
         showToast('error', 'Failed to create jam. Please try again.');
         btn.disabled = false;
-        btn.textContent = 'Start a Jam';
+        btn.textContent = '▶ Create a Jam Room';
       }
     }
 
     function openJoinModal() {
-      document.getElementById('joinModal').classList.remove('hidden');
-      setTimeout(() => document.getElementById('joinRoomCode').focus(), 50);
+      // Primary join is inline — just focus the inline input
+      const input = document.getElementById('joinRoomCode');
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
     }
 
     function closeJoinModal() {
       document.getElementById('joinModal').classList.add('hidden');
+    }
+
+    function joinJamModal() {
+      const code = document.getElementById('joinRoomCodeModal').value.trim().toUpperCase();
+      if (code) {
+        window.location.href = `/room/${code}`;
+      } else {
+        showToast('warning', 'Please enter a room code');
+      }
     }
 
     function joinJam() {
@@ -514,7 +505,7 @@
 
     // ===== EVENT LISTENERS =====
 
-    // Delegated click for search results (avoids inline onclick quoting issues)
+    // Delegated click for search results
     document.getElementById('searchResults').addEventListener('click', (e) => {
       const row = e.target.closest('.search-result');
       if (!row) return;
@@ -535,7 +526,6 @@
         searchTimeout = setTimeout(searchYouTube, 500);
       } else if (!q) {
         closeSearchResults();
-        document.getElementById('noSearchPlaceholder').style.display = '';
       }
     });
 
@@ -543,19 +533,12 @@
       if (e.key === 'Enter') joinJam();
     });
 
-    // Close modal on backdrop click
-    document.getElementById('joinModal').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('joinModal')) closeJoinModal();
-    });
-
     // ===== PWA — Service Worker + Install Prompt =====
 
-    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    // Capture install prompt (Android Chrome / Edge)
     let deferredInstallPrompt = null;
 
     window.addEventListener('beforeinstallprompt', (e) => {

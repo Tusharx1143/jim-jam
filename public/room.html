@@ -60,21 +60,19 @@
   <!-- Header -->
   <header class="room-header">
     <div class="room-header-container">
-      <a href="/" class="room-logo">
-        <span>🎵</span>
-        <span>Jim-jam</span>
-      </a>
+      <!-- Left: room code + copy -->
+      <div class="room-header-left room-info">
+        <span class="room-code-display">Room: <strong id="roomCodeDisplay"></strong></span>
+        <button class="room-header-icon" onclick="copyRoomLink()" title="Copy Room Link">🔗</button>
+      </div>
 
-      <div class="room-info">
-        <span class="room-code-display">
-          Room: <strong id="roomCodeDisplay"></strong>
-        </span>
-        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="copyRoomLink()">
-          Copy Link
-        </button>
-        <a href="/" class="btn btn-ghost" style="padding: 8px 14px; font-size: 13px;">
-          Leave
-        </a>
+      <!-- Center: logo -->
+      <a href="/" class="room-logo">🎵 Jam Room</a>
+
+      <!-- Right: chat shortcut + leave -->
+      <div class="room-header-right">
+        <button class="room-header-icon" onclick="switchTab('chat')" title="Chat">💬</button>
+        <a href="/" class="room-header-icon" title="Leave Room">✕</a>
       </div>
     </div>
   </header>
@@ -150,7 +148,7 @@
             class="input"
             placeholder="Say something..."
           >
-          <button class="btn btn-primary" onclick="sendChat()" style="padding: 12px 20px;">
+          <button class="btn btn-success" onclick="sendChat()">
             Send
           </button>
         </div>
