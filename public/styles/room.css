@@ -1,56 +1,40 @@
 /**
  * Jim-Jam Room Page
- * Dark navy app layout with inline player + sidebar chat
+ * Spotify-style layout: bottom player bar + tabbed sidebar
  */
 
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--bg-room);
+  /* Make room at the bottom for the player bar */
   padding-bottom: var(--player-height);
 }
 
-/* ===== HEADER ===== */
+/* ===== MINIMAL HEADER ===== */
 
 .room-header {
-  background: rgba(13, 16, 39, 0.95);
+  background: rgba(10, 10, 15, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px var(--space-xl);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
 }
 
 .room-header-container {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   max-width: 1800px;
   margin: 0 auto;
-  padding: 0 var(--space-md);
-  gap: var(--space-sm);
-}
-
-.room-header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.room-header-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-sm);
 }
 
 .room-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-sm);
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
@@ -59,30 +43,10 @@ body {
   letter-spacing: -0.02em;
 }
 
-.room-header-icon {
-  width: 38px;
-  height: 38px;
-  background: rgba(255,255,255,0.08);
-  border: none;
-  border-radius: 50%;
-  color: var(--text-secondary);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--transition-fast), color var(--transition-fast);
-}
-
-.room-header-icon:hover {
-  background: rgba(255,255,255,0.14);
-  color: var(--text-primary);
-}
-
 .room-info {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .room-code-display {
@@ -116,10 +80,10 @@ body {
   flex-direction: column;
   padding: var(--space-xl);
   gap: var(--space-lg);
-  border-right: 1px solid rgba(255,255,255,0.07);
+  border-right: 1px solid var(--border-subtle);
 }
 
-/* Now-playing area */
+/* Now-playing card — big centered album art */
 .now-playing-area {
   display: flex;
   flex-direction: column;
@@ -138,12 +102,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.7);
+  box-shadow: var(--shadow-art);
   transition: box-shadow var(--transition-slow);
 }
 
 .album-art-container.playing {
-  box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 60px var(--accent-glow-strong);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 60px var(--accent-glow-strong);
 }
 
 .album-art {
@@ -174,7 +138,7 @@ body {
 
 .track-info {
   text-align: center;
-  margin-top: var(--space-lg);
+  margin-top: var(--space-xl);
   width: 100%;
   max-width: 400px;
 }
@@ -292,15 +256,14 @@ body {
 .sidebar {
   display: flex;
   flex-direction: column;
-  background: rgba(10, 12, 30, 0.8);
-  border-left: 1px solid rgba(255,255,255,0.07);
+  background: var(--bg-secondary);
   overflow: hidden;
 }
 
 /* Tabs */
 .sidebar-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid var(--border-subtle);
   padding: 0 var(--space-md);
   flex-shrink: 0;
 }
@@ -323,7 +286,9 @@ body {
   margin-bottom: -1px;
 }
 
-.sidebar-tab:hover { color: var(--text-secondary); }
+.sidebar-tab:hover {
+  color: var(--text-secondary);
+}
 
 .sidebar-tab.active {
   color: var(--text-primary);
@@ -452,10 +417,8 @@ body {
 }
 
 .chat-message {
-  display: flex;
-  gap: var(--space-sm);
   padding: 8px var(--space-sm);
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-hover);
   border-radius: var(--radius-md);
 }
 
@@ -463,7 +426,6 @@ body {
   background: transparent;
   padding: 2px 0;
   text-align: center;
-  display: block;
 }
 
 .chat-user {
@@ -494,11 +456,6 @@ body {
 
 .chat-input-wrapper .input { flex: 1; }
 
-.chat-input-wrapper .btn-success {
-  padding: 12px 18px;
-  font-size: var(--text-sm);
-}
-
 /* ===== BOTTOM PLAYER BAR ===== */
 
 .player-bar {
@@ -507,10 +464,10 @@ body {
   left: 0;
   right: 0;
   height: var(--player-height);
-  background: rgba(8, 10, 25, 0.97);
+  background: var(--bg-player);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid var(--border-subtle);
   z-index: var(--z-player);
   display: flex;
   align-items: center;
@@ -539,7 +496,9 @@ body {
 
 .player-bar-thumb.visible { display: block; }
 
-.player-bar-info { min-width: 0; }
+.player-bar-info {
+  min-width: 0;
+}
 
 .player-bar-title {
   font-size: var(--text-sm);
@@ -633,7 +592,7 @@ body {
   transform: translateX(-50%) translateY(-2px);
 }
 
-/* Sidebar user count badge */
+/* Sidebar user count */
 .sidebar-tab-count {
   display: inline-flex;
   align-items: center;

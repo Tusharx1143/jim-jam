@@ -11,29 +11,61 @@
     --player-height: 70px;
   }
 
-  /* Home — already single-column, just tighten padding */
+  /* Home */
+  .header-container { padding: 0 var(--space-md); }
+  .header-actions { gap: 6px; }
+  .header-actions .btn-ghost { display: none; }
+
   .home-main {
-    padding: var(--space-md) var(--space-md) var(--space-2xl);
-    gap: var(--space-md);
+    grid-template-columns: 1fr;
   }
 
-  /* Room header */
-  .room-header-container {
-    padding: 0 var(--space-sm);
+  .now-playing-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-md);
   }
 
-  .room-code-display {
-    display: none;
+  .album-art-container {
+    width: 180px;
+    height: 180px;
   }
+
+  .jam-cta { max-width: 100%; }
+
+  .discovery-panel {
+    padding: var(--space-md);
+  }
+
+  .search-input-wrapper { flex-direction: column; }
+  .search-input-wrapper .btn { width: 100%; }
 
   /* Room */
+  .room-header {
+    padding: 10px var(--space-md);
+  }
+
+  .room-header-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .room-logo { justify-content: center; }
+
+  .room-info {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
   .room-content {
     grid-template-columns: 1fr;
   }
 
   .player-section {
     border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid var(--border-subtle);
     padding: var(--space-md);
   }
 
@@ -48,6 +80,14 @@
     letter-spacing: 0.04em;
   }
 
+  .search-input-wrapper {
+    flex-direction: column;
+  }
+
+  .search-input-wrapper .btn { width: 100%; }
+
+  .search-results { max-height: 260px; }
+
   .search-result { flex-wrap: wrap; }
 
   .search-result-actions {
@@ -58,7 +98,7 @@
 
   .search-result-actions .btn { flex: 1; }
 
-  /* Bottom player bar on mobile — compact */
+  /* Bottom player bar on mobile — compact horizontal */
   .player-bar {
     padding: 0 var(--space-md);
     gap: var(--space-sm);
@@ -113,25 +153,23 @@
   .audio-prompt:hover {
     transform: translateY(-2px);
   }
-
-  /* Home join row */
-  .join-input-row {
-    flex-direction: column;
-  }
-
-  .join-input-row .btn-info { width: 100%; }
-
-  /* Home search */
-  .home-search .btn {
-    padding: 12px 16px;
-  }
 }
 
 /* ===== TABLET (640px - 768px) ===== */
 @media (min-width: 640px) and (max-width: 768px) {
-  /* Home — expand max-width slightly */
+  /* Home */
   .home-main {
-    max-width: 600px;
+    grid-template-columns: 1fr;
+  }
+
+  .now-playing-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .album-art-container {
+    width: 240px;
+    height: 240px;
   }
 
   /* Room */
@@ -141,20 +179,15 @@
 
   .player-section {
     border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-
-  .album-art-container {
-    width: 240px;
-    height: 240px;
+    border-bottom: 1px solid var(--border-subtle);
   }
 }
 
 /* ===== SMALL DESKTOP (768px - 1024px) ===== */
 @media (min-width: 768px) and (max-width: 1024px) {
-  /* Home — max-width grows a bit */
+  /* Home */
   .home-main {
-    max-width: 600px;
+    grid-template-columns: 1fr 320px;
   }
 
   /* Room */
@@ -174,6 +207,10 @@
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
+  .home-main {
+    grid-template-columns: 1fr 480px;
+  }
+
   .room-content {
     grid-template-columns: 1fr 420px;
   }
@@ -216,7 +253,7 @@
   }
 
   /* Disable hover transforms on touch */
-  .btn-success:hover,
+  .feature-card:hover,
   .btn-primary:hover {
     transform: none;
   }
