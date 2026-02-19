@@ -6,7 +6,6 @@
 /* ===== MOBILE (< 640px) ===== */
 @media (max-width: 640px) {
 
-  /* Player bar compact on mobile */
   :root {
     --player-height: 70px;
   }
@@ -20,9 +19,13 @@
     grid-template-columns: 1fr;
   }
 
-  .now-playing-panel {
+  .discovery-panel {
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-md);
+  }
+
+  .now-playing-panel {
     padding: var(--space-md);
   }
 
@@ -32,10 +35,6 @@
   }
 
   .jam-cta { max-width: 100%; }
-
-  .discovery-panel {
-    padding: var(--space-md);
-  }
 
   .search-input-wrapper { flex-direction: column; }
   .search-input-wrapper .btn { width: 100%; }
@@ -69,22 +68,11 @@
     padding: var(--space-md);
   }
 
-  .album-art-container {
-    width: 200px;
-    height: 200px;
-  }
-
   .sidebar-tab {
     font-size: 10px;
     padding: var(--space-sm) 4px;
     letter-spacing: 0.04em;
   }
-
-  .search-input-wrapper {
-    flex-direction: column;
-  }
-
-  .search-input-wrapper .btn { width: 100%; }
 
   .search-results { max-height: 260px; }
 
@@ -162,7 +150,7 @@
     grid-template-columns: 1fr;
   }
 
-  .now-playing-panel {
+  .discovery-panel {
     border-right: none;
     border-bottom: 1px solid var(--border-subtle);
   }
@@ -187,7 +175,7 @@
 @media (min-width: 768px) and (max-width: 1024px) {
   /* Home */
   .home-main {
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 1fr;
   }
 
   /* Room */
@@ -208,7 +196,8 @@
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
   .home-main {
-    grid-template-columns: 1fr 480px;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1400px;
   }
 
   .room-content {
@@ -248,13 +237,14 @@
   }
 
   .search-result-thumbnail {
-    width: 88px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
   }
 
   /* Disable hover transforms on touch */
   .feature-card:hover,
-  .btn-primary:hover {
+  .btn-primary:hover,
+  .btn-gradient:hover {
     transform: none;
   }
 }

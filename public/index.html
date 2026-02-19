@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
-  <meta name="theme-color" content="#a855f7">
+  <meta name="theme-color" content="#6366f1">
   <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
   <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
 
@@ -65,43 +65,17 @@
           ⬇ Install
         </button>
         <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
-        <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
+        <button class="btn btn-gradient" onclick="startJam()" id="startJamBtn">
           Start a Jam
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Player Layout -->
+  <!-- Main Layout -->
   <main class="home-main">
 
-    <!-- Left: Now Playing -->
-    <section class="now-playing-panel">
-      <div class="now-playing-area">
-        <div class="album-art-container" id="albumArtContainer">
-          <div class="no-music" id="noMusic">
-            <span class="no-music-icon">🎵</span>
-            <p class="no-music-text">Search for a song to start listening</p>
-          </div>
-          <img class="album-art" id="albumArt" src="" alt="Album Art">
-        </div>
-
-        <div class="track-info" id="trackInfo" style="display: none;">
-          <div class="track-title" id="trackTitle">Song Title</div>
-          <div class="track-artist" id="trackArtist">Artist Name</div>
-        </div>
-
-        <!-- Jam CTA (shown when song is playing) -->
-        <div class="jam-cta" id="jamCta" style="display: none;">
-          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
-          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
-            🎧 Start a Jam
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right: Discovery / Search -->
+    <!-- Left: Discovery / Search -->
     <section class="discovery-panel">
       <div class="discovery-header">
         <h2 class="discovery-title">Discover Music</h2>
@@ -123,7 +97,7 @@
         <div class="search-results" id="searchResults"></div>
       </div>
 
-      <!-- Trending / placeholder when no search -->
+      <!-- Placeholder when no search -->
       <div class="no-search-placeholder" id="noSearchPlaceholder">
         <div class="placeholder-items">
           <div class="placeholder-hint">
@@ -138,6 +112,32 @@
             <span class="placeholder-icon">👥</span>
             <span>Start a Jam to listen with friends</span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Now Playing -->
+    <section class="now-playing-panel">
+      <div class="now-playing-area">
+        <div class="album-art-container" id="albumArtContainer">
+          <div class="no-music" id="noMusic">
+            <span class="no-music-icon">🎵</span>
+            <p class="no-music-text">Search for a song to start listening</p>
+          </div>
+          <img class="album-art" id="albumArt" src="" alt="Album Art">
+        </div>
+
+        <div class="track-info" id="trackInfo" style="display: none;">
+          <div class="track-title" id="trackTitle">Song Title</div>
+          <div class="track-artist" id="trackArtist">Artist Name</div>
+        </div>
+
+        <!-- Jam CTA (shown when song is playing) -->
+        <div class="jam-cta" id="jamCta" style="display: none;">
+          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
+          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
+            🎧 Start a Jam
+          </button>
         </div>
       </div>
     </section>

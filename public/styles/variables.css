@@ -1,33 +1,33 @@
 /**
  * Jim-Jam Design System — Variables
- * Spotify-inspired premium dark theme
+ * Clean dark theme with blue-indigo accents
  */
 
 :root {
   /* ===== BACKGROUNDS ===== */
-  --bg-primary:   #0a0a0f;   /* Page background */
-  --bg-secondary: #13131f;   /* Cards, panels */
-  --bg-elevated:  #1a1a2a;   /* Raised surfaces */
-  --bg-hover:     #1e1e30;   /* Hover state */
-  --bg-active:    #252540;   /* Selected / active */
-  --bg-player:    rgba(13, 13, 20, 0.97); /* Bottom player bar */
+  --bg-primary:   #0a0a14;
+  --bg-secondary: #111827;
+  --bg-elevated:  #1a1f35;
+  --bg-hover:     #1e2540;
+  --bg-active:    #252d4a;
+  --bg-player:    rgba(10, 10, 20, 0.97);
 
   /* ===== ACCENTS ===== */
-  --accent-primary:   #a855f7;                  /* Vivid purple */
-  --accent-hover:     #c084fc;                  /* Lighter on hover */
-  --accent-secondary: #f472b6;                  /* Pink highlight */
-  --accent-glow:      rgba(168, 85, 247, 0.22); /* Soft glow */
-  --accent-glow-strong: rgba(168, 85, 247, 0.4);
+  --accent-primary:   #6366f1;
+  --accent-hover:     #818cf8;
+  --accent-secondary: #a78bfa;
+  --accent-glow:      rgba(99, 102, 241, 0.22);
+  --accent-glow-strong: rgba(99, 102, 241, 0.4);
 
   /* ===== GRADIENTS ===== */
-  --gradient-accent:  linear-gradient(135deg, #e2e8f0 0%, #a855f7 55%, #f472b6 100%);
-  --gradient-hero:    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(168,85,247,0.18) 0%, transparent 70%);
-  --gradient-art:     radial-gradient(circle at bottom, rgba(168,85,247,0.25) 0%, transparent 60%);
+  --gradient-accent:  linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
+  --gradient-hero:    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 70%);
+  --gradient-art:     radial-gradient(circle at bottom, rgba(99,102,241,0.25) 0%, transparent 60%);
 
   /* ===== TEXT ===== */
   --text-primary:   #ffffff;
-  --text-secondary: #9ca3af;
-  --text-muted:     #4b5563;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
 
   /* ===== BORDERS ===== */
   --border-subtle: rgba(255, 255, 255, 0.06);
