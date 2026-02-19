@@ -225,6 +225,7 @@
             if (pendingTrack) {
               const t = pendingTrack;
               pendingTrack = null;
+              currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
               // If user switched song while player was loading, seek to it;
               // otherwise the constructor's autoplay already started it.
               if (t.videoId !== videoId) {
@@ -262,7 +263,7 @@
 
     // ===== PLAYBACK CONTROLS =====
     function togglePlay() {
-      if (!player || !playerReady || !currentTrack) return;
+      if (!player || !playerReady) return;
       if (isPlaying) {
         player.pauseVideo();
       } else {
