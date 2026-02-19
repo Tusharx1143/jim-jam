@@ -257,10 +257,12 @@
               const t = pendingTrack;
               pendingTrack = null;
               currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
-              // If user switched song while player was loading, seek to it;
-              // otherwise the constructor's autoplay already started it.
+              // If user switched song while player was loading, load new video;
+              // otherwise explicitly call playVideo — never rely on autoplay on mobile.
               if (t.videoId !== videoId) {
                 player.loadVideoById(t.videoId);
+              } else {
+                player.playVideo();
               }
               _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
             }
