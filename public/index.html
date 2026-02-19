@@ -855,6 +855,21 @@
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
 
+    // ===== BFCACHE CLEANUP =====
+    // When user navigates back, browser restores page from bfcache with
+    // the page-transition overlay still active — blocking all clicks.
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) {
+        // Remove page transition overlay
+        const overlay = document.getElementById('pageTransition');
+        if (overlay) overlay.classList.remove('active');
+
+        // Re-enable startJam button in case it was left disabled
+        const btn = document.getElementById('startJamBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Start a Jam'; }
+      }
+    });
+
   </script>
 </body>
 </html>
