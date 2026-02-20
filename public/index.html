@@ -201,7 +201,6 @@
   <script>
     // ===== STATE =====
     let player = null;
-    let ytApiLoaded = false;
     let playerReady = false;
     let pendingTrack = null;
     let currentTrack = null;
@@ -210,25 +209,15 @@
     let isPlaying = false;
 
     // ===== YOUTUBE PLAYER =====
-    // Called by YouTube IFrame API when its script is ready
+    // Called by YouTube IFrame API when its script is ready.
+    // Create the player immediately — no videoId yet, no autoplay.
+    // This means onReady fires fast, before the user even clicks anything.
     function onYouTubeIframeAPIReady() {
-      ytApiLoaded = true;
-      // If user clicked play before the API loaded, create player now
-      if (pendingTrack) {
-        _createPlayer(pendingTrack.videoId);
-      }
-    }
-
-    // Lazily create the player the first time a song is played.
-    // Passing videoId to the constructor guarantees onReady fires.
-    function _createPlayer(videoId) {
-      if (player) return;
       player = new YT.Player('hiddenPlayer', {
         height: '360',
         width: '640',
-        videoId: videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           disablekb: 1,
           fs: 0,
@@ -238,19 +227,15 @@
           playsinline: 1,
         },
         events: {
-          onReady: () => {
+          onReady: function () {
             playerReady = true;
+            // If user already clicked a song while player was loading, play it now
             if (pendingTrack) {
               const t = pendingTrack;
               pendingTrack = null;
               currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
-              // If user switched song while player was loading, load new video;
-              // otherwise explicitly call playVideo — never rely on autoplay on mobile.
-              if (t.videoId !== videoId) {
-                player.loadVideoById(t.videoId);
-              } else {
-                player.playVideo();
-              }
+              player.loadVideoById(t.videoId);
+              player.playVideo();
               _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
             }
           },
@@ -348,25 +333,19 @@
 
     // ===== PLAY SONG =====
     function playSong(videoId, title, thumbnail, artist) {
-      // Always store as pending so onReady can pick it up if needed
-      pendingTrack = { videoId, title, thumbnail, artist };
-
       if (playerReady) {
-        // Player already initialised — just load the new video
-        pendingTrack = null;
+        // Player is ready — load and play immediately within the user gesture
         currentTrack = { videoId, title, thumbnail, artist };
+        pendingTrack = null;
         player.loadVideoById(videoId);
-        // Explicit playVideo() call within the user gesture unlocks audio on mobile
-        player.playVideo();
+        player.playVideo();  // must be called explicitly — autoplay blocked on mobile
         _applyTrackUI(videoId, title, thumbnail, artist);
-      } else if (!player && ytApiLoaded) {
-        // First play, API ready — create player now with this video
-        _createPlayer(videoId);
-      } else if (!player && !ytApiLoaded) {
-        // API script still loading — onYouTubeIframeAPIReady will create player
-        showToast('info', 'Loading player…');
+      } else {
+        // Player not ready yet (API still loading or onReady not fired) —
+        // queue the track silently, it will play the moment onReady fires.
+        pendingTrack = { videoId, title, thumbnail, artist };
+        _applyTrackUI(videoId, title, thumbnail, artist); // update UI immediately
       }
-      // else: pre-warmed player exists but onReady hasn't fired yet — pendingTrack will be picked up
     }
 
     // Update all UI elements for the now-playing track
@@ -832,47 +811,7 @@
       }
     };
 
-    // ===== PRE-WARM PLAYER =====
-    // Wrap onYouTubeIframeAPIReady to pre-create the player as soon as the
-    // API loads — before the user clicks anything. This way the first click
-    // goes straight to loadVideoById instead of showing "Loading player…".
-    const _originalYTAPIReady = onYouTubeIframeAPIReady;
-    onYouTubeIframeAPIReady = function () {
-      _originalYTAPIReady(); // sets ytApiLoaded=true, handles any pendingTrack
-      // If no pendingTrack was handled (player not yet created), pre-warm now
-      if (!player) {
-        player = new YT.Player('hiddenPlayer', {
-          height: '360',
-          width: '640',
-          playerVars: {
-            autoplay: 0,
-            controls: 0,
-            disablekb: 1,
-            fs: 0,
-            iv_load_policy: 3,
-            modestbranding: 1,
-            rel: 0,
-            playsinline: 1,
-          },
-          events: {
-            onReady: function () {
-              playerReady = true;
-              if (pendingTrack) {
-                const t = pendingTrack;
-                pendingTrack = null;
-                currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
-                player.loadVideoById(t.videoId);
-                // Must call playVideo() — loadVideoById alone won't start playback
-                player.playVideo();
-                _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
-              }
-            },
-            onStateChange: onPlayerStateChange,
-            onError: onPlayerError
-          }
-        });
-      }
-    };
+    // (Pre-warm block removed — player is now created directly in onYouTubeIframeAPIReady above)
 
     // ===== OFFLINE INDICATOR =====
     function updateOnlineStatus() {
