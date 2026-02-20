@@ -670,11 +670,22 @@
       playSong(chip.dataset.vid, chip.dataset.title, chip.dataset.thumb, chip.dataset.artist);
     });
 
-    // Hook into playSong to save recently played
+    // Hook into playSong to save recently played + fix mobile audio
     const _originalPlaySong = playSong;
     playSong = function(videoId, title, thumbnail, artist) {
+      // Capture playerReady BEFORE calling original — if true, loadVideoById
+      // will be called inside _originalPlaySong. We then need an explicit
+      // playVideo() call here (still within the user gesture) to unlock audio
+      // on mobile browsers that block autoplay for pre-warmed players.
+      const wasReady = playerReady;
       _originalPlaySong(videoId, title, thumbnail, artist);
       saveRecentlyPlayed({ videoId, title, thumbnail, artist });
+      // Mobile autoplay fix: calling playVideo() synchronously within a user
+      // gesture (click event) grants audio permission on iOS/Android even if
+      // the player was created without a user gesture (pre-warmed).
+      if (wasReady && player) {
+        player.playVideo();
+      }
     };
 
     renderRecentlyPlayed();
