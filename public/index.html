@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <!-- Header -->
+  <!-- Header with Search -->
   <header class="header">
     <div class="header-container">
       <a href="/" class="logo">
@@ -76,19 +76,7 @@
         </button>
       </div>
     </div>
-  </header>
-
-  <!-- Main Layout -->
-  <main class="home-main">
-
-    <!-- Left: Discovery / Search -->
-    <section class="discovery-panel">
-      <div class="discovery-header">
-        <h2 class="discovery-title">Discover Music</h2>
-        <p class="discovery-subtitle">Search any song from YouTube</p>
-      </div>
-
-      <!-- Search -->
+    <div class="header-search">
       <div class="search-container" style="position: relative;">
         <div class="search-input-wrapper">
           <input
@@ -98,7 +86,7 @@
             placeholder="Search songs, artists, albums..."
             autocomplete="off"
           >
-          <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
+          <button class="btn btn-primary search-btn" onclick="searchYouTube()">Search</button>
         </div>
         <!-- Search History Dropdown -->
         <div class="search-history" id="searchHistory">
@@ -110,25 +98,14 @@
         </div>
         <div class="search-results" id="searchResults"></div>
       </div>
+    </div>
+  </header>
 
-      <!-- Recently Played -->
-      <div class="recently-played" id="recentlyPlayed" style="display: none;">
-        <div class="recently-played-title">Recently Played</div>
-        <div class="recently-played-list" id="recentlyPlayedList"></div>
-      </div>
+  <!-- Single-Column Feed -->
+  <main class="home-main">
 
-      <!-- Placeholder when no search -->
-      <div class="no-search-placeholder" id="noSearchPlaceholder">
-        <!-- Trending Section -->
-        <div class="trending-section" id="trendingSection">
-          <div class="trending-title">Suggested for you</div>
-          <div class="trending-list" id="trendingList"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right: Now Playing -->
-    <section class="now-playing-panel">
+    <!-- Hero: Now Playing -->
+    <section class="hero-section">
       <div class="now-playing-area">
         <div class="album-art-container" id="albumArtContainer">
           <div class="no-music" id="noMusic">
@@ -151,12 +128,29 @@
           <div class="track-artist" id="trackArtist">Artist Name</div>
         </div>
 
-        <!-- Jam CTA (shown when song is playing) -->
         <div class="jam-cta" id="jamCta" style="display: none;">
           <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
           <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
             🎧 Start a Jam
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recently Played Carousel -->
+    <section class="feed-section">
+      <div class="recently-played" id="recentlyPlayed" style="display: none;">
+        <div class="recently-played-title">Recently Played</div>
+        <div class="recently-played-list" id="recentlyPlayedList"></div>
+      </div>
+    </section>
+
+    <!-- Trending / Suggested Carousel -->
+    <section class="feed-section">
+      <div class="no-search-placeholder" id="noSearchPlaceholder">
+        <div class="trending-section" id="trendingSection">
+          <div class="trending-title">Suggested for you</div>
+          <div class="trending-list" id="trendingList"></div>
         </div>
       </div>
     </section>

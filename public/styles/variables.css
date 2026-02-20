@@ -96,4 +96,12 @@
 
   /* ===== PLAYER BAR ===== */
   --player-height: 88px;
+
+  /* ===== FEED LAYOUT ===== */
+  --bg-card:           #151929;
+  --radius-card:       8px;
+  --carousel-gap:      12px;
+  --feed-max-width:    680px;
+  --header-height:     56px;
+  --search-bar-height: 48px;
 }

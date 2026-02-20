@@ -1,6 +1,6 @@
 /**
  * Jim-Jam Responsive Styles
- * Mobile-first design for all breakpoints
+ * Mobile-first single-column feed layout
  */
 
 /* ===== MOBILE (< 640px) ===== */
@@ -10,40 +10,36 @@
     --player-height: 70px;
   }
 
-  /* Home */
+  /* Header */
   .header-container { padding: 0 var(--space-md); }
-  .header-actions { gap: 6px; }
+  .header-actions { gap: 4px; }
   .header-actions .btn-ghost { display: none; }
+  .header-actions .btn-gradient {
+    padding: 8px 16px;
+    font-size: var(--text-xs);
+  }
 
+  /* Feed */
   .home-main {
-    grid-template-columns: 1fr;
-  }
-
-  .discovery-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-    padding: var(--space-md);
-  }
-
-  .now-playing-panel {
-    padding: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
+    gap: var(--space-lg);
   }
 
   .album-art-container {
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
   }
 
   .jam-cta { max-width: 100%; }
 
-  .search-input-wrapper { flex-direction: column; }
-  .search-input-wrapper .btn { width: 100%; }
+  /* Carousel cards smaller */
+  .recent-chip { width: 130px; }
+  .recent-chip-thumb { width: 130px; height: 130px; }
+  .trending-item { width: 130px; }
+  .trending-item-thumb { width: 130px; height: 130px; }
 
-  /* Recently played chips scroll horizontally */
-  .recent-chip-title { max-width: 80px; }
-
-  /* Trending compact */
-  .trending-item { padding: var(--space-xs) var(--space-sm); }
+  /* Search results overlay */
+  .search-results { max-height: 50vh; }
 
   /* Room */
   .room-header {
@@ -82,8 +78,6 @@
     letter-spacing: 0.04em;
   }
 
-  .search-results { max-height: 260px; }
-
   .search-result { flex-wrap: wrap; }
 
   .search-result-actions {
@@ -94,7 +88,7 @@
 
   .search-result-actions .btn { flex: 1; }
 
-  /* Bottom player bar on mobile — compact horizontal */
+  /* Bottom player bar — compact */
   .player-bar {
     padding: 0 var(--space-md);
     gap: var(--space-sm);
@@ -114,14 +108,10 @@
   .player-bar-artist { font-size: 10px; }
 
   .player-bar-right { display: none; }
-
   .player-bar-main { gap: 4px; }
-
   .player-controls { gap: var(--space-sm); }
-
   .btn-icon { width: 36px; height: 36px; }
   .btn-icon.large { width: 44px; height: 44px; font-size: 18px; }
-
   .progress-time { display: none; }
 
   /* Chat */
@@ -153,20 +143,15 @@
 
 /* ===== TABLET (640px - 768px) ===== */
 @media (min-width: 640px) and (max-width: 768px) {
-  /* Home */
-  .home-main {
-    grid-template-columns: 1fr;
-  }
-
-  .discovery-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
   .album-art-container {
-    width: 240px;
-    height: 240px;
+    width: 260px;
+    height: 260px;
   }
+
+  .recent-chip { width: 150px; }
+  .recent-chip-thumb { width: 150px; height: 150px; }
+  .trending-item { width: 150px; }
+  .trending-item-thumb { width: 150px; height: 150px; }
 
   /* Room */
   .room-content {
@@ -186,19 +171,9 @@
 
 /* ===== SMALL DESKTOP (768px - 1024px) ===== */
 @media (min-width: 768px) and (max-width: 1024px) {
-  /* Home */
-  .home-main {
-    grid-template-columns: 1fr 1fr;
-  }
-
   /* Room */
   .room-content {
     grid-template-columns: 1fr 300px;
-  }
-
-  .album-art-container {
-    width: 220px;
-    height: 220px;
   }
 
   .player-bar-right {
@@ -209,20 +184,37 @@
   .connection-text { display: none; }
 }
 
+/* ===== DESKTOP (> 1024px) ===== */
+@media (min-width: 1024px) {
+  .album-art-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .recent-chip { width: 170px; }
+  .recent-chip-thumb { width: 170px; height: 170px; }
+  .trending-item { width: 170px; }
+  .trending-item-thumb { width: 170px; height: 170px; }
+
+  .home-main {
+    padding-top: var(--space-2xl);
+    gap: var(--space-2xl);
+  }
+}
+
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
-  .home-main {
-    grid-template-columns: 1fr 1fr;
-    max-width: 1400px;
+  :root {
+    --feed-max-width: 800px;
+  }
+
+  .album-art-container {
+    width: 340px;
+    height: 340px;
   }
 
   .room-content {
     grid-template-columns: 1fr 420px;
-  }
-
-  .album-art-container {
-    width: 320px;
-    height: 320px;
   }
 
   .player-bar-track {
