@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -8,7 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
   <meta name="theme-color" content="#6366f1">
-  <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
+  <meta name="description"
+    content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
   <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
 
   <!-- PWA -->
@@ -23,6 +25,7 @@
   <link rel="stylesheet" href="/styles/home.css">
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
+
 <body>
 
   <!-- Offline Banner -->
@@ -45,14 +48,7 @@
         <h2 class="modal-title">Join a Jam</h2>
         <p class="modal-description">Enter the room code to join your friends</p>
       </div>
-      <input
-        type="text"
-        id="joinRoomCode"
-        class="input"
-        placeholder="Room code (e.g. ABC123)"
-        maxlength="10"
-        autofocus
-      >
+      <input type="text" id="joinRoomCode" class="input" placeholder="Room code (e.g. ABC123)" maxlength="10" autofocus>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="joinJam()">Join Now</button>
       </div>
@@ -79,13 +75,8 @@
     <div class="header-search">
       <div class="search-container" style="position: relative;">
         <div class="search-input-wrapper">
-          <input
-            type="text"
-            id="searchInput"
-            class="input input-search"
-            placeholder="Search songs, artists, albums..."
-            autocomplete="off"
-          >
+          <input type="text" id="searchInput" class="input input-search" placeholder="Search songs, artists, albums..."
+            autocomplete="off">
           <button class="btn btn-primary search-btn" onclick="searchYouTube()">Search</button>
         </div>
         <!-- Search History Dropdown -->
@@ -191,9 +182,11 @@
     <div class="player-bar-right">
       <div class="volume-control">
         <button class="btn-icon" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value)">
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100"
+          oninput="setVolume(this.value)">
       </div>
-      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()" style="display: none;">
+      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()"
+        style="display: none;">
         🎧 Jam
       </button>
     </div>
@@ -363,6 +356,8 @@
         pendingTrack = null;
         currentTrack = { videoId, title, thumbnail, artist };
         player.loadVideoById(videoId);
+        // Explicit playVideo() call within the user gesture unlocks audio on mobile
+        player.playVideo();
         _applyTrackUI(videoId, title, thumbnail, artist);
       } else if (!player && ytApiLoaded) {
         // First play, API ready — create player now with this video
@@ -371,7 +366,7 @@
         // API script still loading — onYouTubeIframeAPIReady will create player
         showToast('info', 'Loading player…');
       }
-      // else: player exists but onReady hasn't fired yet — pendingTrack will be picked up
+      // else: pre-warmed player exists but onReady hasn't fired yet — pendingTrack will be picked up
     }
 
     // Update all UI elements for the now-playing track
@@ -573,7 +568,7 @@
 
     // Register service worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').catch(() => { });
     }
 
     // Capture install prompt (Android Chrome / Edge)
@@ -672,20 +667,9 @@
 
     // Hook into playSong to save recently played + fix mobile audio
     const _originalPlaySong = playSong;
-    playSong = function(videoId, title, thumbnail, artist) {
-      // Capture playerReady BEFORE calling original — if true, loadVideoById
-      // will be called inside _originalPlaySong. We then need an explicit
-      // playVideo() call here (still within the user gesture) to unlock audio
-      // on mobile browsers that block autoplay for pre-warmed players.
-      const wasReady = playerReady;
+    playSong = function (videoId, title, thumbnail, artist) {
       _originalPlaySong(videoId, title, thumbnail, artist);
       saveRecentlyPlayed({ videoId, title, thumbnail, artist });
-      // Mobile autoplay fix: calling playVideo() synchronously within a user
-      // gesture (click event) grants audio permission on iOS/Android even if
-      // the player was created without a user gesture (pre-warmed).
-      if (wasReady && player) {
-        player.playVideo();
-      }
     };
 
     renderRecentlyPlayed();
@@ -777,7 +761,7 @@
 
     // Hook searchYouTube to save queries
     const _originalSearchYouTube = searchYouTube;
-    searchYouTube = async function() {
+    searchYouTube = async function () {
       const query = document.getElementById('searchInput').value.trim();
       document.getElementById('searchHistory').classList.remove('show');
       await _originalSearchYouTube();
@@ -786,7 +770,7 @@
 
     // ===== AUDIO VISUALIZER =====
     const _originalOnPlayerStateChange = onPlayerStateChange;
-    onPlayerStateChange = function(event) {
+    onPlayerStateChange = function (event) {
       _originalOnPlayerStateChange(event);
       const viz = document.getElementById('visualizer');
       if (!viz) return;
@@ -806,7 +790,7 @@
 
     // Override startJam to use transition
     const _originalStartJam = startJam;
-    startJam = async function() {
+    startJam = async function () {
       const btn = document.getElementById('startJamBtn');
       btn.disabled = true;
       btn.textContent = 'Creating...';
@@ -839,7 +823,7 @@
 
     // Override joinJam to use transition
     const _originalJoinJam = joinJam;
-    joinJam = function() {
+    joinJam = function () {
       const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
       if (code) {
         navigateWithTransition(`/room/${code}`);
@@ -853,7 +837,7 @@
     // API loads — before the user clicks anything. This way the first click
     // goes straight to loadVideoById instead of showing "Loading player…".
     const _originalYTAPIReady = onYouTubeIframeAPIReady;
-    onYouTubeIframeAPIReady = function() {
+    onYouTubeIframeAPIReady = function () {
       _originalYTAPIReady(); // sets ytApiLoaded=true, handles any pendingTrack
       // If no pendingTrack was handled (player not yet created), pre-warm now
       if (!player) {
@@ -871,13 +855,15 @@
             playsinline: 1,
           },
           events: {
-            onReady: function() {
+            onReady: function () {
               playerReady = true;
               if (pendingTrack) {
                 const t = pendingTrack;
                 pendingTrack = null;
                 currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
                 player.loadVideoById(t.videoId);
+                // Must call playVideo() — loadVideoById alone won't start playback
+                player.playVideo();
                 _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
               }
             },
@@ -919,4 +905,5 @@
 
   </script>
 </body>
+
 </html>
