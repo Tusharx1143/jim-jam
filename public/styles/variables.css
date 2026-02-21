@@ -1,37 +1,37 @@
 /**
  * Jim-Jam Design System — Variables
- * Clean dark theme with blue-indigo accents
+ * YouTube Music-inspired dark theme with purple accents
  */
 
 :root {
   /* ===== BACKGROUNDS ===== */
-  --bg-primary:   #0a0a14;
-  --bg-secondary: #111827;
-  --bg-elevated:  #1a1f35;
-  --bg-hover:     #1e2540;
-  --bg-active:    #252d4a;
-  --bg-player:    rgba(10, 10, 20, 0.97);
+  --bg-primary:   #0f0f0f;
+  --bg-secondary: #212121;
+  --bg-elevated:  #2d2d2d;
+  --bg-hover:     #3d3d3d;
+  --bg-active:    #484848;
+  --bg-player:    rgba(33, 33, 33, 0.98);
 
   /* ===== ACCENTS ===== */
-  --accent-primary:   #6366f1;
-  --accent-hover:     #818cf8;
-  --accent-secondary: #a78bfa;
-  --accent-glow:      rgba(99, 102, 241, 0.22);
+  --accent-primary:     #6366f1;
+  --accent-hover:       #818cf8;
+  --accent-secondary:   #a78bfa;
+  --accent-glow:        rgba(99, 102, 241, 0.22);
   --accent-glow-strong: rgba(99, 102, 241, 0.4);
 
   /* ===== GRADIENTS ===== */
-  --gradient-accent:  linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
-  --gradient-hero:    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 70%);
-  --gradient-art:     radial-gradient(circle at bottom, rgba(99,102,241,0.25) 0%, transparent 60%);
+  --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-hero:   radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.14) 0%, transparent 70%);
+  --gradient-art:    radial-gradient(circle at bottom, rgba(99,102,241,0.2) 0%, transparent 60%);
 
   /* ===== TEXT ===== */
   --text-primary:   #ffffff;
-  --text-secondary: #94a3b8;
-  --text-muted:     #475569;
+  --text-secondary: #aaaaaa;
+  --text-muted:     #717171;
 
   /* ===== BORDERS ===== */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-hover:  rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-hover:  rgba(255, 255, 255, 0.2);
 
   /* ===== UTILITY ===== */
   --success: #22c55e;
@@ -40,9 +40,9 @@
   --info:    #3b82f6;
 
   /* ===== SHADOWS ===== */
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 16px rgba(0,0,0,0.5);
-  --shadow-art: 0 24px 64px rgba(0,0,0,0.6), 0 0 40px var(--accent-glow);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.6);
+  --shadow-art: 0 24px 64px rgba(0,0,0,0.7), 0 0 40px var(--accent-glow);
 
   /* ===== SPACING ===== */
   --space-xs:  4px;
@@ -54,13 +54,13 @@
   --space-3xl: 64px;
 
   /* ===== TYPOGRAPHY ===== */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono:   'JetBrains Mono', 'Courier New', monospace;
+  --font-family: 'Roboto', 'Noto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:   'Roboto Mono', 'Courier New', monospace;
 
   --text-xs:   11px;
   --text-sm:   13px;
-  --text-base: 15px;
-  --text-lg:   17px;
+  --text-base: 14px;
+  --text-lg:   16px;
   --text-xl:   20px;
   --text-2xl:  24px;
   --text-3xl:  32px;
@@ -68,7 +68,7 @@
 
   --font-regular:  400;
   --font-medium:   500;
-  --font-semibold: 600;
+  --font-semibold: 500;
   --font-bold:     700;
 
   --leading-tight:   1.2;
@@ -76,11 +76,12 @@
   --leading-relaxed: 1.75;
 
   /* ===== BORDER RADIUS ===== */
-  --radius-sm:  4px;
-  --radius-md:  8px;
-  --radius-lg:  12px;
-  --radius-xl:  20px;
-  --radius-full: 9999px;
+  --radius-sm:   2px;
+  --radius-md:   8px;
+  --radius-lg:   8px;
+  --radius-xl:   8px;
+  --radius-pill: 18px;
+  --radius-full: 50%;
 
   /* ===== TRANSITIONS ===== */
   --transition-fast: 0.12s ease;
@@ -98,8 +99,8 @@
   --player-height: 88px;
 
   /* ===== FEED LAYOUT ===== */
-  --bg-card:           #151929;
-  --radius-card:       8px;
+  --bg-card:           #212121;
+  --radius-card:       2px;
   --carousel-gap:      12px;
   --feed-max-width:    680px;
   --header-height:     56px;

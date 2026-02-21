@@ -15,7 +15,8 @@
   .header-actions { gap: 4px; }
   .header-actions .btn-ghost { display: none; }
   .header-actions .btn-gradient {
-    padding: 8px 16px;
+    padding: 0 16px;
+    height: 32px;
     font-size: var(--text-xs);
   }
 
@@ -134,6 +135,7 @@
     transform: none;
     text-align: center;
     bottom: calc(var(--player-height) + var(--space-md));
+    justify-content: center;
   }
 
   .audio-prompt:hover {
