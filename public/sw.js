@@ -3,7 +3,7 @@
  * Cache-first for static assets, network-first for pages, skip API/sockets
  */
 
-const CACHE_NAME = 'jimjam-v2';
+const CACHE_NAME = 'jimjam-v3';
 
 const PRECACHE_ASSETS = [
   '/styles/variables.css',
