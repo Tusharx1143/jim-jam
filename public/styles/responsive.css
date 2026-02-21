@@ -11,19 +11,14 @@
   }
 
   /* Header */
-  .header-container { padding: 0 var(--space-md); }
-  .header-actions { gap: 4px; }
-  .header-actions .btn-ghost { display: none; }
-  .header-actions .btn-gradient {
-    padding: 0 16px;
-    height: 32px;
-    font-size: var(--text-xs);
-  }
+  .header-inner { padding: 0 var(--space-md); gap: var(--space-sm); }
+  .logo-text { display: none; }
+  .start-jam-tab-btn { display: none; }
 
   /* Feed */
   .home-main {
     padding: var(--space-lg) var(--space-md);
-    gap: var(--space-lg);
+    gap: 0;
   }
 
   .album-art-container {
@@ -34,10 +29,9 @@
   .jam-cta { max-width: 100%; }
 
   /* Carousel cards smaller */
-  .recent-chip { width: 130px; }
-  .recent-chip-thumb { width: 130px; height: 130px; }
   .trending-item { width: 130px; }
   .trending-item-thumb { width: 130px; height: 130px; }
+  .static-thumb { width: 130px; height: 130px; }
 
   /* Search results overlay */
   .search-results { max-height: 50vh; }
@@ -122,7 +116,7 @@
   /* Toast */
   .toast {
     top: auto;
-    bottom: calc(var(--player-height) + var(--space-sm));
+    bottom: calc(var(--player-height) + var(--bottom-nav-height) + var(--space-sm));
     right: var(--space-md);
     left: var(--space-md);
     max-width: none;
@@ -134,7 +128,7 @@
     right: var(--space-md);
     transform: none;
     text-align: center;
-    bottom: calc(var(--player-height) + var(--space-md));
+    bottom: calc(var(--player-height) + var(--bottom-nav-height) + var(--space-md));
     justify-content: center;
   }
 
@@ -150,10 +144,9 @@
     height: 260px;
   }
 
-  .recent-chip { width: 150px; }
-  .recent-chip-thumb { width: 150px; height: 150px; }
   .trending-item { width: 150px; }
   .trending-item-thumb { width: 150px; height: 150px; }
+  .static-thumb { width: 150px; height: 150px; }
 
   /* Room */
   .room-content {
@@ -193,19 +186,13 @@
     height: 300px;
   }
 
-  .recent-chip { width: 170px; }
-  .recent-chip-thumb { width: 170px; height: 170px; }
-  .trending-item { width: 170px; }
-  .trending-item-thumb { width: 170px; height: 170px; }
+  .trending-item { width: 180px; }
+  .trending-item-thumb { width: 180px; height: 180px; }
+  .static-thumb { width: 180px; height: 180px; }
 
   .home-main {
     padding-top: var(--space-2xl);
-    gap: var(--space-2xl);
-    max-width: 780px;
-  }
-
-  .header-search {
-    max-width: 860px;
+    max-width: 960px;
   }
 }
 

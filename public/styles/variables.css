@@ -103,6 +103,7 @@
   --radius-card:       2px;
   --carousel-gap:      12px;
   --feed-max-width:    680px;
-  --header-height:     56px;
-  --search-bar-height: 48px;
+  --header-height:     64px;
+  --search-bar-height: 40px;
+  --bottom-nav-height: 56px;
 }
