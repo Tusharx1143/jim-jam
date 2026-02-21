@@ -192,6 +192,11 @@
     </div>
   </div>
 
+  <!-- Audio Unlock Prompt (iOS Safari) -->
+  <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
+    🔊 Tap to enable audio
+  </div>
+
   <!-- Hidden YouTube player -->
   <div id="hiddenPlayer"></div>
 
@@ -841,6 +846,45 @@
         if (btn) { btn.disabled = false; btn.textContent = 'Start a Jam'; }
       }
     });
+
+    // ===== MOBILE AUDIO UNLOCK =====
+    // iOS Safari requires explicit user gesture to play audio.
+    // If song loads without gesture (API was loading when user clicked),
+    // show audio prompt. User taps it to unlock audio for the player.
+    let userInteracted = false;
+
+    function forceEnableAudio() {
+      if (!userInteracted && player) {
+        userInteracted = true;
+        player.unMute && player.unMute();
+        player.setVolume && player.setVolume(100);
+        document.getElementById('audioPrompt').classList.remove('show');
+        if (player.getVideoData && player.getVideoData().video_id) {
+          player.playVideo();
+        }
+      }
+    }
+
+    // Any click on the page: unlock audio if not yet done
+    document.addEventListener('click', forceEnableAudio);
+
+    // Show audio prompt after a short delay if song loaded but isn't playing
+    // (indicates iOS blocked audio due to no user gesture at play time)
+    const _origOnPlayerStateChange = onPlayerStateChange;
+    onPlayerStateChange = function(event) {
+      _origOnPlayerStateChange(event);
+      if (event.data === YT.PlayerState.PLAYING) {
+        userInteracted = true;
+        document.getElementById('audioPrompt').classList.remove('show');
+      } else if (event.data === YT.PlayerState.BUFFERING && currentTrack && !userInteracted) {
+        // Song buffering but user hasn't interacted yet — might need audio unlock
+        setTimeout(() => {
+          if (currentTrack && !isPlaying && !userInteracted) {
+            document.getElementById('audioPrompt').classList.add('show');
+          }
+        }, 500);
+      }
+    };
 
   </script>
 </body>

@@ -966,3 +966,34 @@
   opacity: 1;
   pointer-events: all;
 }
+
+/* ===== AUDIO PROMPT (iOS) ===== */
+/* iOS Safari blocks audio unless explicitly unlocked in user gesture */
+.audio-prompt {
+  position: fixed;
+  bottom: calc(var(--player-height) + var(--space-lg));
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  z-index: calc(var(--z-player) + 10);
+  display: none;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  transition: all var(--transition-base);
+}
+
+.audio-prompt.show {
+  display: block;
+}
+
+.audio-prompt:hover {
+  background: var(--accent-hover);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
+}
