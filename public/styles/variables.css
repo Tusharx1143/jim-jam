@@ -91,19 +91,22 @@
   /* ===== Z-INDEX ===== */
   --z-dropdown: 1000;
   --z-sticky:   1020;
+  --z-sidebar:  1022;
   --z-player:   1025;
   --z-modal:    1030;
   --z-toast:    1040;
 
-  /* ===== PLAYER BAR ===== */
-  --player-height: 88px;
+  /* ===== LAYOUT ===== */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 72px;
+  --topbar-height: 64px;
+  --player-height: 72px;
+  --bottom-nav-height: 56px;
 
   /* ===== FEED LAYOUT ===== */
   --bg-card:           #212121;
-  --radius-card:       2px;
+  --radius-card:       4px;
   --carousel-gap:      12px;
-  --feed-max-width:    680px;
-  --header-height:     64px;
-  --search-bar-height: 40px;
-  --bottom-nav-height: 56px;
+  --feed-max-width:    960px;
+  --search-bar-height: 46px;
 }

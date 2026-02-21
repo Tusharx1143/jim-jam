@@ -1,23 +1,92 @@
 /**
  * Jim-Jam Responsive Styles
- * Mobile-first single-column feed layout
+ * YouTube Music-inspired: sidebar on desktop, bottom nav on mobile
  */
 
-/* ===== MOBILE (< 640px) ===== */
-@media (max-width: 640px) {
+/* ===== MOBILE (< 768px) ===== */
+@media (max-width: 767px) {
 
   :root {
-    --player-height: 70px;
+    --player-height: 64px;
   }
 
-  /* Header */
-  .header-inner { padding: 0 var(--space-md); gap: var(--space-sm); }
-  .logo-text { display: none; }
-  .start-jam-tab-btn { display: none; }
+  /* Hide sidebar on mobile by default */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: var(--z-sidebar);
+    width: 280px;
+  }
+
+  /* Sidebar open state on mobile */
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  body.sidebar-open .sidebar-backdrop {
+    display: block;
+  }
+
+  /* Sidebar collapsed class has no effect on mobile */
+  body.sidebar-collapsed .sidebar {
+    width: 280px;
+  }
+
+  /* Show mobile hamburger + logo in topbar */
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .mobile-logo {
+    display: flex;
+  }
+
+  /* Show bottom nav on mobile */
+  .bottom-nav {
+    display: flex;
+  }
+
+  /* Adjust player bar position above bottom nav */
+  .player-bar {
+    bottom: var(--bottom-nav-height);
+  }
+
+  /* Adjust main wrapper padding for bottom nav + player */
+  .main-wrapper {
+    padding-bottom: var(--bottom-nav-height);
+  }
+
+  body.player-active .main-wrapper {
+    padding-bottom: calc(var(--player-height) + var(--bottom-nav-height));
+  }
+
+  /* Topbar */
+  .topbar {
+    padding: var(--space-sm) var(--space-md);
+    height: 56px;
+    gap: var(--space-sm);
+  }
+
+  .topbar-search {
+    max-width: none;
+  }
+
+  .topbar-right {
+    display: none;
+  }
+
+  /* Category chips */
+  .category-chips {
+    padding: var(--space-xs) var(--space-md);
+  }
 
   /* Feed */
   .home-main {
-    padding: var(--space-lg) var(--space-md);
+    padding: var(--space-md);
     gap: 0;
   }
 
@@ -29,61 +98,12 @@
   .jam-cta { max-width: 100%; }
 
   /* Carousel cards smaller */
-  .trending-item { width: 130px; }
-  .trending-item-thumb { width: 130px; height: 130px; }
-  .static-thumb { width: 130px; height: 130px; }
+  .trending-item { width: 140px; }
 
   /* Search results overlay */
   .search-results { max-height: 50vh; }
 
-  /* Room */
-  .room-header {
-    padding: 10px var(--space-md);
-  }
-
-  .room-header-container {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-sm);
-  }
-
-  .room-logo { justify-content: center; }
-
-  .room-info {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  #connectionText { display: none; }
-
-  .room-content {
-    grid-template-columns: 1fr;
-  }
-
-  .player-section {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-    padding: var(--space-md);
-  }
-
-  .sidebar-tab {
-    font-size: 10px;
-    padding: var(--space-sm) 4px;
-    letter-spacing: 0.04em;
-  }
-
-  .search-result { flex-wrap: wrap; }
-
-  .search-result-actions {
-    width: 100%;
-    justify-content: stretch;
-    margin-top: var(--space-sm);
-  }
-
-  .search-result-actions .btn { flex: 1; }
-
-  /* Bottom player bar — compact */
+  /* Player bar compact */
   .player-bar {
     padding: 0 var(--space-md);
     gap: var(--space-sm);
@@ -103,11 +123,25 @@
   .player-bar-artist { font-size: 10px; }
 
   .player-bar-right { display: none; }
-  .player-bar-main { gap: 4px; }
+  .player-bar-main { gap: 2px; }
   .player-controls { gap: var(--space-sm); }
   .btn-icon { width: 36px; height: 36px; }
   .btn-icon.large { width: 44px; height: 44px; font-size: 18px; }
   .progress-time { display: none; }
+
+  /* Room styles */
+  .room-header { padding: 10px var(--space-md); }
+  .room-header-container { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+  .room-logo { justify-content: center; }
+  .room-info { justify-content: center; flex-wrap: wrap; gap: var(--space-sm); }
+  #connectionText { display: none; }
+  .room-content { grid-template-columns: 1fr; }
+  .player-section { border-right: none; border-bottom: 1px solid var(--border-subtle); padding: var(--space-md); }
+  .sidebar-tab { font-size: 10px; padding: var(--space-sm) 4px; letter-spacing: 0.04em; }
+
+  .search-result { flex-wrap: wrap; }
+  .search-result-actions { width: 100%; justify-content: stretch; margin-top: var(--space-sm); }
+  .search-result-actions .btn { flex: 1; }
 
   /* Chat */
   .chat-input-wrapper { flex-direction: column; }
@@ -137,46 +171,37 @@
   }
 }
 
-/* ===== TABLET (640px - 768px) ===== */
-@media (min-width: 640px) and (max-width: 768px) {
+/* ===== SMALL TABLET (640px - 767px) ===== */
+@media (min-width: 640px) and (max-width: 767px) {
   .album-art-container {
     width: 260px;
     height: 260px;
   }
 
   .trending-item { width: 150px; }
-  .trending-item-thumb { width: 150px; height: 150px; }
-  .static-thumb { width: 150px; height: 150px; }
 
   /* Room */
-  .room-content {
-    grid-template-columns: 1fr;
+  .room-content { grid-template-columns: 1fr; }
+  .player-section { border-right: none; border-bottom: 1px solid var(--border-subtle); }
+}
+
+/* ===== TABLET / SMALL DESKTOP (768px - 1024px) ===== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Sidebar slightly narrower */
+  :root {
+    --sidebar-width: 220px;
   }
 
-  .player-section {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-  }
+  /* Room */
+  .room-content { grid-template-columns: 1fr 300px; }
+  .player-bar-right { flex: 0 0 120px; }
+  .volume-slider { width: 60px; }
+  .connection-text { display: none; }
 }
 
 /* Hide mini-player on desktop (player section always visible in 2-col) */
 @media (min-width: 768px) {
   .mini-player { display: none !important; }
-}
-
-/* ===== SMALL DESKTOP (768px - 1024px) ===== */
-@media (min-width: 768px) and (max-width: 1024px) {
-  /* Room */
-  .room-content {
-    grid-template-columns: 1fr 300px;
-  }
-
-  .player-bar-right {
-    flex: 0 0 120px;
-  }
-
-  .volume-slider { width: 60px; }
-  .connection-text { display: none; }
 }
 
 /* ===== DESKTOP (> 1024px) ===== */
@@ -187,12 +212,9 @@
   }
 
   .trending-item { width: 180px; }
-  .trending-item-thumb { width: 180px; height: 180px; }
-  .static-thumb { width: 180px; height: 180px; }
 
   .home-main {
-    padding-top: var(--space-2xl);
-    max-width: 960px;
+    padding-top: var(--space-xl);
   }
 }
 
@@ -250,7 +272,7 @@
 /* ===== LANDSCAPE MOBILE ===== */
 @media (max-width: 900px) and (orientation: landscape) {
   :root {
-    --player-height: 60px;
+    --player-height: 56px;
   }
 
   .room-content {
@@ -288,10 +310,10 @@
 
 /* ===== PRINT ===== */
 @media print {
-  .room-header,
   .sidebar,
   .search-container,
   .player-bar,
+  .bottom-nav,
   .toast,
   .audio-prompt,
   .modal {
