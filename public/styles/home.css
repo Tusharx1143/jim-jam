@@ -34,9 +34,8 @@ body.player-active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--feed-max-width);
-  margin: 0 auto;
-  padding: 10px var(--space-md);
+  width: 100%;
+  padding: 0 var(--space-xl);
   height: var(--header-height);
 }
 
@@ -68,9 +67,10 @@ body.player-active {
 
 /* Search bar row below logo row */
 .header-search {
-  max-width: var(--feed-max-width);
+  width: 100%;
+  max-width: 720px;
   margin: 0 auto;
-  padding: 0 var(--space-md) 10px;
+  padding: 0 var(--space-xl) 10px;
 }
 
 /* ===== SEARCH CONTAINER (in header) ===== */
@@ -170,11 +170,12 @@ body.player-active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: var(--feed-max-width);
-  margin: 0 auto;
   width: 100%;
-  padding: var(--space-xl) var(--space-md);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-xl);
   gap: var(--space-2xl);
+  overflow-x: hidden;
 }
 
 /* ===== HERO SECTION (now playing) ===== */
@@ -297,6 +298,7 @@ body.player-active {
 
 .feed-section {
   width: 100%;
+  overflow: hidden;
 }
 
 /* No-search placeholder — simple wrapper for trending */

@@ -201,15 +201,16 @@
   .home-main {
     padding-top: var(--space-2xl);
     gap: var(--space-2xl);
+    max-width: 780px;
+  }
+
+  .header-search {
+    max-width: 860px;
   }
 }
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
-  :root {
-    --feed-max-width: 800px;
-  }
-
   .album-art-container {
     width: 340px;
     height: 340px;
