@@ -1,44 +1,40 @@
 /**
  * Jim-Jam Responsive Styles
- * Mobile-first design for all breakpoints
+ * Mobile-first single-column feed layout
  */
 
 /* ===== MOBILE (< 640px) ===== */
 @media (max-width: 640px) {
 
-  /* Player bar compact on mobile */
   :root {
     --player-height: 70px;
   }
 
-  /* Home */
-  .header-container { padding: 0 var(--space-md); }
-  .header-actions { gap: 6px; }
-  .header-actions .btn-ghost { display: none; }
+  /* Header */
+  .header-inner { padding: 0 var(--space-md); gap: var(--space-sm); }
+  .logo-text { display: none; }
+  .start-jam-tab-btn { display: none; }
 
+  /* Feed */
   .home-main {
-    grid-template-columns: 1fr;
-  }
-
-  .now-playing-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-    padding: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
+    gap: 0;
   }
 
   .album-art-container {
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
   }
 
   .jam-cta { max-width: 100%; }
 
-  .discovery-panel {
-    padding: var(--space-md);
-  }
+  /* Carousel cards smaller */
+  .trending-item { width: 130px; }
+  .trending-item-thumb { width: 130px; height: 130px; }
+  .static-thumb { width: 130px; height: 130px; }
 
-  .search-input-wrapper { flex-direction: column; }
-  .search-input-wrapper .btn { width: 100%; }
+  /* Search results overlay */
+  .search-results { max-height: 50vh; }
 
   /* Room */
   .room-header {
@@ -59,6 +55,8 @@
     gap: var(--space-sm);
   }
 
+  #connectionText { display: none; }
+
   .room-content {
     grid-template-columns: 1fr;
   }
@@ -69,24 +67,11 @@
     padding: var(--space-md);
   }
 
-  .album-art-container {
-    width: 200px;
-    height: 200px;
-  }
-
   .sidebar-tab {
     font-size: 10px;
     padding: var(--space-sm) 4px;
     letter-spacing: 0.04em;
   }
-
-  .search-input-wrapper {
-    flex-direction: column;
-  }
-
-  .search-input-wrapper .btn { width: 100%; }
-
-  .search-results { max-height: 260px; }
 
   .search-result { flex-wrap: wrap; }
 
@@ -98,7 +83,7 @@
 
   .search-result-actions .btn { flex: 1; }
 
-  /* Bottom player bar on mobile — compact horizontal */
+  /* Bottom player bar — compact */
   .player-bar {
     padding: 0 var(--space-md);
     gap: var(--space-sm);
@@ -118,14 +103,10 @@
   .player-bar-artist { font-size: 10px; }
 
   .player-bar-right { display: none; }
-
   .player-bar-main { gap: 4px; }
-
   .player-controls { gap: var(--space-sm); }
-
   .btn-icon { width: 36px; height: 36px; }
   .btn-icon.large { width: 44px; height: 44px; font-size: 18px; }
-
   .progress-time { display: none; }
 
   /* Chat */
@@ -135,7 +116,7 @@
   /* Toast */
   .toast {
     top: auto;
-    bottom: calc(var(--player-height) + var(--space-sm));
+    bottom: calc(var(--player-height) + var(--bottom-nav-height) + var(--space-sm));
     right: var(--space-md);
     left: var(--space-md);
     max-width: none;
@@ -147,7 +128,8 @@
     right: var(--space-md);
     transform: none;
     text-align: center;
-    bottom: calc(var(--player-height) + var(--space-md));
+    bottom: calc(var(--player-height) + var(--bottom-nav-height) + var(--space-md));
+    justify-content: center;
   }
 
   .audio-prompt:hover {
@@ -157,20 +139,14 @@
 
 /* ===== TABLET (640px - 768px) ===== */
 @media (min-width: 640px) and (max-width: 768px) {
-  /* Home */
-  .home-main {
-    grid-template-columns: 1fr;
-  }
-
-  .now-playing-panel {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
   .album-art-container {
-    width: 240px;
-    height: 240px;
+    width: 260px;
+    height: 260px;
   }
+
+  .trending-item { width: 150px; }
+  .trending-item-thumb { width: 150px; height: 150px; }
+  .static-thumb { width: 150px; height: 150px; }
 
   /* Room */
   .room-content {
@@ -183,41 +159,52 @@
   }
 }
 
+/* Hide mini-player on desktop (player section always visible in 2-col) */
+@media (min-width: 768px) {
+  .mini-player { display: none !important; }
+}
+
 /* ===== SMALL DESKTOP (768px - 1024px) ===== */
 @media (min-width: 768px) and (max-width: 1024px) {
-  /* Home */
-  .home-main {
-    grid-template-columns: 1fr 320px;
-  }
-
   /* Room */
   .room-content {
     grid-template-columns: 1fr 300px;
   }
 
-  .album-art-container {
-    width: 220px;
-    height: 220px;
-  }
-
   .player-bar-right {
     flex: 0 0 120px;
+  }
+
+  .volume-slider { width: 60px; }
+  .connection-text { display: none; }
+}
+
+/* ===== DESKTOP (> 1024px) ===== */
+@media (min-width: 1024px) {
+  .album-art-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .trending-item { width: 180px; }
+  .trending-item-thumb { width: 180px; height: 180px; }
+  .static-thumb { width: 180px; height: 180px; }
+
+  .home-main {
+    padding-top: var(--space-2xl);
+    max-width: 960px;
   }
 }
 
 /* ===== LARGE DESKTOP (> 1440px) ===== */
 @media (min-width: 1440px) {
-  .home-main {
-    grid-template-columns: 1fr 480px;
+  .album-art-container {
+    width: 340px;
+    height: 340px;
   }
 
   .room-content {
     grid-template-columns: 1fr 420px;
-  }
-
-  .album-art-container {
-    width: 320px;
-    height: 320px;
   }
 
   .player-bar-track {
@@ -248,13 +235,14 @@
   }
 
   .search-result-thumbnail {
-    width: 88px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
   }
 
   /* Disable hover transforms on touch */
   .feature-card:hover,
-  .btn-primary:hover {
+  .btn-primary:hover,
+  .btn-gradient:hover {
     transform: none;
   }
 }

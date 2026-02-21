@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -7,13 +8,19 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
-  <meta name="theme-color" content="#a855f7">
-  <meta name="description" content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="description"
+    content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
   <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- CSS Files -->
   <link rel="stylesheet" href="/styles/variables.css">
@@ -23,7 +30,14 @@
   <link rel="stylesheet" href="/styles/home.css">
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
+
 <body>
+
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">You're offline — check your connection</div>
+
+  <!-- Page Transition Overlay -->
+  <div class="page-transition" id="pageTransition"></div>
 
   <!-- Toast Notification -->
   <div class="toast" id="toast">
@@ -39,14 +53,7 @@
         <h2 class="modal-title">Join a Jam</h2>
         <p class="modal-description">Enter the room code to join your friends</p>
       </div>
-      <input
-        type="text"
-        id="joinRoomCode"
-        class="input"
-        placeholder="Room code (e.g. ABC123)"
-        maxlength="10"
-        autofocus
-      >
+      <input type="text" id="joinRoomCode" class="input" placeholder="Room code (e.g. ABC123)" maxlength="10" autofocus>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="joinJam()">Join Now</button>
       </div>
@@ -55,92 +62,188 @@
 
   <!-- Header -->
   <header class="header">
-    <div class="header-container">
+    <div class="header-inner">
+
+      <!-- Logo -->
       <a href="/" class="logo">
-        <span class="logo-icon">🎵</span>
-        <span>Jim-jam</span>
+        <div class="logo-icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
+        <span class="logo-text">Jim-jam</span>
       </a>
-      <div class="header-actions">
+
+      <!-- Search (center) -->
+      <div class="header-search-center">
+        <div class="search-container" style="position: relative;">
+          <div class="search-input-wrapper">
+            <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+            <input type="text" id="searchInput" class="input input-search" placeholder="Search" autocomplete="off">
+          </div>
+          <!-- Search History Dropdown -->
+          <div class="search-history" id="searchHistory">
+            <div class="search-history-header">
+              <span class="search-history-label">Recent Searches</span>
+              <button class="search-history-clear" onclick="clearSearchHistory()">Clear</button>
+            </div>
+            <div id="searchHistoryList"></div>
+          </div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+      </div>
+
+      <!-- Right actions -->
+      <div class="header-right">
         <button class="btn btn-ghost install-btn" id="installBtn" style="display:none" onclick="installApp()">
           ⬇ Install
         </button>
-        <button class="btn btn-ghost" onclick="openJoinModal()">Join a Jam</button>
-        <button class="btn btn-primary" onclick="startJam()" id="startJamBtn">
-          Start a Jam
+        <button class="header-icon-btn" onclick="openJoinModal()" title="Join a Jam">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </button>
+        <button class="header-icon-btn" title="Settings">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+          </svg>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Player Layout -->
+  <!-- Category Tabs -->
+  <nav class="category-tabs">
+    <div class="tabs-scroll">
+      <button class="tab active">For You</button>
+      <button class="tab">New Releases</button>
+      <button class="tab">Playlists</button>
+      <button class="tab">Artists</button>
+      <button class="tab">Albums</button>
+      <button class="tab">Podcasts</button>
+    </div>
+    <button class="btn btn-gradient start-jam-tab-btn" onclick="startJam()" id="startJamBtn">
+      Start a Jam
+    </button>
+  </nav>
+
+  <!-- Main Content -->
   <main class="home-main">
 
-    <!-- Left: Now Playing -->
-    <section class="now-playing-panel">
-      <div class="now-playing-area">
-        <div class="album-art-container" id="albumArtContainer">
-          <div class="no-music" id="noMusic">
-            <span class="no-music-icon">🎵</span>
-            <p class="no-music-text">Search for a song to start listening</p>
-          </div>
-          <img class="album-art" id="albumArt" src="" alt="Album Art">
+    <!-- Now Playing (hidden until music is selected) -->
+    <section class="now-playing-section">
+      <div class="album-art-container" id="albumArtContainer">
+        <div class="no-music" id="noMusic">
+          <span class="no-music-icon">🎵</span>
+          <p class="no-music-text">Search for a song to start listening</p>
         </div>
+        <img class="album-art" id="albumArt" src="" alt="Album Art">
+      </div>
 
-        <div class="track-info" id="trackInfo" style="display: none;">
-          <div class="track-title" id="trackTitle">Song Title</div>
-          <div class="track-artist" id="trackArtist">Artist Name</div>
+      <div class="track-info" id="trackInfo" style="display: none;">
+        <div class="track-title">
+          <span id="trackTitle">Song Title</span>
+          <span class="visualizer" id="visualizer">
+            <span class="visualizer-bar"></span>
+            <span class="visualizer-bar"></span>
+            <span class="visualizer-bar"></span>
+            <span class="visualizer-bar"></span>
+          </span>
         </div>
+        <div class="track-artist" id="trackArtist">Artist Name</div>
+      </div>
 
-        <!-- Jam CTA (shown when song is playing) -->
-        <div class="jam-cta" id="jamCta" style="display: none;">
-          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
-          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
-            🎧 Start a Jam
-          </button>
-        </div>
+      <div class="jam-cta" id="jamCta" style="display: none;">
+        <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
+        <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
+          🎧 Start a Jam
+        </button>
       </div>
     </section>
 
-    <!-- Right: Discovery / Search -->
-    <section class="discovery-panel">
-      <div class="discovery-header">
-        <h2 class="discovery-title">Discover Music</h2>
-        <p class="discovery-subtitle">Search any song from YouTube</p>
-      </div>
+    <!-- Discovery Feed -->
+    <div class="no-search-placeholder" id="noSearchPlaceholder">
 
-      <!-- Search -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input
-            type="text"
-            id="searchInput"
-            class="input input-search"
-            placeholder="Search songs, artists, albums..."
-            autocomplete="off"
-          >
-          <button class="btn btn-primary" onclick="searchYouTube()">Search</button>
-        </div>
-        <div class="search-results" id="searchResults"></div>
-      </div>
+      <!-- Recommended for you -->
+      <section class="discovery-section">
+        <h2 class="section-title">Recommended for you</h2>
+        <div class="trending-list" id="trendingList"></div>
+      </section>
 
-      <!-- Trending / placeholder when no search -->
-      <div class="no-search-placeholder" id="noSearchPlaceholder">
-        <div class="placeholder-items">
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🔍</span>
-            <span>Search for your favorite songs</span>
+      <!-- New releases from artists you follow -->
+      <section class="discovery-section">
+        <h2 class="section-title">New releases from artists you follow</h2>
+        <div class="recently-played" id="recentlyPlayed" style="display: none;">
+          <div class="recently-played-list" id="recentlyPlayedList"></div>
+        </div>
+        <div class="artist-placeholder-row">
+          <div class="artist-circle-item">
+            <div class="artist-circle-img" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
+            <span class="artist-circle-name">DJ Pulse</span>
           </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">🎧</span>
-            <span>Play anything from YouTube</span>
+          <div class="artist-circle-item">
+            <div class="artist-circle-img" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"></div>
+            <span class="artist-circle-name">Acoustic Dreams</span>
           </div>
-          <div class="placeholder-hint">
-            <span class="placeholder-icon">👥</span>
-            <span>Start a Jam to listen with friends</span>
+          <div class="artist-circle-item">
+            <div class="artist-circle-img" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
+            <span class="artist-circle-name">Rock Reval Glitch</span>
+          </div>
+          <div class="artist-circle-item">
+            <div class="artist-circle-img" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"></div>
+            <span class="artist-circle-name">Luna &amp; The Satellites</span>
+          </div>
+          <div class="artist-circle-item">
+            <div class="artist-circle-img" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
+            <span class="artist-circle-name">The Night Collective</span>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Mixed for you -->
+      <section class="discovery-section">
+        <h2 class="section-title">Mixed for you</h2>
+      </section>
+
+      <!-- Toxed for you -->
+      <section class="discovery-section">
+        <h2 class="section-title">Toxed for you</h2>
+        <div class="trending-list">
+          <div class="trending-item static-card">
+            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #4c1d95, #7c3aed);"></div>
+            <div class="trending-item-info">
+              <div class="trending-item-title">Chill Mix</div>
+              <div class="trending-item-artist">Various Artists</div>
+            </div>
+          </div>
+          <div class="trending-item static-card">
+            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #1e3a5f, #1d4ed8);"></div>
+            <div class="trending-item-info">
+              <div class="trending-item-title">Workout Wonders</div>
+              <div class="trending-item-artist">DJ Pulse</div>
+            </div>
+          </div>
+          <div class="trending-item static-card">
+            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #065f46, #059669);"></div>
+            <div class="trending-item-info">
+              <div class="trending-item-title">Morning Coffee Jazz</div>
+              <div class="trending-item-artist">Smooth Jazz Collective</div>
+            </div>
+          </div>
+          <div class="trending-item static-card">
+            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #7c2d12, #dc2626);"></div>
+            <div class="trending-item-info">
+              <div class="trending-item-title">Evening Drive</div>
+              <div class="trending-item-artist">The Night Collective</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
 
   </main>
 
@@ -174,12 +277,51 @@
       </div>
     </div>
 
-    <!-- Right: jam button -->
+    <!-- Right: volume + jam button -->
     <div class="player-bar-right">
-      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()" style="display: none;">
+      <div class="volume-control">
+        <button class="btn-icon" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100"
+          oninput="setVolume(this.value)">
+      </div>
+      <button class="btn btn-primary player-bar-jam-btn" id="playerBarJamBtn" onclick="startJam()"
+        style="display: none;">
         🎧 Jam
       </button>
     </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span>Home</span>
+    </button>
+    <button class="bottom-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+      </svg>
+      <span>Library</span>
+    </button>
+    <button class="bottom-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+      </svg>
+      <span>Explore</span>
+    </button>
+    <button class="bottom-nav-item">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+      </svg>
+      <span>Downloads</span>
+    </button>
+  </nav>
+
+  <!-- Audio Unlock Prompt (iOS Safari) -->
+  <div class="audio-prompt" id="audioPrompt" onclick="forceEnableAudio()">
+    🔊 Tap to enable audio
   </div>
 
   <!-- Hidden YouTube player -->
@@ -191,7 +333,6 @@
   <script>
     // ===== STATE =====
     let player = null;
-    let ytApiLoaded = false;
     let playerReady = false;
     let pendingTrack = null;
     let currentTrack = null;
@@ -200,25 +341,15 @@
     let isPlaying = false;
 
     // ===== YOUTUBE PLAYER =====
-    // Called by YouTube IFrame API when its script is ready
+    // Called by YouTube IFrame API when its script is ready.
+    // Create the player immediately — no videoId yet, no autoplay.
+    // This means onReady fires fast, before the user even clicks anything.
     function onYouTubeIframeAPIReady() {
-      ytApiLoaded = true;
-      // If user clicked play before the API loaded, create player now
-      if (pendingTrack) {
-        _createPlayer(pendingTrack.videoId);
-      }
-    }
-
-    // Lazily create the player the first time a song is played.
-    // Passing videoId to the constructor guarantees onReady fires.
-    function _createPlayer(videoId) {
-      if (player) return;
       player = new YT.Player('hiddenPlayer', {
         height: '360',
         width: '640',
-        videoId: videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 0,
           disablekb: 1,
           fs: 0,
@@ -228,16 +359,15 @@
           playsinline: 1,
         },
         events: {
-          onReady: () => {
+          onReady: function () {
             playerReady = true;
+            // If user already clicked a song while player was loading, play it now
             if (pendingTrack) {
               const t = pendingTrack;
               pendingTrack = null;
-              // If user switched song while player was loading, seek to it;
-              // otherwise the constructor's autoplay already started it.
-              if (t.videoId !== videoId) {
-                player.loadVideoById(t.videoId);
-              }
+              currentTrack = { videoId: t.videoId, title: t.title, thumbnail: t.thumbnail, artist: t.artist };
+              player.loadVideoById(t.videoId);
+              player.playVideo();
               _applyTrackUI(t.videoId, t.title, t.thumbnail, t.artist);
             }
           },
@@ -335,23 +465,19 @@
 
     // ===== PLAY SONG =====
     function playSong(videoId, title, thumbnail, artist) {
-      // Always store as pending so onReady can pick it up if needed
-      pendingTrack = { videoId, title, thumbnail, artist };
-
       if (playerReady) {
-        // Player already initialised — just load the new video
-        pendingTrack = null;
+        // Player is ready — load and play immediately within the user gesture
         currentTrack = { videoId, title, thumbnail, artist };
+        pendingTrack = null;
         player.loadVideoById(videoId);
+        player.playVideo();  // must be called explicitly — autoplay blocked on mobile
         _applyTrackUI(videoId, title, thumbnail, artist);
-      } else if (!player && ytApiLoaded) {
-        // First play, API ready — create player now with this video
-        _createPlayer(videoId);
-      } else if (!player && !ytApiLoaded) {
-        // API script still loading — onYouTubeIframeAPIReady will create player
-        showToast('info', 'Loading player…');
+      } else {
+        // Player not ready yet (API still loading or onReady not fired) —
+        // queue the track silently, it will play the moment onReady fires.
+        pendingTrack = { videoId, title, thumbnail, artist };
+        _applyTrackUI(videoId, title, thumbnail, artist); // update UI immediately
       }
-      // else: player exists but onReady hasn't fired yet — pendingTrack will be picked up
     }
 
     // Update all UI elements for the now-playing track
@@ -397,7 +523,7 @@
       if (!query) return;
 
       const resultsEl = document.getElementById('searchResults');
-      resultsEl.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">Searching...</div>';
+      resultsEl.innerHTML = '<div class="skeleton-results">' + Array(4).fill('<div class="skeleton-item"><div class="skeleton-thumb"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('') + '</div>';
       resultsEl.classList.add('active');
       document.getElementById('noSearchPlaceholder').style.display = 'none';
 
@@ -420,8 +546,9 @@
                  onerror="this.src='https://img.youtube.com/vi/${escapeHtml(r.id)}/mqdefault.jpg'">
             <div class="search-result-info">
               <div class="search-result-title">${escapeHtml(r.title)}</div>
-              <div class="search-result-artist">${escapeHtml(r.artist || '')}</div>
+              <div class="search-result-artist">${escapeHtml(r.artist || '')}${r.duration ? ' · ' + r.duration : ''}</div>
             </div>
+            ${r.duration ? '<span class="search-result-duration">' + r.duration + '</span>' : ''}
             <div class="search-result-actions">
               <button class="btn btn-primary search-result-btn">▶ Play</button>
             </div>
@@ -552,7 +679,7 @@
 
     // Register service worker
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').catch(() => { });
     }
 
     // Capture install prompt (Android Chrome / Edge)
@@ -579,6 +706,314 @@
       });
     }
 
+    // ===== VOLUME CONTROL =====
+    function setVolume(val) {
+      if (!player || !playerReady) return;
+      player.setVolume(parseInt(val));
+      updateVolumeIcon(val);
+    }
+
+    function toggleMute() {
+      if (!player || !playerReady) return;
+      const slider = document.getElementById('volumeSlider');
+      if (player.isMuted()) {
+        player.unMute();
+        if (slider) slider.value = player.getVolume();
+        updateVolumeIcon(player.getVolume());
+      } else {
+        player.mute();
+        if (slider) slider.value = 0;
+        updateVolumeIcon(0);
+      }
+    }
+
+    function updateVolumeIcon(val) {
+      const btns = document.querySelectorAll('.volume-control .btn-icon');
+      btns.forEach(b => b.textContent = val == 0 ? '🔇' : val < 50 ? '🔉' : '🔊');
+    }
+
+    // ===== KEYBOARD SHORTCUTS =====
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+      else if (e.code === 'ArrowLeft') { e.preventDefault(); seekBack(); }
+      else if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); }
+      else if (e.code === 'KeyM') { toggleMute(); }
+    });
+
+    // ===== RECENTLY PLAYED (localStorage) =====
+    const MAX_RECENT = 8;
+
+    function getRecentlyPlayed() {
+      try { return JSON.parse(localStorage.getItem('jj_recent') || '[]'); } catch { return []; }
+    }
+
+    function saveRecentlyPlayed(track) {
+      const recent = getRecentlyPlayed().filter(t => t.videoId !== track.videoId);
+      recent.unshift(track);
+      if (recent.length > MAX_RECENT) recent.length = MAX_RECENT;
+      localStorage.setItem('jj_recent', JSON.stringify(recent));
+      renderRecentlyPlayed();
+    }
+
+    function renderRecentlyPlayed() {
+      const recent = getRecentlyPlayed();
+      const container = document.getElementById('recentlyPlayed');
+      const list = document.getElementById('recentlyPlayedList');
+      if (recent.length === 0) { container.style.display = 'none'; return; }
+      container.style.display = '';
+      list.innerHTML = recent.map(t => `
+        <div class="recent-chip" data-vid="${escapeHtml(t.videoId)}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail || '')}" data-artist="${escapeHtml(t.artist || '')}">
+          <img class="recent-chip-thumb" src="${escapeHtml(t.thumbnail || '')}" alt="" onerror="this.src='https://img.youtube.com/vi/${escapeHtml(t.videoId)}/mqdefault.jpg'">
+          <span class="recent-chip-title">${escapeHtml(t.title)}</span>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('recentlyPlayedList').addEventListener('click', (e) => {
+      const chip = e.target.closest('.recent-chip');
+      if (!chip) return;
+      playSong(chip.dataset.vid, chip.dataset.title, chip.dataset.thumb, chip.dataset.artist);
+    });
+
+    // Hook into playSong to save recently played + fix mobile audio
+    const _originalPlaySong = playSong;
+    playSong = function (videoId, title, thumbnail, artist) {
+      _originalPlaySong(videoId, title, thumbnail, artist);
+      saveRecentlyPlayed({ videoId, title, thumbnail, artist });
+    };
+
+    renderRecentlyPlayed();
+
+    // ===== TRENDING / SUGGESTED =====
+    const suggestedTracks = [
+      { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', artist: 'Rick Astley', thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg' },
+      { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/mqdefault.jpg' },
+      { id: 'kJQP7kiw5Fk', title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', thumbnail: 'https://img.youtube.com/vi/kJQP7kiw5Fk/mqdefault.jpg' },
+      { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', artist: 'Alan Walker', thumbnail: 'https://img.youtube.com/vi/60ItHLz5WEA/mqdefault.jpg' },
+      { id: 'JGwWNGJdvx8', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://img.youtube.com/vi/JGwWNGJdvx8/mqdefault.jpg' },
+    ];
+
+    function renderTrending() {
+      const list = document.getElementById('trendingList');
+      list.innerHTML = suggestedTracks.map((t, i) => `
+        <div class="trending-item" data-vid="${t.id}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail)}" data-artist="${escapeHtml(t.artist)}">
+          <span class="trending-rank">${i + 1}</span>
+          <img class="trending-item-thumb" src="${t.thumbnail}" alt="" loading="lazy">
+          <div class="trending-item-info">
+            <div class="trending-item-title">${escapeHtml(t.title)}</div>
+            <div class="trending-item-artist">${escapeHtml(t.artist)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('trendingList').addEventListener('click', (e) => {
+      const item = e.target.closest('.trending-item');
+      if (!item) return;
+      playSong(item.dataset.vid, item.dataset.title, item.dataset.thumb, item.dataset.artist);
+    });
+
+    renderTrending();
+
+    // ===== SEARCH HISTORY =====
+    const MAX_SEARCH_HISTORY = 8;
+
+    function getSearchHistory() {
+      try { return JSON.parse(localStorage.getItem('jj_search_history') || '[]'); } catch { return []; }
+    }
+
+    function saveSearchQuery(query) {
+      if (!query || query.length < 2) return;
+      const history = getSearchHistory().filter(q => q.toLowerCase() !== query.toLowerCase());
+      history.unshift(query);
+      if (history.length > MAX_SEARCH_HISTORY) history.length = MAX_SEARCH_HISTORY;
+      localStorage.setItem('jj_search_history', JSON.stringify(history));
+    }
+
+    function clearSearchHistory() {
+      localStorage.removeItem('jj_search_history');
+      document.getElementById('searchHistory').classList.remove('show');
+    }
+
+    function renderSearchHistory() {
+      const history = getSearchHistory();
+      const container = document.getElementById('searchHistory');
+      const list = document.getElementById('searchHistoryList');
+      if (history.length === 0) { container.classList.remove('show'); return; }
+      list.innerHTML = history.map(q => `
+        <div class="search-history-item" data-query="${escapeHtml(q)}">
+          <span class="search-history-icon">🕐</span>
+          <span>${escapeHtml(q)}</span>
+        </div>
+      `).join('');
+      container.classList.add('show');
+    }
+
+    document.getElementById('searchHistoryList').addEventListener('click', (e) => {
+      const item = e.target.closest('.search-history-item');
+      if (!item) return;
+      document.getElementById('searchInput').value = item.dataset.query;
+      document.getElementById('searchHistory').classList.remove('show');
+      searchYouTube();
+    });
+
+    // Show history on focus, hide on blur
+    document.getElementById('searchInput').addEventListener('focus', () => {
+      const q = document.getElementById('searchInput').value.trim();
+      if (!q && getSearchHistory().length > 0) renderSearchHistory();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        document.getElementById('searchHistory').classList.remove('show');
+      }
+    });
+
+    // Hook searchYouTube to save queries
+    const _originalSearchYouTube = searchYouTube;
+    searchYouTube = async function () {
+      const query = document.getElementById('searchInput').value.trim();
+      document.getElementById('searchHistory').classList.remove('show');
+      await _originalSearchYouTube();
+      if (query) saveSearchQuery(query);
+    };
+
+    // ===== AUDIO VISUALIZER =====
+    const _originalOnPlayerStateChange = onPlayerStateChange;
+    onPlayerStateChange = function (event) {
+      _originalOnPlayerStateChange(event);
+      const viz = document.getElementById('visualizer');
+      if (!viz) return;
+      if (event.data === YT.PlayerState.PLAYING) {
+        viz.classList.add('active');
+      } else {
+        viz.classList.remove('active');
+      }
+    };
+
+    // ===== PAGE TRANSITION =====
+    function navigateWithTransition(url) {
+      const overlay = document.getElementById('pageTransition');
+      overlay.classList.add('active');
+      setTimeout(() => { window.location.href = url; }, 300);
+    }
+
+    // Override startJam to use transition
+    const _originalStartJam = startJam;
+    startJam = async function () {
+      const btn = document.getElementById('startJamBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      try {
+        const res = await fetch('/api/create-room');
+        const data = await res.json();
+        if (data.roomId) {
+          let url = `/room/${data.roomId}`;
+          if (currentTrack) {
+            const p = new URLSearchParams({
+              vid: currentTrack.videoId,
+              title: currentTrack.title,
+              thumb: currentTrack.thumbnail || '',
+              artist: currentTrack.artist || ''
+            });
+            url += '?' + p.toString();
+          }
+          navigateWithTransition(url);
+        } else {
+          showToast('error', 'Failed to create jam. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'Start a Jam';
+        }
+      } catch (err) {
+        showToast('error', 'Failed to create jam. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Start a Jam';
+      }
+    };
+
+    // Override joinJam to use transition
+    const _originalJoinJam = joinJam;
+    joinJam = function () {
+      const code = document.getElementById('joinRoomCode').value.trim().toUpperCase();
+      if (code) {
+        navigateWithTransition(`/room/${code}`);
+      } else {
+        showToast('warning', 'Please enter a room code');
+      }
+    };
+
+    // (Pre-warm block removed — player is now created directly in onYouTubeIframeAPIReady above)
+
+    // ===== OFFLINE INDICATOR =====
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (navigator.onLine) {
+        banner.classList.remove('show');
+      } else {
+        banner.classList.add('show');
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // ===== BFCACHE CLEANUP =====
+    // When user navigates back, browser restores page from bfcache with
+    // the page-transition overlay still active — blocking all clicks.
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) {
+        // Remove page transition overlay
+        const overlay = document.getElementById('pageTransition');
+        if (overlay) overlay.classList.remove('active');
+
+        // Re-enable startJam button in case it was left disabled
+        const btn = document.getElementById('startJamBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Start a Jam'; }
+      }
+    });
+
+    // ===== MOBILE AUDIO UNLOCK =====
+    // iOS Safari requires explicit user gesture to play audio.
+    // If song loads without gesture (API was loading when user clicked),
+    // show audio prompt. User taps it to unlock audio for the player.
+    let userInteracted = false;
+
+    function forceEnableAudio() {
+      if (!userInteracted && player) {
+        userInteracted = true;
+        player.unMute && player.unMute();
+        player.setVolume && player.setVolume(100);
+        document.getElementById('audioPrompt').classList.remove('show');
+        if (player.getVideoData && player.getVideoData().video_id) {
+          player.playVideo();
+        }
+      }
+    }
+
+    // Any click on the page: unlock audio if not yet done
+    document.addEventListener('click', forceEnableAudio);
+
+    // Show audio prompt after a short delay if song loaded but isn't playing
+    // (indicates iOS blocked audio due to no user gesture at play time)
+    const _origOnPlayerStateChange = onPlayerStateChange;
+    onPlayerStateChange = function(event) {
+      _origOnPlayerStateChange(event);
+      if (event.data === YT.PlayerState.PLAYING) {
+        userInteracted = true;
+        document.getElementById('audioPrompt').classList.remove('show');
+      } else if (event.data === YT.PlayerState.BUFFERING && currentTrack && !userInteracted) {
+        // Song buffering but user hasn't interacted yet — might need audio unlock
+        setTimeout(() => {
+          if (currentTrack && !isPlaying && !userInteracted) {
+            document.getElementById('audioPrompt').classList.add('show');
+          }
+        }, 500);
+      }
+    };
+
   </script>
 </body>
+
 </html>

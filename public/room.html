@@ -7,12 +7,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jim-Jam">
-  <meta name="theme-color" content="#a855f7">
+  <meta name="theme-color" content="#6366f1">
   <title>Jim-jam Room 🎵</title>
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- CSS Files -->
   <link rel="stylesheet" href="/styles/variables.css">
@@ -23,6 +28,9 @@
   <link rel="stylesheet" href="/styles/responsive.css">
 </head>
 <body>
+
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">You're offline — check your connection</div>
 
   <!-- Name Modal -->
   <div class="modal" id="nameModal">
@@ -61,16 +69,19 @@
   <header class="room-header">
     <div class="room-header-container">
       <a href="/" class="room-logo">
-        <span>🎵</span>
-        <span>Jim-jam</span>
+        <div class="logo-placeholder"></div>
       </a>
 
       <div class="room-info">
         <span class="room-code-display">
           Room: <strong id="roomCodeDisplay"></strong>
         </span>
-        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="copyRoomLink()">
-          Copy Link
+        <div class="connection-status" id="connectionStatus">
+          <span class="connection-dot" id="connectionDot"></span>
+          <span id="connectionText">Connected</span>
+        </div>
+        <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 13px;" onclick="shareRoom()">
+          Share
         </button>
         <a href="/" class="btn btn-ghost" style="padding: 8px 14px; font-size: 13px;">
           Leave
@@ -78,6 +89,20 @@
       </div>
     </div>
   </header>
+
+  <!-- Mini Player (shows on scroll) -->
+  <div class="mini-player" id="miniPlayer">
+    <img class="mini-player-thumb" id="miniPlayerThumb" src="" alt="">
+    <div class="mini-player-info">
+      <div class="mini-player-title" id="miniPlayerTitle"></div>
+      <div class="mini-player-artist" id="miniPlayerArtist"></div>
+    </div>
+    <div class="mini-player-controls">
+      <button class="btn-icon" onclick="skipBack()">⏪</button>
+      <button class="btn-icon" onclick="togglePlay()" id="miniPlayPauseBtn">▶️</button>
+      <button class="btn-icon" onclick="playNext()">⏭️</button>
+    </div>
+  </div>
 
   <!-- Main Content -->
   <main class="room-content">
@@ -126,7 +151,7 @@
           Queue
         </button>
         <button class="sidebar-tab" data-tab="chat" onclick="switchTab('chat')">
-          Chat
+          Chat <span class="unread-badge" id="chatUnreadBadge"></span>
         </button>
         <button class="sidebar-tab" data-tab="users" onclick="switchTab('users')">
           People <span class="sidebar-tab-count" id="userCount">0</span>
@@ -196,8 +221,12 @@
       </div>
     </div>
 
-    <!-- Right: listener count -->
+    <!-- Right: volume + listener count -->
     <div class="player-bar-right">
+      <div class="volume-control">
+        <button class="btn-icon" onclick="toggleMute()" id="volumeBtn" title="Mute" style="width:32px;height:32px;font-size:16px;">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100" oninput="setVolume(this.value)">
+      </div>
       <span class="player-bar-listeners">
         👥 <span id="listenerCount">0</span>
       </span>
@@ -732,9 +761,10 @@
       isSearching = true;
       container.classList.add('active');
       container.innerHTML = `
-        <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
-          <div class="spinner" style="margin: 0 auto 1rem;"></div>
-          <p>Searching YouTube...</p>
+        <div class="skeleton-results">
+          <div class="skeleton-item"><div class="skeleton-thumb"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
+          <div class="skeleton-item"><div class="skeleton-thumb"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
+          <div class="skeleton-item"><div class="skeleton-thumb"></div><div class="skeleton-text"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>
         </div>
       `;
 
@@ -760,6 +790,7 @@
               <div class="search-result-title">${escapeHtml(result.title)}</div>
               <div class="search-result-artist">${escapeHtml(result.artist)} ${result.duration ? '· ' + result.duration : ''}</div>
             </div>
+            ${result.duration ? '<span class="search-result-duration">' + result.duration + '</span>' : ''}
             <div class="search-result-actions">
               <button class="btn btn-primary search-result-btn" onclick="event.stopPropagation(); playVideo('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">▶ Play</button>
               <button class="btn btn-secondary search-result-btn" onclick="event.stopPropagation(); addToQueue('${result.id}', '${escapeHtml(result.title).replace(/'/g, "\\'")}', '${result.thumbnail}', '${escapeHtml(result.artist).replace(/'/g, "\\'")}', '${result.source}')">+ Queue</button>
@@ -911,6 +942,193 @@
       releaseWakeLock();
       _originalCleanup();
     };
+
+    // ===== VOLUME CONTROL =====
+
+    let currentVolume = 100;
+    let isMuted = false;
+
+    function setVolume(val) {
+      val = parseInt(val);
+      currentVolume = val;
+      isMuted = val === 0;
+      if (player && player.setVolume) {
+        player.setVolume(val);
+        if (val === 0) player.mute(); else player.unMute();
+      }
+      updateVolumeIcon();
+    }
+
+    function toggleMute() {
+      if (isMuted) {
+        isMuted = false;
+        const restoreVol = currentVolume > 0 ? currentVolume : 50;
+        document.getElementById('volumeSlider').value = restoreVol;
+        if (player && player.unMute) { player.unMute(); player.setVolume(restoreVol); }
+        currentVolume = restoreVol;
+      } else {
+        isMuted = true;
+        document.getElementById('volumeSlider').value = 0;
+        if (player && player.mute) player.mute();
+      }
+      updateVolumeIcon();
+    }
+
+    function updateVolumeIcon() {
+      const btn = document.getElementById('volumeBtn');
+      if (!btn) return;
+      if (isMuted || currentVolume === 0) btn.textContent = '🔇';
+      else if (currentVolume < 50) btn.textContent = '🔉';
+      else btn.textContent = '🔊';
+    }
+
+    // ===== SHARE (Web Share API + clipboard fallback) =====
+
+    function shareRoom() {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: 'Join my Jim-Jam room!', text: 'Come jam with me!', url: url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          showToast('success', 'Room link copied!');
+        }).catch(() => {
+          showToast('error', 'Failed to copy link.');
+        });
+      }
+    }
+
+    // ===== UNREAD CHAT BADGE =====
+
+    const _originalAddChatMessage = addChatMessage;
+    addChatMessage = function(user, message) {
+      _originalAddChatMessage(user, message);
+      // Show unread badge if chat tab is not active
+      const chatTab = document.querySelector('.sidebar-tab[data-tab="chat"]');
+      if (chatTab && !chatTab.classList.contains('active')) {
+        const badge = document.getElementById('chatUnreadBadge');
+        if (badge) badge.classList.add('show');
+      }
+    };
+
+    const _originalSwitchTab = switchTab;
+    switchTab = function(tab) {
+      _originalSwitchTab(tab);
+      if (tab === 'chat') {
+        const badge = document.getElementById('chatUnreadBadge');
+        if (badge) badge.classList.remove('show');
+      }
+    };
+
+    // ===== CONNECTION STATUS =====
+
+    function updateConnectionStatus(connected) {
+      const dot = document.getElementById('connectionDot');
+      const text = document.getElementById('connectionText');
+      if (!dot || !text) return;
+      if (connected) {
+        dot.classList.remove('disconnected');
+        text.textContent = 'Connected';
+      } else {
+        dot.classList.add('disconnected');
+        text.textContent = 'Reconnecting...';
+      }
+    }
+
+    // Wrap socket events for connection status after socket is created
+    const _originalJoinRoom = joinRoom;
+    joinRoom = function() {
+      _originalJoinRoom();
+      if (socket) {
+        socket.on('connect', () => updateConnectionStatus(true));
+        socket.on('disconnect', () => updateConnectionStatus(false));
+        socket.on('reconnect', () => updateConnectionStatus(true));
+      }
+    };
+
+    // ===== KEYBOARD SHORTCUTS =====
+
+    document.addEventListener('keydown', (e) => {
+      // Skip if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          skipBack();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          if (player && player.getCurrentTime && player.seekTo) {
+            const newTime = Math.min(player.getDuration(), player.getCurrentTime() + 10);
+            player.seekTo(newTime, true);
+            socket.emit('seek', { currentTime: newTime });
+          }
+          break;
+        case 'KeyM':
+          toggleMute();
+          break;
+      }
+    });
+
+    // ===== MINI PLAYER ON SCROLL =====
+    let miniPlayerActive = false;
+    let currentVideoTitle = '';
+    let currentVideoArtist = '';
+    let currentVideoThumb = '';
+
+    const _originalShowNowPlaying2 = showNowPlaying;
+    showNowPlaying = function(title, thumbnail, artist) {
+      _originalShowNowPlaying2(title, thumbnail, artist);
+      currentVideoTitle = title;
+      currentVideoArtist = artist || 'Unknown Artist';
+      currentVideoThumb = thumbnail;
+      // Update mini player info
+      document.getElementById('miniPlayerTitle').textContent = title;
+      document.getElementById('miniPlayerArtist').textContent = artist || 'Unknown Artist';
+      document.getElementById('miniPlayerThumb').src = thumbnail;
+    };
+
+    const _originalUpdatePlayingState2 = updatePlayingState;
+    updatePlayingState = function(isPlaying) {
+      _originalUpdatePlayingState2(isPlaying);
+      const miniBtn = document.getElementById('miniPlayPauseBtn');
+      if (miniBtn) miniBtn.textContent = isPlaying ? '⏸️' : '▶️';
+    };
+
+    function checkMiniPlayer() {
+      const playerSection = document.querySelector('.player-section');
+      if (!playerSection || !currentVideoTitle) return;
+      const rect = playerSection.getBoundingClientRect();
+      const shouldShow = rect.bottom < 0;
+      const miniPlayer = document.getElementById('miniPlayer');
+      if (shouldShow && !miniPlayerActive) {
+        miniPlayer.classList.add('show');
+        miniPlayerActive = true;
+      } else if (!shouldShow && miniPlayerActive) {
+        miniPlayer.classList.remove('show');
+        miniPlayerActive = false;
+      }
+    }
+
+    window.addEventListener('scroll', checkMiniPlayer, { passive: true });
+
+    // ===== OFFLINE INDICATOR =====
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (navigator.onLine) {
+        banner.classList.remove('show');
+      } else {
+        banner.classList.add('show');
+      }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 
     document.getElementById('userName').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') joinRoom();
