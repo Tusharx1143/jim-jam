@@ -216,33 +216,11 @@
           <div class="trending-list" id="trendingList"></div>
         </section>
 
-        <!-- New releases from artists you follow -->
+        <!-- Recently Played -->
         <section class="discovery-section">
-          <h2 class="section-title">New releases from artists you follow</h2>
+          <h2 class="section-title">Recently Played</h2>
           <div class="recently-played" id="recentlyPlayed" style="display: none;">
             <div class="recently-played-list" id="recentlyPlayedList"></div>
-          </div>
-          <div class="artist-placeholder-row">
-            <div class="artist-circle-item">
-              <div class="artist-circle-img" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
-              <span class="artist-circle-name">DJ Pulse</span>
-            </div>
-            <div class="artist-circle-item">
-              <div class="artist-circle-img" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"></div>
-              <span class="artist-circle-name">Acoustic Dreams</span>
-            </div>
-            <div class="artist-circle-item">
-              <div class="artist-circle-img" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
-              <span class="artist-circle-name">Rock Reval Glitch</span>
-            </div>
-            <div class="artist-circle-item">
-              <div class="artist-circle-img" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"></div>
-              <span class="artist-circle-name">Luna &amp; The Satellites</span>
-            </div>
-            <div class="artist-circle-item">
-              <div class="artist-circle-img" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
-              <span class="artist-circle-name">The Night Collective</span>
-            </div>
           </div>
         </section>
 
@@ -830,26 +808,35 @@
     renderRecentlyPlayed();
 
     // ===== TRENDING / SUGGESTED =====
-    const suggestedTracks = [
-      { id: 'dQw4w9WgXcQ', title: 'Never Gonna Give You Up', artist: 'Rick Astley', thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg' },
-      { id: 'fJ9rUzIMcZQ', title: 'Bohemian Rhapsody', artist: 'Queen', thumbnail: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/mqdefault.jpg' },
-      { id: 'kJQP7kiw5Fk', title: 'Despacito', artist: 'Luis Fonsi ft. Daddy Yankee', thumbnail: 'https://img.youtube.com/vi/kJQP7kiw5Fk/mqdefault.jpg' },
-      { id: '60ItHLz5WEA', title: 'Alan Walker - Faded', artist: 'Alan Walker', thumbnail: 'https://img.youtube.com/vi/60ItHLz5WEA/mqdefault.jpg' },
-      { id: 'JGwWNGJdvx8', title: 'Shape of You', artist: 'Ed Sheeran', thumbnail: 'https://img.youtube.com/vi/JGwWNGJdvx8/mqdefault.jpg' },
-    ];
-
-    function renderTrending() {
+    async function loadTrending() {
       const list = document.getElementById('trendingList');
-      list.innerHTML = suggestedTracks.map((t, i) => `
-        <div class="trending-item" data-vid="${t.id}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail)}" data-artist="${escapeHtml(t.artist)}">
+      list.innerHTML = Array(5).fill(0).map((_, i) => `
+        <div class="trending-item skeleton-item">
           <span class="trending-rank">${i + 1}</span>
-          <img class="trending-item-thumb" src="${t.thumbnail}" alt="" loading="lazy">
+          <div class="trending-item-thumb skeleton-box"></div>
           <div class="trending-item-info">
-            <div class="trending-item-title">${escapeHtml(t.title)}</div>
-            <div class="trending-item-artist">${escapeHtml(t.artist)}</div>
+            <div class="skeleton-text" style="width:70%;height:14px;margin-bottom:6px;border-radius:4px;background:rgba(255,255,255,0.08);"></div>
+            <div class="skeleton-text" style="width:45%;height:12px;border-radius:4px;background:rgba(255,255,255,0.05);"></div>
           </div>
         </div>
       `).join('');
+      try {
+        const res = await fetch('/api/trending');
+        if (!res.ok) throw new Error('Failed');
+        const tracks = await res.json();
+        list.innerHTML = tracks.map((t, i) => `
+          <div class="trending-item" data-vid="${escapeHtml(t.id)}" data-title="${escapeHtml(t.title)}" data-thumb="${escapeHtml(t.thumbnail)}" data-artist="${escapeHtml(t.artist)}">
+            <span class="trending-rank">${i + 1}</span>
+            <img class="trending-item-thumb" src="${escapeHtml(t.thumbnail)}" alt="" loading="lazy">
+            <div class="trending-item-info">
+              <div class="trending-item-title">${escapeHtml(t.title)}</div>
+              <div class="trending-item-artist">${escapeHtml(t.artist)}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        list.innerHTML = '<div style="padding:16px;color:rgba(255,255,255,0.4);font-size:14px;">Could not load trending songs</div>';
+      }
     }
 
     document.getElementById('trendingList').addEventListener('click', (e) => {
@@ -858,7 +845,7 @@
       playSong(item.dataset.vid, item.dataset.title, item.dataset.thumb, item.dataset.artist);
     });
 
-    renderTrending();
+    loadTrending();
 
     // ===== SEARCH HISTORY =====
     const MAX_SEARCH_HISTORY = 8;

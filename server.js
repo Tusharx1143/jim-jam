@@ -168,6 +168,35 @@ app.get('/api/search', searchLimiter, async (req, res) => {
   }
 });
 
+// Trending endpoint — ytsr "top hits 2025" with 1-hour in-memory cache
+let trendingCache = { data: null, timestamp: 0 };
+const TRENDING_TTL = 60 * 60 * 1000;
+
+app.get('/api/trending', async (req, res) => {
+  if (trendingCache.data && Date.now() - trendingCache.timestamp < TRENDING_TTL) {
+    return res.json(trendingCache.data);
+  }
+  try {
+    const ytResults = await ytsr('top hits 2025', { limit: 15 });
+    const results = ytResults.items
+      .filter(item => item.type === 'video')
+      .slice(0, 10)
+      .map(item => ({
+        source: 'youtube',
+        id: item.id,
+        title: item.title,
+        thumbnail: item.bestThumbnail?.url || `https://i.ytimg.com/vi/${item.id}/mqdefault.jpg`,
+        artist: item.author?.name || 'Unknown',
+        duration: item.duration
+      }));
+    trendingCache = { data: results, timestamp: Date.now() };
+    res.json(results);
+  } catch (err) {
+    console.error('Trending fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch trending' });
+  }
+});
+
 // API to create a new room
 app.get('/api/create-room', createRoomLimiter, (req, res) => {
   const roomId = uuidv4().slice(0, 8);
