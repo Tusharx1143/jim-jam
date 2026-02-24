@@ -1,9 +1,9 @@
 {
-  "appId": "com.jimjam.app",
-  "appName": "Jim-Jam",
+  "appId": "com.wejam.app",
+  "appName": "WeJam",
   "webDir": "www",
   "server": {
-    "url": "https://jim-jam.onrender.com",
+    "url": "https://wejam.onrender.com",
     "androidScheme": "https"
   },
   "android": {

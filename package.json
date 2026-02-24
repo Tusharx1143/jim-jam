@@ -1,5 +1,5 @@
 {
-  "name": "jim-jam",
+  "name": "wejam",
   "version": "2.0.0",
   "description": "Real-time YouTube music synchronization app - Listen together with friends in perfect sync!",
   "main": "server.js",
