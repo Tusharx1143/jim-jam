@@ -3,6 +3,7 @@
   "appName": "WeJam",
   "webDir": "www",
   "server": {
+    "url": "https://wejam.onrender.com",
     "androidScheme": "https"
   },
   "android": {
