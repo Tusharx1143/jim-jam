@@ -7,11 +7,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Jim-Jam">
+  <meta name="apple-mobile-web-app-title" content="WeJam">
   <meta name="theme-color" content="#6366f1">
   <meta name="description"
     content="Listen to YouTube music together, in perfect sync. Search, play, and jam with friends.">
-  <title>Jim-jam 🎵 - Listen &amp; Jam Together</title>
+  <title>WeJam 🎵 - Listen &amp; Jam Together</title>
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -60,28 +60,86 @@
     </div>
   </div>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-inner">
+  <!-- Sidebar Backdrop (mobile overlay) -->
+  <div class="sidebar-backdrop" onclick="document.body.classList.remove('sidebar-open')"></div>
 
-      <!-- Logo -->
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-collapsed')" aria-label="Toggle sidebar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </button>
       <a href="/" class="logo">
         <div class="logo-icon-circle">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
           </svg>
         </div>
-        <span class="logo-text">Jim-jam</span>
+        <span class="logo-text sidebar-label">WeJam</span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav">
+      <a class="sidebar-nav-item active" href="/">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        <span class="sidebar-label">Home</span>
+      </a>
+      <a class="sidebar-nav-item" href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+        <span class="sidebar-label">Explore</span>
+      </a>
+      <a class="sidebar-nav-item" href="#">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+        </svg>
+        <span class="sidebar-label">Library</span>
+      </a>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-actions">
+      <button class="sidebar-action-btn" onclick="startJam()" id="startJamBtn">Start a Jam</button>
+      <button class="sidebar-action-btn" onclick="openJoinModal()">Join a Jam</button>
+      <button class="sidebar-action-btn" id="installBtn" style="display:none" onclick="installApp()">Install App</button>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <!-- Mobile hamburger (visible on mobile only) -->
+      <button class="mobile-menu-btn" onclick="document.body.classList.toggle('sidebar-open')" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </button>
+
+      <!-- Mobile logo (visible on mobile only) -->
+      <a href="/" class="mobile-logo">
+        <div class="logo-icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+        </div>
       </a>
 
-      <!-- Search (center) -->
-      <div class="header-search-center">
+      <!-- Search Bar -->
+      <div class="topbar-search">
         <div class="search-container" style="position: relative;">
           <div class="search-input-wrapper">
             <svg class="search-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
-            <input type="text" id="searchInput" class="input input-search" placeholder="Search" autocomplete="off">
+            <input type="text" id="searchInput" class="input input-search" placeholder="Search songs, albums, artists, podcasts" autocomplete="off">
           </div>
           <!-- Search History Dropdown -->
           <div class="search-history" id="searchHistory">
@@ -96,156 +154,142 @@
       </div>
 
       <!-- Right actions -->
-      <div class="header-right">
-        <button class="btn btn-ghost install-btn" id="installBtn" style="display:none" onclick="installApp()">
-          ⬇ Install
-        </button>
-        <button class="header-icon-btn" onclick="openJoinModal()" title="Join a Jam">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-        </button>
-        <button class="header-icon-btn" title="Settings">
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Settings">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
           </svg>
         </button>
       </div>
+    </header>
 
-    </div>
-  </header>
-
-  <!-- Category Tabs -->
-  <nav class="category-tabs">
-    <div class="tabs-scroll">
-      <button class="tab active">For You</button>
-      <button class="tab">New Releases</button>
-      <button class="tab">Playlists</button>
-      <button class="tab">Artists</button>
-      <button class="tab">Albums</button>
-      <button class="tab">Podcasts</button>
-    </div>
-    <button class="btn btn-gradient start-jam-tab-btn" onclick="startJam()" id="startJamBtn">
-      Start a Jam
-    </button>
-  </nav>
-
-  <!-- Main Content -->
-  <main class="home-main">
-
-    <!-- Now Playing (hidden until music is selected) -->
-    <section class="now-playing-section">
-      <div class="album-art-container" id="albumArtContainer">
-        <div class="no-music" id="noMusic">
-          <span class="no-music-icon">🎵</span>
-          <p class="no-music-text">Search for a song to start listening</p>
-        </div>
-        <img class="album-art" id="albumArt" src="" alt="Album Art">
-      </div>
-
-      <div class="track-info" id="trackInfo" style="display: none;">
-        <div class="track-title">
-          <span id="trackTitle">Song Title</span>
-          <span class="visualizer" id="visualizer">
-            <span class="visualizer-bar"></span>
-            <span class="visualizer-bar"></span>
-            <span class="visualizer-bar"></span>
-            <span class="visualizer-bar"></span>
-          </span>
-        </div>
-        <div class="track-artist" id="trackArtist">Artist Name</div>
-      </div>
-
-      <div class="jam-cta" id="jamCta" style="display: none;">
-        <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
-        <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
-          🎧 Start a Jam
-        </button>
-      </div>
-    </section>
-
-    <!-- Discovery Feed -->
-    <div class="no-search-placeholder" id="noSearchPlaceholder">
-
-      <!-- Recommended for you -->
-      <section class="discovery-section">
-        <h2 class="section-title">Recommended for you</h2>
-        <div class="trending-list" id="trendingList"></div>
-      </section>
-
-      <!-- New releases from artists you follow -->
-      <section class="discovery-section">
-        <h2 class="section-title">New releases from artists you follow</h2>
-        <div class="recently-played" id="recentlyPlayed" style="display: none;">
-          <div class="recently-played-list" id="recentlyPlayedList"></div>
-        </div>
-        <div class="artist-placeholder-row">
-          <div class="artist-circle-item">
-            <div class="artist-circle-img" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
-            <span class="artist-circle-name">DJ Pulse</span>
-          </div>
-          <div class="artist-circle-item">
-            <div class="artist-circle-img" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"></div>
-            <span class="artist-circle-name">Acoustic Dreams</span>
-          </div>
-          <div class="artist-circle-item">
-            <div class="artist-circle-img" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
-            <span class="artist-circle-name">Rock Reval Glitch</span>
-          </div>
-          <div class="artist-circle-item">
-            <div class="artist-circle-img" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"></div>
-            <span class="artist-circle-name">Luna &amp; The Satellites</span>
-          </div>
-          <div class="artist-circle-item">
-            <div class="artist-circle-img" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
-            <span class="artist-circle-name">The Night Collective</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Mixed for you -->
-      <section class="discovery-section">
-        <h2 class="section-title">Mixed for you</h2>
-      </section>
-
-      <!-- Toxed for you -->
-      <section class="discovery-section">
-        <h2 class="section-title">Toxed for you</h2>
-        <div class="trending-list">
-          <div class="trending-item static-card">
-            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #4c1d95, #7c3aed);"></div>
-            <div class="trending-item-info">
-              <div class="trending-item-title">Chill Mix</div>
-              <div class="trending-item-artist">Various Artists</div>
-            </div>
-          </div>
-          <div class="trending-item static-card">
-            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #1e3a5f, #1d4ed8);"></div>
-            <div class="trending-item-info">
-              <div class="trending-item-title">Workout Wonders</div>
-              <div class="trending-item-artist">DJ Pulse</div>
-            </div>
-          </div>
-          <div class="trending-item static-card">
-            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #065f46, #059669);"></div>
-            <div class="trending-item-info">
-              <div class="trending-item-title">Morning Coffee Jazz</div>
-              <div class="trending-item-artist">Smooth Jazz Collective</div>
-            </div>
-          </div>
-          <div class="trending-item static-card">
-            <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #7c2d12, #dc2626);"></div>
-            <div class="trending-item-info">
-              <div class="trending-item-title">Evening Drive</div>
-              <div class="trending-item-artist">The Night Collective</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+    <!-- Category Chips -->
+    <div class="category-chips">
+      <button class="chip active">All</button>
+      <button class="chip">For You</button>
+      <button class="chip">New Releases</button>
+      <button class="chip">Playlists</button>
+      <button class="chip">Artists</button>
+      <button class="chip">Podcasts</button>
     </div>
 
-  </main>
+    <!-- Main Content -->
+    <main class="home-main">
+
+      <!-- Now Playing (hidden until music is selected) -->
+      <section class="now-playing-section">
+        <div class="album-art-container" id="albumArtContainer">
+          <div class="no-music" id="noMusic">
+            <span class="no-music-icon">🎵</span>
+            <p class="no-music-text">Search for a song to start listening</p>
+          </div>
+          <img class="album-art" id="albumArt" src="" alt="Album Art">
+        </div>
+
+        <div class="track-info" id="trackInfo" style="display: none;">
+          <div class="track-title">
+            <span id="trackTitle">Song Title</span>
+            <span class="visualizer" id="visualizer">
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+              <span class="visualizer-bar"></span>
+            </span>
+          </div>
+          <div class="track-artist" id="trackArtist">Artist Name</div>
+        </div>
+
+        <div class="jam-cta" id="jamCta" style="display: none;">
+          <p class="jam-cta-text">Enjoying this? Jam with friends!</p>
+          <button class="btn btn-primary jam-cta-btn" onclick="startJam()">
+            🎧 Start a Jam
+          </button>
+        </div>
+      </section>
+
+      <!-- Discovery Feed -->
+      <div class="no-search-placeholder" id="noSearchPlaceholder">
+
+        <!-- Recommended for you -->
+        <section class="discovery-section">
+          <h2 class="section-title">Recommended for you</h2>
+          <div class="trending-list" id="trendingList"></div>
+        </section>
+
+        <!-- New releases from artists you follow -->
+        <section class="discovery-section">
+          <h2 class="section-title">New releases from artists you follow</h2>
+          <div class="recently-played" id="recentlyPlayed" style="display: none;">
+            <div class="recently-played-list" id="recentlyPlayedList"></div>
+          </div>
+          <div class="artist-placeholder-row">
+            <div class="artist-circle-item">
+              <div class="artist-circle-img" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);"></div>
+              <span class="artist-circle-name">DJ Pulse</span>
+            </div>
+            <div class="artist-circle-item">
+              <div class="artist-circle-img" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"></div>
+              <span class="artist-circle-name">Acoustic Dreams</span>
+            </div>
+            <div class="artist-circle-item">
+              <div class="artist-circle-img" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></div>
+              <span class="artist-circle-name">Rock Reval Glitch</span>
+            </div>
+            <div class="artist-circle-item">
+              <div class="artist-circle-img" style="background: linear-gradient(135deg, #f59e0b, #ef4444);"></div>
+              <span class="artist-circle-name">Luna &amp; The Satellites</span>
+            </div>
+            <div class="artist-circle-item">
+              <div class="artist-circle-img" style="background: linear-gradient(135deg, #10b981, #059669);"></div>
+              <span class="artist-circle-name">The Night Collective</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mixed for you -->
+        <section class="discovery-section">
+          <h2 class="section-title">Mixed for you</h2>
+        </section>
+
+        <!-- Toxed for you -->
+        <section class="discovery-section">
+          <h2 class="section-title">Toxed for you</h2>
+          <div class="trending-list">
+            <div class="trending-item static-card">
+              <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #4c1d95, #7c3aed);"></div>
+              <div class="trending-item-info">
+                <div class="trending-item-title">Chill Mix</div>
+                <div class="trending-item-artist">Various Artists</div>
+              </div>
+            </div>
+            <div class="trending-item static-card">
+              <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #1e3a5f, #1d4ed8);"></div>
+              <div class="trending-item-info">
+                <div class="trending-item-title">Workout Wonders</div>
+                <div class="trending-item-artist">DJ Pulse</div>
+              </div>
+            </div>
+            <div class="trending-item static-card">
+              <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #065f46, #059669);"></div>
+              <div class="trending-item-info">
+                <div class="trending-item-title">Morning Coffee Jazz</div>
+                <div class="trending-item-artist">Smooth Jazz Collective</div>
+              </div>
+            </div>
+            <div class="trending-item static-card">
+              <div class="trending-item-thumb static-thumb" style="background: linear-gradient(135deg, #7c2d12, #dc2626);"></div>
+              <div class="trending-item-info">
+                <div class="trending-item-title">Evening Drive</div>
+                <div class="trending-item-artist">The Night Collective</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+  </div>
 
   <!-- Fixed Bottom Player Bar -->
   <div class="player-bar" id="playerBar">
@@ -291,7 +335,7 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation -->
+  <!-- Bottom Navigation (mobile only) -->
   <nav class="bottom-nav">
     <button class="bottom-nav-item active">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
@@ -694,7 +738,7 @@
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
       document.getElementById('installBtn').style.display = 'none';
-      showToast('success', 'Jim-Jam installed! Find it on your home screen.');
+      showToast('success', 'WeJam installed! Find it on your home screen.');
     });
 
     function installApp() {

@@ -1,6 +1,6 @@
 {
-  "name": "Jim-Jam",
-  "short_name": "Jim-Jam",
+  "name": "WeJam",
+  "short_name": "WeJam",
   "description": "Listen to YouTube music together, in perfect sync",
   "start_url": "/",
   "scope": "/",

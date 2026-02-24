@@ -6,9 +6,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Jim-Jam">
+  <meta name="apple-mobile-web-app-title" content="WeJam">
   <meta name="theme-color" content="#6366f1">
-  <title>Jim-jam Room 🎵</title>
+  <title>WeJam Room 🎵</title>
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -987,7 +987,7 @@
     function shareRoom() {
       const url = window.location.href;
       if (navigator.share) {
-        navigator.share({ title: 'Join my Jim-Jam room!', text: 'Come jam with me!', url: url }).catch(() => {});
+        navigator.share({ title: 'Join my WeJam room!', text: 'Come jam with me!', url: url }).catch(() => {});
       } else {
         navigator.clipboard.writeText(url).then(() => {
           showToast('success', 'Room link copied!');
