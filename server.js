@@ -6,13 +6,17 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const ytsr = require('ytsr');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
+
+const DATA_DIR = './data';
+const ROOMS_FILE = `${DATA_DIR}/rooms.json`;
 
 const app = express();
 const server = http.createServer(app);
 
 // Allow requests from Capacitor mobile apps and browsers
 const allowedOrigins = [
-  /^https:\/\/jim-jam\.onrender\.com$/,       // Render deployment
+  /^https:\/\/wejam\.onrender\.com$/,          // Render deployment
   /^http:\/\/localhost(:\d+)?$/,
   /^http:\/\/192\.168\.\d+\.\d+(:\d+)?$/,    // Local network (for dev)
   /^capacitor:\/\//,                           // Capacitor iOS/Android
@@ -56,6 +60,39 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 
 // Store active rooms
 const rooms = new Map();
+
+function saveRooms() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
+    const data = {};
+    rooms.forEach((room, id) => {
+      data[id] = {
+        id: room.id,
+        currentVideo: room.currentVideo,
+        isPlaying: room.isPlaying,
+        currentTime: room.currentTime,
+        lastUpdate: room.lastUpdate,
+        lastActivity: room.lastActivity,
+        queue: room.queue
+      };
+    });
+    fs.writeFileSync(ROOMS_FILE, JSON.stringify(data));
+  } catch (e) { console.error('saveRooms error:', e); }
+}
+
+function loadRooms() {
+  try {
+    if (!fs.existsSync(ROOMS_FILE)) return;
+    const data = JSON.parse(fs.readFileSync(ROOMS_FILE, 'utf8'));
+    const cutoff = Date.now() - 2 * 60 * 60 * 1000;
+    Object.values(data).forEach(r => {
+      if (r.lastActivity > cutoff) {
+        rooms.set(r.id, { ...r, users: [], host: null });
+      }
+    });
+    console.log(`📂 Loaded ${rooms.size} rooms from disk`);
+  } catch (e) { console.error('loadRooms error:', e); }
+}
 
 // ========== Input Validation Utilities ==========
 function validateString(str, minLength = 1, maxLength = 500) {
@@ -197,6 +234,11 @@ app.get('/api/trending', async (req, res) => {
   }
 });
 
+// Health check — used by UptimeRobot to keep Render awake
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', rooms: rooms.size, uptime: Math.floor(process.uptime()) });
+});
+
 // API to create a new room
 app.get('/api/create-room', createRoomLimiter, (req, res) => {
   const roomId = uuidv4().slice(0, 8);
@@ -313,6 +355,7 @@ io.on('connection', (socket) => {
       isPlaying: true,
       currentTime: 0
     });
+    saveRooms();
     console.log(`Playing ${title} in room ${currentRoom}`);
   });
 
@@ -338,6 +381,7 @@ io.on('connection', (socket) => {
       isPlaying,
       currentTime
     });
+    saveRooms();
   });
 
   // Seek
@@ -358,6 +402,7 @@ io.on('connection', (socket) => {
     room.lastUpdate = Date.now();
 
     socket.to(currentRoom).emit('seeked', { currentTime });
+    saveRooms();
   });
 
   // Sync request
@@ -402,6 +447,7 @@ io.on('connection', (socket) => {
       addedBy: userName
     });
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
+    saveRooms();
   });
 
   // Reorder queue
@@ -430,6 +476,7 @@ io.on('connection', (socket) => {
     room.queue.splice(toIndex, 0, item);
 
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
+    saveRooms();
   });
 
   // Play next in queue
@@ -453,6 +500,7 @@ io.on('connection', (socket) => {
       currentTime: 0
     });
     io.to(currentRoom).emit('queue-updated', { queue: room.queue });
+    saveRooms();
   });
 
   // Chat message
@@ -500,6 +548,7 @@ io.on('connection', (socket) => {
           rooms.delete(currentRoom);
           console.log(`Room ${currentRoom} deleted (empty)`);
         }
+        saveRooms();
       }
 
       // Clear references to prevent memory leaks
@@ -558,6 +607,8 @@ setInterval(() => {
 }, CLEANUP_INTERVAL);
 // ========================================
 
+loadRooms();
+
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`🎵 Jim-jam server running at http://0.0.0.0:${PORT}`);
+  console.log(`🎵 WeJam server running at http://0.0.0.0:${PORT}`);
 });
