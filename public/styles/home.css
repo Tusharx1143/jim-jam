@@ -70,11 +70,10 @@ body {
 }
 
 .logo-icon-img {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px;
+  object-fit: contain;
 }
 
 .logo-text {
