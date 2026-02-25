@@ -1,9 +1,9 @@
 /**
- * Jim-Jam Service Worker
- * Cache-first for static assets, network-first for pages, skip API/sockets
+ * WeJam Service Worker
+ * Network-first for everything — always fetch fresh, fall back to cache offline
  */
 
-const CACHE_NAME = 'jimjam-v6';
+const CACHE_NAME = 'jimjam-v7';
 
 const PRECACHE_ASSETS = [
   '/styles/variables.css',
@@ -52,19 +52,7 @@ self.addEventListener('fetch', event => {
   // Skip API, socket.io — always needs live data
   if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/socket.io/')) return;
 
-  // Cache-first for versioned static assets (CSS, icons, manifest)
-  if (
-    url.pathname.startsWith('/styles/') ||
-    url.pathname.startsWith('/icons/') ||
-    url.pathname === '/manifest.json'
-  ) {
-    event.respondWith(
-      caches.match(request).then(cached => cached || fetchAndCache(request))
-    );
-    return;
-  }
-
-  // Network-first for HTML pages (always get fresh version, fall back to cache)
+  // Network-first for everything — always get fresh content, fall back to cache when offline
   event.respondWith(
     fetch(request)
       .then(response => {
