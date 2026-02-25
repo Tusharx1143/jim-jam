@@ -974,6 +974,48 @@
 
     // (Pre-warm block removed — player is now created directly in onYouTubeIframeAPIReady above)
 
+    // ===== CROSS-PAGE AUDIO PERSISTENCE =====
+
+    // 1. Save current track when navigating away (home → room, or any navigation)
+    window.addEventListener('pagehide', () => {
+      if (!currentTrack) return;
+      try {
+        localStorage.setItem('wejam_playing', JSON.stringify({
+          videoId: currentTrack.videoId,
+          title: currentTrack.title,
+          thumbnail: currentTrack.thumbnail || '',
+          artist: currentTrack.artist || 'YouTube',
+          currentTime: player && playerReady ? (player.getCurrentTime() || 0) : 0,
+          ts: Date.now()
+        }));
+      } catch (e) {}
+    });
+
+    // 2. Restore track if it was saved within the last 60 seconds
+    //    (runs synchronously before onYouTubeIframeAPIReady, so the wrapper below
+    //     is in place when the player is created and picks up onPlayerStateChange)
+    (function () {
+      try {
+        const saved = JSON.parse(localStorage.getItem('wejam_playing'));
+        if (!saved || !saved.videoId || Date.now() - saved.ts > 60000) return;
+        localStorage.removeItem('wejam_playing');
+        // playSong handles the pending/ready split automatically
+        playSong(saved.videoId, saved.title, saved.thumbnail, saved.artist);
+        // Seek to saved position once playback actually starts
+        if (saved.currentTime > 5) {
+          const _prevOSC = onPlayerStateChange;
+          let _seeked = false;
+          onPlayerStateChange = function (event) {
+            _prevOSC(event);
+            if (!_seeked && event.data === YT.PlayerState.PLAYING && player) {
+              _seeked = true;
+              player.seekTo(saved.currentTime, true);
+            }
+          };
+        }
+      } catch (e) {}
+    })();
+
     // ===== OFFLINE INDICATOR =====
     function updateOnlineStatus() {
       const banner = document.getElementById('offlineBanner');

@@ -1135,6 +1135,26 @@
     document.getElementById('userName').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') joinRoom();
     });
+
+    // ===== CROSS-PAGE AUDIO PERSISTENCE =====
+    // Save the currently playing track when the user navigates away from the room,
+    // so the home page can resume playback where the room left off.
+    window.addEventListener('pagehide', () => {
+      try {
+        if (!player || !currentVideoTitle) return;
+        const vd = player.getVideoData ? player.getVideoData() : null;
+        const videoId = vd && vd.video_id ? vd.video_id : null;
+        if (!videoId) return;
+        localStorage.setItem('wejam_playing', JSON.stringify({
+          videoId,
+          title: currentVideoTitle,
+          thumbnail: currentVideoThumb || `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+          artist: currentVideoArtist || 'YouTube',
+          currentTime: player.getCurrentTime ? player.getCurrentTime() : 0,
+          ts: Date.now()
+        }));
+      } catch (e) {}
+    });
   </script>
 </body>
 </html>

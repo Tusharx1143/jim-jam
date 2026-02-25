@@ -543,10 +543,11 @@ io.on('connection', (socket) => {
         // Leave the socket room
         socket.leave(currentRoom);
 
-        // Clean up empty rooms immediately
+        // Keep empty rooms alive so refreshing users can rejoin with state intact.
+        // The 2-hour TTL cleanup handles truly abandoned rooms.
         if (room.users.length === 0) {
-          rooms.delete(currentRoom);
-          console.log(`Room ${currentRoom} deleted (empty)`);
+          room.host = null; // reset so the next joiner becomes host
+          console.log(`Room ${currentRoom} is now empty — keeping state for reconnection`);
         }
         saveRooms();
       }
