@@ -69,17 +69,18 @@ body {
 }
 
 .logo-icon-img {
-  width: 48px !important;
-  height: 48px !important;
-  min-width: 48px;
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px;
   object-fit: contain;
 }
 
 .logo-text {
-  font-size: 17px;
-  font-weight: 700;
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  font-weight: 400;
   color: white;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   transition: opacity 0.15s ease, max-width 0.2s ease;
