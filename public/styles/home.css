@@ -69,15 +69,12 @@ body {
   min-width: 0;
 }
 
-.logo-icon-circle {
+.logo-icon-img {
   width: 32px;
   height: 32px;
   min-width: 32px;
-  background: var(--accent-primary);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
 }
 
 .logo-text {
